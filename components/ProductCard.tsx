@@ -17,7 +17,7 @@ function ImageOrPlaceholder({ uri, width, height }: { uri: string | null; width:
     return <Image source={{ uri }} style={{ width, height }} resizeMode="cover" />;
   }
   return (
-    <View style={{ width, height }} className="items-center justify-center bg-gray-100">
+    <View style={{ width, height, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' }}>
       <ShoppingBag size={32} color="#9CA3AF" />
     </View>
   );

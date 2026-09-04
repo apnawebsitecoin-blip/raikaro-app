@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function WalletScreen() {
   return (
-    <View className="flex-1 bg-white items-center justify-center">
-      <Text className="text-xl font-semibold text-gray-700">Coming soon — Wallet</Text>
+    <View style={s.container}>
+      <Text style={s.text}>Coming soon — Wallet</Text>
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  text:      { fontSize: 20, fontWeight: '600', color: '#374151' },
+});

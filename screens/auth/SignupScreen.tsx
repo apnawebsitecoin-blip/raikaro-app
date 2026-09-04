@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '../../lib/supabase';
 
@@ -22,43 +22,49 @@ export default function SignupScreen({ navigation }: Props) {
   }
 
   return (
-    <View className="flex-1 bg-white px-6 justify-center">
-      <Text className="text-3xl font-bold text-indigo-600 mb-2">Raikaro</Text>
-      <Text className="text-gray-500 mb-8">Create your account</Text>
+    <View style={s.container}>
+      <Text style={s.brand}>Raikaro</Text>
+      <Text style={s.subtitle}>Create your account</Text>
 
       <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4 text-base"
+        style={s.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        placeholderTextColor="#9CA3AF"
       />
       <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-6 text-base"
+        style={[s.input, s.inputLast]}
         placeholder="Password (min 6 characters)"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        placeholderTextColor="#9CA3AF"
       />
 
-      <TouchableOpacity
-        className="bg-indigo-600 rounded-xl py-4 items-center mb-4"
-        onPress={handleSignup}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-white font-semibold text-base">Create Account</Text>
-        )}
+      <TouchableOpacity style={s.btn} onPress={handleSignup} disabled={loading} activeOpacity={0.8}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={s.btnText}>Create Account</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text className="text-center text-gray-500">
-          Already have an account? <Text className="text-indigo-600 font-semibold">Sign In</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+        <Text style={s.link}>
+          Already have an account? <Text style={s.linkBold}>Sign In</Text>
         </Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 24, justifyContent: 'center' },
+  brand:     { fontSize: 32, fontWeight: '800', color: '#4F46E5', marginBottom: 6 },
+  subtitle:  { fontSize: 15, color: '#6B7280', marginBottom: 32 },
+  input:     { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, marginBottom: 16, color: '#111827' },
+  inputLast: { marginBottom: 24 },
+  btn:       { backgroundColor: '#4F46E5', borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginBottom: 16 },
+  btnText:   { color: '#fff', fontWeight: '700', fontSize: 16 },
+  link:      { textAlign: 'center', color: '#6B7280', fontSize: 14 },
+  linkBold:  { color: '#4F46E5', fontWeight: '700' },
+});
