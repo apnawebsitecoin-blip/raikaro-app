@@ -69,3 +69,45 @@ export interface TopReferrer {
   name: string | null;
   referral_count: number;
 }
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  title: string;
+  discount_type: 'percent' | 'flat';
+  discount_value: number;
+  product_id: string | null;
+  category: string | null;
+  expires_at: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type MissingCashbackStatus = 'pending' | 'resolved' | 'rejected';
+
+export interface MissingCashbackRequest {
+  id: string;
+  user_id: string;
+  order_url: string;
+  platform: string;
+  order_amount: number;
+  order_date: string;
+  screenshot_url: string | null;
+  status: MissingCashbackStatus;
+  admin_note: string | null;
+  created_at: string;
+}
+
+export interface WishlistWithProduct {
+  id: string;
+  product_id: string;
+  products: Product;
+}

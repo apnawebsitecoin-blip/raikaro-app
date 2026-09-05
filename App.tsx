@@ -15,6 +15,8 @@ import WalletScreen from './screens/WalletScreen';
 import ReferScreen from './screens/ReferScreen';
 import AccountScreen from './screens/AccountScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
+import WishlistScreen from './screens/WishlistScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,6 +28,7 @@ function HomeStack() {
     <Stack.Navigator>
       <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Detail' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 }
@@ -59,6 +62,7 @@ function AccountStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="AccountMain" component={AccountScreen} options={{ title: 'Account' }} />
+      <Stack.Screen name="Wishlist" component={WishlistScreen} options={{ title: 'My Wishlist' }} />
     </Stack.Navigator>
   );
 }

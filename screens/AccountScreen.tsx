@@ -4,7 +4,7 @@ import {
   Alert, ActivityIndicator, StatusBar, Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe, ChevronRight, Shield } from 'lucide-react-native';
+import { User, Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe, ChevronRight, Shield, Heart } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -13,7 +13,9 @@ import { Profile } from '../lib/types';
 const INDIGO = '#4F46E5';
 const APP_VERSION = '1.0.0';
 
-export default function AccountScreen() {
+type Props = { navigation: any };
+
+export default function AccountScreen({ navigation }: Props) {
   const { session } = useAuth();
   const userId = session?.user.id;
   const email = session?.user.email ?? '';
@@ -184,6 +186,18 @@ export default function AccountScreen() {
         <View style={s.section}>
           <Text style={s.sectionTitle}>Account</Text>
           <View style={s.settingsCard}>
+            <Pressable style={s.settingRow} onPress={() => navigation.navigate('Wishlist')}>
+              <View style={s.settingLeft}>
+                <View style={[s.settingIcon, { backgroundColor: '#FEF2F2' }]}>
+                  <Heart size={16} color="#EF4444" />
+                </View>
+                <Text style={s.settingLabel}>My Wishlist</Text>
+              </View>
+              <ChevronRight size={16} color="#9CA3AF" />
+            </Pressable>
+
+            <View style={s.divider} />
+
             <Pressable style={s.settingRow}>
               <View style={s.settingLeft}>
                 <View style={[s.settingIcon, { backgroundColor: '#EFF6FF' }]}>
