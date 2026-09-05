@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, Pressable, Dimensions } from 'react-native';
 import { ShoppingBag } from 'lucide-react-native';
 import { Product } from '../lib/types';
+import { cleanProductTitle } from '../lib/utils';
 
 const CARD_WIDTH = (Dimensions.get('window').width - 48) / 2;
 
@@ -39,6 +40,7 @@ type Props = {
 };
 
 export default function ProductCard({ product, onPress, featured = false }: Props) {
+  const displayName = cleanProductTitle(product.name);
   const cardStyle = {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -58,7 +60,7 @@ export default function ProductCard({ product, onPress, featured = false }: Prop
         <ImageOrPlaceholder uri={product.image_url} width={180} height={130} />
         <View style={{ padding: 10 }}>
           {product.platform && <PlatformBadge platform={product.platform} />}
-          <Text style={{ fontSize: 13, fontWeight: '600', color: '#111827' }} numberOfLines={2}>{product.name}</Text>
+          <Text style={{ fontSize: 13, fontWeight: '600', color: '#111827' }} numberOfLines={2}>{displayName}</Text>
           {product.price != null && (
             <Text style={{ fontSize: 14, fontWeight: '700', color: '#4F46E5', marginTop: 4 }}>
               ₹{product.price.toLocaleString('en-IN')}
@@ -74,7 +76,7 @@ export default function ProductCard({ product, onPress, featured = false }: Prop
       <ImageOrPlaceholder uri={product.image_url} width={CARD_WIDTH} height={CARD_WIDTH * 0.85} />
       <View style={{ padding: 10 }}>
         {product.platform && <PlatformBadge platform={product.platform} />}
-        <Text style={{ fontSize: 13, fontWeight: '500', color: '#1F2937' }} numberOfLines={2}>{product.name}</Text>
+        <Text style={{ fontSize: 13, fontWeight: '500', color: '#1F2937' }} numberOfLines={2}>{displayName}</Text>
         {product.price != null && (
           <Text style={{ fontSize: 14, fontWeight: '700', color: '#4F46E5', marginTop: 4 }}>
             ₹{product.price.toLocaleString('en-IN')}
