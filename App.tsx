@@ -18,6 +18,8 @@ import AccountScreen from './screens/AccountScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import WishlistScreen from './screens/WishlistScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import WriteReviewScreen from './screens/WriteReviewScreen';
+import SubmitDealScreen from './screens/SubmitDealScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,9 +29,10 @@ const INDIGO = '#4F46E5';
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Home' }} />
+      <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Detail' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
     </Stack.Navigator>
   );
 }
@@ -37,8 +40,9 @@ function HomeStack() {
 function DealsStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="DealsMain" component={DealsScreen} options={{ title: 'Deals' }} />
+      <Stack.Screen name="DealsMain" component={DealsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Detail' }} />
+      <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
     </Stack.Navigator>
   );
 }
@@ -46,7 +50,7 @@ function DealsStack() {
 function WalletStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="WalletMain" component={WalletScreen} options={{ title: 'Wallet' }} />
+      <Stack.Screen name="WalletMain" component={WalletScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -54,7 +58,7 @@ function WalletStack() {
 function ReferStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ReferMain" component={ReferScreen} options={{ title: 'Refer & Earn' }} />
+      <Stack.Screen name="ReferMain" component={ReferScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -62,8 +66,11 @@ function ReferStack() {
 function AccountStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="AccountMain" component={AccountScreen} options={{ title: 'Account' }} />
+      <Stack.Screen name="AccountMain" component={AccountScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Wishlist" component={WishlistScreen} options={{ title: 'My Wishlist' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
+      <Stack.Screen name="SubmitDeal" component={SubmitDealScreen} options={{ title: 'Submit a Deal' }} />
     </Stack.Navigator>
   );
 }
