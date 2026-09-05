@@ -30,7 +30,7 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Detail' }} />
+      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
     </Stack.Navigator>
@@ -41,7 +41,7 @@ function DealsStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="DealsMain" component={DealsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Detail' }} />
+      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
     </Stack.Navigator>
   );
