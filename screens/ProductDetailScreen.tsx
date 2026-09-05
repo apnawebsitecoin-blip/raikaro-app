@@ -4,11 +4,12 @@ import {
   Linking, ActivityIndicator, Dimensions, Alert, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Heart, ExternalLink, ShoppingBag, ChevronLeft } from 'lucide-react-native';
+import { Heart, ExternalLink, ShoppingBag, ChevronLeft, Ticket, Copy, CheckCheck } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as Clipboard from 'expo-clipboard';
 
 import { supabase } from '../lib/supabase';
-import { Product, ProductImage } from '../lib/types';
+import { Product, ProductImage, Coupon } from '../lib/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const INDIGO = '#4F46E5';
@@ -29,8 +30,20 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const [loadingImages, setLoadingImages] = useState(true);
   // TODO: Connect to wishlists table (supabase.from('wishlists').insert/delete)
   const [wishlisted, setWishlisted] = useState(false);
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [couponCopied, setCouponCopied] = useState(false);
 
   const platformStyle = product.platform ? PLATFORM_COLORS[product.platform] : null;
+
+  useEffect(() => {
+    supabase
+      .from('coupons')
+      .select('*')
+      .eq('product_id', product.id)
+      .eq('is_active', true)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setCoupon(data as Coupon); });
+  }, [product.id]);
 
   useEffect(() => {
     async function fetchImages() {
@@ -143,6 +156,26 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               <Text style={{ fontSize: 13, color: '#6B7280' }}>Category: </Text>
               <Text style={{ fontSize: 13, fontWeight: '600', color: '#374151' }}>{product.category}</Text>
             </View>
+          )}
+
+          {coupon && (
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#ECFDF5', borderRadius: 12, padding: 14, marginBottom: 16, borderWidth: 1, borderColor: '#A7F3D0' }}
+              onPress={async () => {
+                await Clipboard.setStringAsync(coupon.code);
+                setCouponCopied(true);
+                setTimeout(() => setCouponCopied(false), 2000);
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
+                <Ticket size={18} color="#059669" />
+                <View>
+                  <Text style={{ fontSize: 12, color: '#059669', fontWeight: '600' }}>Coupon Available</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '800', color: '#065F46', letterSpacing: 1 }}>{coupon.code}</Text>
+                </View>
+              </View>
+              {couponCopied ? <CheckCheck size={18} color="#059669" /> : <Copy size={18} color="#059669" />}
+            </Pressable>
           )}
 
           <View style={{ height: 1, backgroundColor: '#F3F4F6', marginBottom: 20 }} />
