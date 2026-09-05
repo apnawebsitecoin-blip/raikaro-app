@@ -3,9 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, Tag, Wallet, Users, User } from 'lucide-react-native';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ProfileProvider, useProfile } from './context/ProfileContext';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import SignupScreen from './screens/auth/SignupScreen';
@@ -67,6 +68,15 @@ function AccountStack() {
   );
 }
 
+function WalletTabLabel({ color }: { color: string }) {
+  const { walletBalance } = useProfile();
+  return (
+    <Text style={{ fontSize: 10, color, marginTop: 2, fontWeight: '600' }}>
+      ₹{walletBalance.toFixed(0)}
+    </Text>
+  );
+}
+
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -81,6 +91,11 @@ function MainTabs() {
           if (route.name === 'Wallet') return <Wallet color={color} size={size} />;
           if (route.name === 'Refer') return <Users color={color} size={size} />;
           if (route.name === 'Account') return <User color={color} size={size} />;
+        },
+        tabBarLabel: ({ color, focused }) => {
+          if (route.name === 'Wallet') return <WalletTabLabel color={color} />;
+          const labels: Record<string, string> = { Home: 'Home', Deals: 'Deals', Refer: 'Refer', Account: 'Account' };
+          return <Text style={{ fontSize: 10, color, marginTop: 2 }}>{labels[route.name]}</Text>;
         },
       })}
     >
@@ -119,9 +134,11 @@ function RootNavigator() {
 export default function App() {
   return (
     <AuthProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
+      <ProfileProvider>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </ProfileProvider>
     </AuthProvider>
   );
 }
