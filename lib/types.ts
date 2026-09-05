@@ -111,3 +111,31 @@ export interface WishlistWithProduct {
   product_id: string;
   products: Product;
 }
+
+export type ReviewSentiment = 'positive' | 'neutral' | 'negative';
+
+export interface Review {
+  id: string;
+  product_id: string;
+  reviewer_id: string;
+  sentiment: ReviewSentiment | null;
+  review_text: string | null;
+  invoice_url: string | null;
+  media_url: string | null;
+  verified: boolean;
+  created_at: string;
+}
+
+export interface CommunityDeal {
+  id: string;
+  user_id: string;
+  product_name: string;
+  product_url: string;
+  price: number | null;
+  category: string | null;
+  image_url: string | null;
+  description: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  admin_note: string | null;
+  created_at: string;
+}
