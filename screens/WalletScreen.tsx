@@ -81,6 +81,12 @@ export default function WalletScreen() {
   const handleCheckin = async () => {
     if (!userId) return;
     setCheckinLoading(true);
+    // Ensure profile row exists before inserting (FK: daily_checkins.user_id → profiles.id)
+    const { data: existingProfile } = await supabase.from('profiles').select('id').eq('id', userId).single();
+    if (!existingProfile) {
+      const refCode = userId.substring(0, 8).toUpperCase();
+      await supabase.from('profiles').upsert({ id: userId, referral_code: refCode }, { onConflict: 'id', ignoreDuplicates: true });
+    }
     const { error } = await supabase.from('daily_checkins').insert({ user_id: userId });
     setCheckinLoading(false);
     if (error) Alert.alert('Error', error.message);

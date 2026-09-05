@@ -12,13 +12,23 @@ export default function SignupScreen({ navigation }: Props) {
 
   async function handleSignup() {
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    setLoading(false);
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
+      setLoading(false);
       Alert.alert('Signup Error', error.message);
-    } else {
-      Alert.alert('Success', 'Check your email to confirm your account!');
+      return;
     }
+    // Ensure profile row exists. The DB trigger should handle this, but we
+    // also upsert here as a safety net for cases where the trigger is missing.
+    if (data.user) {
+      const refCode = data.user.id.substring(0, 8).toUpperCase();
+      await supabase.from('profiles').upsert(
+        { id: data.user.id, name: email.split('@')[0], referral_code: refCode },
+        { onConflict: 'id', ignoreDuplicates: true }
+      );
+    }
+    setLoading(false);
+    Alert.alert('Success', 'Check your email to confirm your account!');
   }
 
   return (
