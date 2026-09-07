@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, FlatList, Image, Pressable,
-  Linking, ActivityIndicator, Dimensions, Alert, StatusBar, Switch,
+  Linking, ActivityIndicator, Dimensions, Alert, StatusBar, Switch, Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Heart, ExternalLink, ShoppingBag, ChevronLeft,
-  Ticket, Copy, CheckCheck, Bell, PenLine, TrendingDown, Play,
+  Ticket, Copy, CheckCheck, Bell, PenLine, TrendingDown, Play, Share2,
 } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Clipboard from 'expo-clipboard';
@@ -222,6 +222,15 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
     else Alert.alert('Error', 'Cannot open this URL');
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        title: cleanName,
+        message: `Check out ${cleanName} on Raikaro!\n\n${product.original_url}`,
+      });
+    } catch {}
+  };
+
   const onScroll = (e: any) => {
     setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH));
   };
@@ -365,6 +374,12 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           style={{ width: 52, height: 52, borderRadius: 16, borderWidth: 1.5, borderColor: wishlisted ? '#EF4444' : colors.borderStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: wishlisted ? '#FEF2F2' : colors.card }}
         >
           <Heart size={22} color={wishlisted ? '#EF4444' : colors.textMuted} fill={wishlisted ? '#EF4444' : 'transparent'} />
+        </Pressable>
+        <Pressable
+          onPress={handleShare}
+          style={{ width: 52, height: 52, borderRadius: 16, borderWidth: 1.5, borderColor: colors.borderStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card }}
+        >
+          <Share2 size={20} color={colors.textSub} />
         </Pressable>
         <Pressable
           onPress={handleBuyNow}
