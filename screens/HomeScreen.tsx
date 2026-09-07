@@ -22,6 +22,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Product, Coupon } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
+import AppDrawer from '../components/AppDrawer';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const INDIGO = '#4F46E5';
@@ -159,6 +160,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [categories, setCategories] = useState<string[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -259,8 +261,8 @@ export default function HomeScreen({ navigation }: Props) {
         paddingHorizontal: 16, paddingVertical: 11,
         backgroundColor: colors.indigo,
       }}>
-        {/* Left — hamburger in white */}
-        <Pressable hitSlop={12} onPress={() => {}}>
+        {/* Left — hamburger opens drawer */}
+        <Pressable hitSlop={12} onPress={() => setDrawerOpen(true)}>
           <Menu size={22} color="#fff" />
         </Pressable>
 
@@ -558,6 +560,12 @@ export default function HomeScreen({ navigation }: Props) {
         )}
       </ScrollView>
       </View>
+
+      <AppDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        navigation={navigation}
+      />
     </SafeAreaView>
   );
 }
