@@ -8,6 +8,7 @@ import { Search, ShoppingBag, Tag, SlidersHorizontal } from 'lucide-react-native
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
+import { useTheme } from '../context/ThemeContext';
 import { Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 
@@ -28,6 +29,7 @@ interface Section {
 }
 
 export default function DealsScreen({ navigation, route }: Props) {
+  const { colors } = useTheme();
   const initialPlatform: string | null = route.params?.filterPlatform ?? null;
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -96,41 +98,41 @@ export default function DealsScreen({ navigation, route }: Props) {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={INDIGO} />
+          <ActivityIndicator size="large" color={colors.indigo} />
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+      <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
 
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Tag size={20} color={INDIGO} />
-          <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827' }}>Deals</Text>
+          <Tag size={20} color={colors.indigo} />
+          <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text }}>Deals</Text>
         </View>
-        <Text style={{ fontSize: 13, color: '#6B7280' }}>{filtered.length} products</Text>
+        <Text style={{ fontSize: 13, color: colors.textSub }}>{filtered.length} products</Text>
       </View>
 
       {/* Search */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#E5E7EB', gap: 8 }}>
-        <Search size={16} color="#9CA3AF" />
+      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8 }}>
+        <Search size={16} color={colors.textMuted} />
         <TextInput
-          style={{ flex: 1, fontSize: 14, color: '#111827' }}
+          style={{ flex: 1, fontSize: 14, color: colors.text }}
           placeholder="Search deals..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textMuted}
           value={search}
           onChangeText={setSearch}
           returnKeyType="search"
         />
         {search.length > 0 && (
           <Pressable onPress={() => setSearch('')} hitSlop={8}>
-            <Text style={{ fontSize: 13, color: '#9CA3AF' }}>✕</Text>
+            <Text style={{ fontSize: 13, color: colors.textMuted }}>✕</Text>
           </Pressable>
         )}
       </View>
@@ -140,9 +142,9 @@ export default function DealsScreen({ navigation, route }: Props) {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 10 }}>
           <Pressable
             onPress={() => setSelectedPlatform(null)}
-            style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: selectedPlatform === null ? INDIGO : '#E5E7EB', backgroundColor: selectedPlatform === null ? '#EEF2FF' : '#fff' }}
+            style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: selectedPlatform === null ? colors.indigo : colors.borderStrong, backgroundColor: selectedPlatform === null ? colors.indigoMuted : colors.card }}
           >
-            <Text style={{ fontSize: 13, fontWeight: '600', color: selectedPlatform === null ? INDIGO : '#6B7280' }}>All Platforms</Text>
+            <Text style={{ fontSize: 13, fontWeight: '600', color: selectedPlatform === null ? colors.indigo : colors.textSub }}>All Platforms</Text>
           </Pressable>
           {platforms.map((p) => {
             const style = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', text: '#374151' };
@@ -151,9 +153,9 @@ export default function DealsScreen({ navigation, route }: Props) {
               <Pressable
                 key={p}
                 onPress={() => setSelectedPlatform(active ? null : p)}
-                style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: active ? style.text : '#E5E7EB', backgroundColor: active ? style.bg : '#fff' }}
+                style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: active ? style.text : colors.borderStrong, backgroundColor: active ? style.bg : colors.card }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '600', color: active ? style.text : '#6B7280' }}>{p}</Text>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: active ? style.text : colors.textSub }}>{p}</Text>
               </Pressable>
             );
           })}
@@ -165,9 +167,9 @@ export default function DealsScreen({ navigation, route }: Props) {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
           <Pressable
             onPress={() => setSelectedCategory(null)}
-            style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: selectedCategory === null ? INDIGO : '#E5E7EB', backgroundColor: selectedCategory === null ? INDIGO : '#fff' }}
+            style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: selectedCategory === null ? colors.indigo : colors.borderStrong, backgroundColor: selectedCategory === null ? colors.indigo : colors.card }}
           >
-            <Text style={{ fontSize: 12, fontWeight: '700', color: selectedCategory === null ? '#fff' : '#6B7280' }}>All</Text>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: selectedCategory === null ? '#fff' : colors.textSub }}>All</Text>
           </Pressable>
           {categories.map((cat) => {
             const active = selectedCategory === cat;
@@ -175,9 +177,9 @@ export default function DealsScreen({ navigation, route }: Props) {
               <Pressable
                 key={cat}
                 onPress={() => setSelectedCategory(active ? null : cat)}
-                style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: active ? INDIGO : '#E5E7EB', backgroundColor: active ? INDIGO : '#fff' }}
+                style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: active ? colors.indigo : colors.borderStrong, backgroundColor: active ? colors.indigo : colors.card }}
               >
-                <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : '#6B7280' }}>{cat}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : colors.textSub }}>{cat}</Text>
               </Pressable>
             );
           })}
@@ -187,20 +189,20 @@ export default function DealsScreen({ navigation, route }: Props) {
       {/* Sectioned horizontal product lists */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         {sections.length === 0 ? (
           <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 80 }}>
-            <ShoppingBag size={48} color="#D1D5DB" />
-            <Text style={{ color: '#6B7280', marginTop: 12, fontSize: 15 }}>No products found</Text>
+            <ShoppingBag size={48} color={colors.textMuted} />
+            <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
           </View>
         ) : (
           sections.map((section) => (
             <View key={section.title} style={{ marginBottom: 24 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 10 }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>{section.title}</Text>
-                <Text style={{ fontSize: 12, color: '#9CA3AF' }}>{section.data.length}</Text>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{section.title}</Text>
+                <Text style={{ fontSize: 12, color: colors.textMuted }}>{section.data.length}</Text>
               </View>
               <FlatList
                 data={section.data}

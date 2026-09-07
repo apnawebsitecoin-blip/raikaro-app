@@ -9,12 +9,14 @@ import { Copy, Share2, Users, Trophy, CheckCheck } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Profile, TopReferrer } from '../lib/types';
 
 const INDIGO = '#4F46E5';
 
 export default function ReferScreen() {
   const { session } = useAuth();
+  const { colors } = useTheme();
   const userId = session?.user.id;
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -69,15 +71,15 @@ export default function ReferScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={s.centered}>
-        <ActivityIndicator size="large" color={INDIGO} />
+      <SafeAreaView style={[s.centered, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.indigo} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={s.root} edges={['top']}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar barStyle={colors.statusBar} />
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
@@ -102,39 +104,39 @@ export default function ReferScreen() {
 
         {/* Stats */}
         <View style={s.statsRow}>
-          <View style={s.statCard}>
-            <Users size={22} color={INDIGO} />
-            <Text style={s.statNumber}>{referralCount}</Text>
-            <Text style={s.statLabel}>Friends Referred</Text>
+          <View style={[s.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Users size={22} color={colors.indigo} />
+            <Text style={[s.statNumber, { color: colors.text }]}>{referralCount}</Text>
+            <Text style={[s.statLabel, { color: colors.textSub }]}>Friends Referred</Text>
           </View>
-          <View style={s.statCard}>
-            <Trophy size={22} color={INDIGO} />
-            <Text style={s.statNumber}>{myRank > 0 ? `#${myRank}` : '—'}</Text>
-            <Text style={s.statLabel}>Your Rank</Text>
+          <View style={[s.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Trophy size={22} color={colors.indigo} />
+            <Text style={[s.statNumber, { color: colors.text }]}>{myRank > 0 ? `#${myRank}` : '—'}</Text>
+            <Text style={[s.statLabel, { color: colors.textSub }]}>Your Rank</Text>
           </View>
         </View>
 
         {/* Leaderboard */}
-        <View style={s.card}>
+        <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={s.cardHeader}>
-            <Trophy size={18} color={INDIGO} />
-            <Text style={s.cardTitle}>Top Referrers</Text>
+            <Trophy size={18} color={colors.indigo} />
+            <Text style={[s.cardTitle, { color: colors.text }]}>Top Referrers</Text>
           </View>
           {leaderboard.length === 0 ? (
-            <Text style={s.emptyText}>No referrals yet — be the first!</Text>
+            <Text style={[s.emptyText, { color: colors.textMuted }]}>No referrals yet — be the first!</Text>
           ) : (
             leaderboard.map((r, i) => {
               const isMe = r.id === userId;
               const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
               return (
-                <View key={r.id} style={[s.leaderRow, isMe && s.leaderRowMe]}>
+                <View key={r.id} style={[s.leaderRow, { borderBottomColor: colors.border }, isMe && { backgroundColor: colors.indigoMuted, marginHorizontal: -16, paddingHorizontal: 16, borderRadius: 8 }]}>
                   <Text style={s.medal}>{medal}</Text>
-                  <Text style={[s.leaderName, isMe && s.leaderNameMe]} numberOfLines={1}>
+                  <Text style={[s.leaderName, { color: colors.textSub }, isMe && { color: colors.indigo, fontWeight: '700' }]} numberOfLines={1}>
                     {r.name ?? 'Anonymous'}{isMe ? ' (You)' : ''}
                   </Text>
-                  <View style={s.leaderBadge}>
-                    <Users size={12} color="#6B7280" />
-                    <Text style={s.leaderCount}>{r.referral_count}</Text>
+                  <View style={[s.leaderBadge, { backgroundColor: colors.cardAlt }]}>
+                    <Users size={12} color={colors.textSub} />
+                    <Text style={[s.leaderCount, { color: colors.text }]}>{r.referral_count}</Text>
                   </View>
                 </View>
               );
@@ -143,18 +145,18 @@ export default function ReferScreen() {
         </View>
 
         {/* How it works */}
-        <View style={s.card}>
-          <Text style={s.cardTitle}>How it works</Text>
+        <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[s.cardTitle, { color: colors.text }]}>How it works</Text>
           {[
             { step: '1', text: 'Share your referral code with friends' },
             { step: '2', text: 'They sign up using your code' },
             { step: '3', text: 'You both earn cashback rewards' },
           ].map((item) => (
             <View key={item.step} style={s.stepRow}>
-              <View style={s.stepBadge}>
-                <Text style={s.stepNum}>{item.step}</Text>
+              <View style={[s.stepBadge, { backgroundColor: colors.indigoMuted }]}>
+                <Text style={[s.stepNum, { color: colors.indigo }]}>{item.step}</Text>
               </View>
-              <Text style={s.stepText}>{item.text}</Text>
+              <Text style={[s.stepText, { color: colors.textSub }]}>{item.text}</Text>
             </View>
           ))}
         </View>

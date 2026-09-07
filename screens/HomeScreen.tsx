@@ -16,6 +16,7 @@ import * as Clipboard from 'expo-clipboard';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Product, Coupon } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
@@ -125,6 +126,7 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
 
 export default function HomeScreen({ navigation }: Props) {
   const { session } = useAuth();
+  const { colors } = useTheme();
   const userId = session?.user.id;
 
   const [featured, setFeatured] = useState<Product[]>([]);
@@ -197,10 +199,10 @@ export default function HomeScreen({ navigation }: Props) {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <StatusBar barStyle={colors.statusBar} />
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={INDIGO} />
+          <ActivityIndicator size="large" color={colors.indigo} />
         </View>
       </SafeAreaView>
     );
@@ -209,8 +211,8 @@ export default function HomeScreen({ navigation }: Props) {
   const isSearching = searchQuery.trim().length > 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+      <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
@@ -219,40 +221,40 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
           <Pressable hitSlop={12} onPress={() => {}}>
-            <Menu size={24} color="#374151" />
+            <Menu size={24} color={colors.textSub} />
           </Pressable>
-          <Text style={{ fontSize: 22, fontWeight: '900', color: INDIGO, letterSpacing: -0.5 }}>Raikaro</Text>
+          <Text style={{ fontSize: 22, fontWeight: '900', color: colors.indigo, letterSpacing: -0.5 }}>Raikaro</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Pressable hitSlop={12} onPress={() => {}}>
-              <HelpCircle size={22} color="#6B7280" />
+              <HelpCircle size={22} color={colors.textSub} />
             </Pressable>
             <Pressable
               hitSlop={12}
               onPress={() => navigation.navigate('Notifications')}
-              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.indigoMuted, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Bell size={18} color={INDIGO} />
+              <Bell size={18} color={colors.indigo} />
               {unreadCount > 0 && (
-                <View style={{ position: 'absolute', top: 5, right: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: '#EEF2FF' }} />
+                <View style={{ position: 'absolute', top: 5, right: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigoMuted }} />
               )}
             </Pressable>
           </View>
         </View>
 
         {/* Search bar */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, marginHorizontal: 16, marginBottom: 20, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#E5E7EB', gap: 8 }}>
-          <ShoppingBag size={16} color="#9CA3AF" />
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginBottom: 20, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8 }}>
+          <ShoppingBag size={16} color={colors.textMuted} />
           <TextInput
-            style={{ flex: 1, fontSize: 14, color: '#111827' }}
+            style={{ flex: 1, fontSize: 14, color: colors.text }}
             placeholder="Search products..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')} hitSlop={8}>
-              <Text style={{ fontSize: 13, color: '#9CA3AF' }}>✕</Text>
+              <Text style={{ fontSize: 13, color: colors.textMuted }}>✕</Text>
             </Pressable>
           )}
         </View>
@@ -266,7 +268,7 @@ export default function HomeScreen({ navigation }: Props) {
             {/* Platform cashback cards */}
             {platforms.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827', paddingHorizontal: 16, marginBottom: 12 }}>Shop & Earn Cashback</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Shop & Earn Cashback</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
                   {platforms.map((platform) => {
                     const style = PLATFORM_COLORS[platform] ?? { bg: '#F3F4F6', text: '#374151', cashback: 'Cashback available' };
@@ -292,7 +294,7 @@ export default function HomeScreen({ navigation }: Props) {
             {categories.length > 0 && (
               <View style={{ marginBottom: 24 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 12 }}>
-                  <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827' }}>Categories</Text>
+                  <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>Categories</Text>
                   <Pressable
                     onPress={() => navigation.getParent()?.navigate('Deals')}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FEF3C7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 }}
@@ -303,20 +305,20 @@ export default function HomeScreen({ navigation }: Props) {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
                   <Pressable onPress={() => setSelectedCategory(null)} style={{ alignItems: 'center', marginRight: 16 }}>
-                    <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: selectedCategory === null ? INDIGO : '#EEF2FF', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-                      <ShoppingBag size={22} color={selectedCategory === null ? '#fff' : INDIGO} />
+                    <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: selectedCategory === null ? colors.indigo : colors.indigoMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+                      <ShoppingBag size={22} color={selectedCategory === null ? '#fff' : colors.indigo} />
                     </View>
-                    <Text style={{ fontSize: 11, fontWeight: '600', color: selectedCategory === null ? INDIGO : '#6B7280' }}>All</Text>
+                    <Text style={{ fontSize: 11, fontWeight: '600', color: selectedCategory === null ? colors.indigo : colors.textSub }}>All</Text>
                   </Pressable>
                   {categories.map((cat) => {
                     const Icon = CATEGORY_MAP[cat] ?? ShoppingBag;
                     const active = selectedCategory === cat;
                     return (
                       <Pressable key={cat} onPress={() => setSelectedCategory(active ? null : cat)} style={{ alignItems: 'center', marginRight: 16 }}>
-                        <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: active ? INDIGO : '#EEF2FF', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-                          <Icon size={22} color={active ? '#fff' : INDIGO} />
+                        <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: active ? colors.indigo : colors.indigoMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+                          <Icon size={22} color={active ? '#fff' : colors.indigo} />
                         </View>
-                        <Text style={{ fontSize: 11, fontWeight: '600', color: active ? INDIGO : '#6B7280' }} numberOfLines={1}>{cat}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '600', color: active ? colors.indigo : colors.textSub }} numberOfLines={1}>{cat}</Text>
                       </Pressable>
                     );
                   })}
@@ -325,9 +327,9 @@ export default function HomeScreen({ navigation }: Props) {
             )}
 
             {/* Earning Story Animation */}
-            <View style={{ marginHorizontal: 16, marginBottom: 24, backgroundColor: '#fff', borderRadius: 18, padding: 20, borderWidth: 1, borderColor: '#F3F4F6' }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', textAlign: 'center', marginBottom: 4 }}>How It Works</Text>
-              <Text style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', marginBottom: 12 }}>Shop, review, earn — it's that simple</Text>
+            <View style={{ marginHorizontal: 16, marginBottom: 24, backgroundColor: colors.card, borderRadius: 18, padding: 20, borderWidth: 1, borderColor: colors.border }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 4 }}>How It Works</Text>
+              <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginBottom: 12 }}>Shop, review, earn — it's that simple</Text>
               <EarningStoryAnimation />
             </View>
 
@@ -352,7 +354,7 @@ export default function HomeScreen({ navigation }: Props) {
               if (!plats.length) return null;
               return (
                 <View key={cat} style={{ marginBottom: 20, paddingHorizontal: 16 }}>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#374151', marginBottom: 10 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 10 }}>
                     Get Cashback on {cat} buys
                   </Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
@@ -372,7 +374,7 @@ export default function HomeScreen({ navigation }: Props) {
             {/* Top Deals horizontal */}
             {featured.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827', paddingHorizontal: 16, marginBottom: 12 }}>🔥 Top Deals</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>🔥 Top Deals</Text>
                 <FlatList
                   data={featured}
                   keyExtractor={(item) => item.id}
@@ -387,15 +389,15 @@ export default function HomeScreen({ navigation }: Props) {
         )}
 
         {/* Products section */}
-        <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827', paddingHorizontal: 16, marginBottom: 12 }}>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>
           {isSearching ? `Results for "${searchQuery.trim()}"` : (selectedCategory ?? 'All Products')}
-          <Text style={{ fontSize: 13, fontWeight: '400', color: '#9CA3AF' }}>  ({filteredProducts.length})</Text>
+          <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textMuted }}>  ({filteredProducts.length})</Text>
         </Text>
 
         {filteredProducts.length === 0 ? (
           <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
-            <ShoppingBag size={48} color="#D1D5DB" />
-            <Text style={{ color: '#6B7280', marginTop: 12, fontSize: 15 }}>No products found</Text>
+            <ShoppingBag size={48} color={colors.textMuted} />
+            <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
           </View>
         ) : (
           <FlatList
