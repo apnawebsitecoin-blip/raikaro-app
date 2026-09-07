@@ -49,9 +49,33 @@ export default function DealsScreen({ navigation, route }: Props) {
       .limit(100);
     if (data) {
       const prods = data as Product[];
-      setProducts(prods);
-      const cats = Array.from(new Set(prods.map((p) => p.category).filter(Boolean))) as string[];
-      const plats = Array.from(new Set(prods.map((p) => p.platform).filter(Boolean))) as string[];
+
+      // Deduplicate products by original_url
+      const seen = new Set<string>();
+      const deduped = prods.filter((p) => {
+        if (seen.has(p.original_url)) return false;
+        seen.add(p.original_url);
+        return true;
+      });
+      setProducts(deduped);
+
+      const cats = Array.from(new Set(deduped.map((p) => p.category).filter(Boolean))) as string[];
+
+      // Deduplicate platforms case-insensitively
+      const platMap = new Map<string, string>(); // lowercase -> canonical display name
+      deduped.forEach((p) => {
+        if (p.platform) {
+          const key = p.platform.toLowerCase();
+          if (!platMap.has(key)) {
+            const canonical = Object.keys(PLATFORM_COLORS).find(
+              (k) => k.toLowerCase() === key
+            ) ?? (p.platform.charAt(0).toUpperCase() + p.platform.slice(1).toLowerCase());
+            platMap.set(key, canonical);
+          }
+        }
+      });
+      const plats = Array.from(platMap.values());
+
       setCategories(cats);
       setPlatforms(plats);
     }
@@ -78,7 +102,9 @@ export default function DealsScreen({ navigation, route }: Props) {
   const filtered = products.filter((p) => {
     const matchSearch = search.trim() ? p.name.toLowerCase().includes(search.toLowerCase()) : true;
     const matchCat = selectedCategory ? p.category === selectedCategory : true;
-    const matchPlat = selectedPlatform ? p.platform === selectedPlatform : true;
+    const matchPlat = selectedPlatform
+      ? p.platform?.toLowerCase() === selectedPlatform.toLowerCase()
+      : true;
     return matchSearch && matchCat && matchPlat;
   });
 
