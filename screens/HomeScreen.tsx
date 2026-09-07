@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Bell, Menu, Wallet,
+  Bell, Menu, Wallet, MessageCircle, ShoppingCart, ChevronRight,
   Smartphone, Shirt, Home as HomeIcon, Sparkles,
   Dumbbell, BookOpen, ShoppingBag, UtensilsCrossed, Plane,
   Ticket, Copy, CheckCheck, Tag, PenLine,
@@ -26,12 +26,31 @@ import EarningStoryAnimation from '../components/EarningStoryAnimation';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const INDIGO = '#4F46E5';
 
-const PLATFORM_COLORS: Record<string, { bg: string; text: string; cashback: string }> = {
-  Amazon:   { bg: '#FEF9EC', text: '#92400E', cashback: 'Up to 8% cashback' },
-  Flipkart: { bg: '#EFF6FF', text: '#1E40AF', cashback: 'Up to 6% cashback' },
-  Meesho:   { bg: '#FAF5FF', text: '#7C3AED', cashback: 'Up to 10% cashback' },
-  Myntra:   { bg: '#FFF1F2', text: '#BE123C', cashback: 'Up to 7% cashback' },
+const PLATFORM_COLORS: Record<string, { bg: string; imgBg: string; text: string; cashback: string; shoppers: string }> = {
+  Amazon:   { bg: '#FEF9EC', imgBg: '#FEF3C7', text: '#92400E', cashback: 'Up to 8%',  shoppers: '3.2K+ shopped' },
+  Flipkart: { bg: '#EFF6FF', imgBg: '#DBEAFE', text: '#1E40AF', cashback: 'Up to 6%',  shoppers: '4.1K+ shopped' },
+  Meesho:   { bg: '#FAF5FF', imgBg: '#EDE9FE', text: '#7C3AED', cashback: 'Up to 10%', shoppers: '2.7K+ shopped' },
+  Myntra:   { bg: '#FFF1F2', imgBg: '#FFE4E6', text: '#BE123C', cashback: 'Up to 7%',  shoppers: '1.9K+ shopped' },
 };
+
+const CATEGORY_COLORS: Record<string, { bg: string; icon: string }> = {
+  Electronics: { bg: '#DBEAFE', icon: '#1D4ED8' },
+  Fashion:     { bg: '#FCE7F3', icon: '#DB2777' },
+  Home:        { bg: '#D1FAE5', icon: '#059669' },
+  Beauty:      { bg: '#EDE9FE', icon: '#7C3AED' },
+  Sports:      { bg: '#FED7AA', icon: '#EA580C' },
+  Books:       { bg: '#FEF3C7', icon: '#D97706' },
+  Food:        { bg: '#CCFBF1', icon: '#0D9488' },
+  Travel:      { bg: '#E0F2FE', icon: '#0284C7' },
+};
+const CAT_PALETTE = [
+  { bg: '#DBEAFE', icon: '#1D4ED8' },
+  { bg: '#FCE7F3', icon: '#DB2777' },
+  { bg: '#D1FAE5', icon: '#059669' },
+  { bg: '#FEF3C7', icon: '#D97706' },
+  { bg: '#EDE9FE', icon: '#7C3AED' },
+  { bg: '#CCFBF1', icon: '#0D9488' },
+];
 
 const CATEGORY_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   Electronics: Smartphone,
@@ -253,17 +272,27 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={{ fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 }}>Raikaro</Text>
         </View>
 
-        {/* Right — bell only, semi-white circle on indigo */}
-        <Pressable
-          hitSlop={12}
-          onPress={() => navigation.navigate('Notifications')}
-          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Bell size={18} color="#fff" />
-          {unreadCount > 0 && (
-            <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
-          )}
-        </Pressable>
+        {/* Right — Help chip + Bell */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Pressable
+            hitSlop={8}
+            onPress={() => {}}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 }}
+          >
+            <MessageCircle size={13} color="#fff" />
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff', letterSpacing: 0.1 }}>Help</Text>
+          </Pressable>
+          <Pressable
+            hitSlop={12}
+            onPress={() => navigation.navigate('Notifications')}
+            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Bell size={18} color="#fff" />
+            {unreadCount > 0 && (
+              <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {/* Body — white background below header */}
@@ -304,17 +333,38 @@ export default function HomeScreen({ navigation }: Props) {
                 <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Shop & Earn Cashback</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
                   {platforms.map((platform) => {
-                    const style = PLATFORM_COLORS[platform] ?? { bg: '#F8F9FB', text: '#374151', cashback: 'Cashback available' };
+                    const pc = PLATFORM_COLORS[platform] ?? { bg: '#F8F9FB', imgBg: '#F3F4F6', text: '#374151', cashback: 'Cashback', shoppers: '1K+ shopped' };
                     return (
                       <Pressable
                         key={platform}
                         onPress={() => handlePlatformShopNow(platform)}
-                        style={{ backgroundColor: style.bg, borderRadius: 14, padding: 16, width: 138, borderWidth: 1, borderColor: style.text + '20' }}
+                        style={{ width: 172, borderRadius: 16, backgroundColor: colors.card, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 3 }}
                       >
-                        <Text style={{ fontSize: 15, fontWeight: '800', color: style.text, marginBottom: 3 }}>{platform}</Text>
-                        <Text style={{ fontSize: 11, color: style.text, opacity: 0.75, marginBottom: 14, lineHeight: 16 }}>{style.cashback}</Text>
-                        <View style={{ backgroundColor: style.text, borderRadius: 8, paddingVertical: 7, alignItems: 'center' }}>
-                          <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>Shop Now</Text>
+                        {/* Image area */}
+                        <View style={{ height: 100, backgroundColor: pc.imgBg, alignItems: 'center', justifyContent: 'center' }}>
+                          <Text style={{ fontSize: 52, fontWeight: '900', color: pc.text, opacity: 0.12, letterSpacing: -2 }}>{platform}</Text>
+                          {/* Platform name badge — top-left */}
+                          <View style={{ position: 'absolute', top: 10, left: 10, backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4 }}>
+                            <Text style={{ fontSize: 11, fontWeight: '800', color: pc.text }}>{platform}</Text>
+                          </View>
+                        </View>
+                        {/* Content */}
+                        <View style={{ padding: 12 }}>
+                          <Text style={{ fontSize: 18, fontWeight: '900', color: colors.text, letterSpacing: -0.5 }}>{pc.cashback}</Text>
+                          <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textSub, marginBottom: 6 }}>Cashback</Text>
+                          {/* Social proof */}
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 10 }}>
+                            <ShoppingCart size={11} color={colors.textMuted} />
+                            <Text style={{ fontSize: 11, color: colors.textMuted }}>{pc.shoppers}</Text>
+                          </View>
+                          {/* Shop Now inline button */}
+                          <Pressable
+                            onPress={() => handlePlatformShopNow(platform)}
+                            style={{ flexDirection: 'row', alignItems: 'center', gap: 3, alignSelf: 'flex-start', backgroundColor: pc.imgBg, borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5 }}
+                          >
+                            <Text style={{ fontSize: 12, fontWeight: '700', color: pc.text }}>Shop Now</Text>
+                            <ChevronRight size={12} color={pc.text} />
+                          </Pressable>
                         </View>
                       </Pressable>
                     );
@@ -337,21 +387,28 @@ export default function HomeScreen({ navigation }: Props) {
                   </Pressable>
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
-                  <Pressable onPress={() => setSelectedCategory(null)} style={{ alignItems: 'center', marginRight: 16 }}>
+                  {/* All — indigo */}
+                  <Pressable onPress={() => setSelectedCategory(null)} style={{ alignItems: 'center', marginRight: 20 }}>
                     <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: selectedCategory === null ? colors.indigo : colors.indigoMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
                       <ShoppingBag size={22} color={selectedCategory === null ? '#fff' : colors.indigo} />
                     </View>
                     <Text style={{ fontSize: 11, fontWeight: '600', color: selectedCategory === null ? colors.indigo : colors.textSub }}>All</Text>
                   </Pressable>
-                  {categories.map((cat) => {
+                  {categories.map((cat, idx) => {
                     const Icon = CATEGORY_MAP[cat] ?? ShoppingBag;
                     const active = selectedCategory === cat;
+                    const palette = CATEGORY_COLORS[cat] ?? CAT_PALETTE[idx % CAT_PALETTE.length];
                     return (
-                      <Pressable key={cat} onPress={() => setSelectedCategory(active ? null : cat)} style={{ alignItems: 'center', marginRight: 16 }}>
-                        <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: active ? colors.indigo : colors.indigoMuted, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-                          <Icon size={22} color={active ? '#fff' : colors.indigo} />
+                      <Pressable key={cat} onPress={() => setSelectedCategory(active ? null : cat)} style={{ alignItems: 'center', marginRight: 20 }}>
+                        <View style={{
+                          width: 56, height: 56, borderRadius: 28,
+                          backgroundColor: active ? palette.icon : palette.bg,
+                          alignItems: 'center', justifyContent: 'center', marginBottom: 6,
+                          shadowColor: palette.icon, shadowOpacity: active ? 0.3 : 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: active ? 4 : 1,
+                        }}>
+                          <Icon size={22} color={active ? '#fff' : palette.icon} />
                         </View>
-                        <Text style={{ fontSize: 11, fontWeight: '600', color: active ? colors.indigo : colors.textSub }} numberOfLines={1}>{cat}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '600', color: active ? palette.icon : colors.textSub }} numberOfLines={1}>{cat}</Text>
                       </Pressable>
                     );
                   })}
