@@ -14,7 +14,7 @@ import * as Clipboard from 'expo-clipboard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Product, ProductImage, Coupon, VideoReview } from '../lib/types';
+import { Product, ProductImage, Coupon, VideoReview, Review } from '../lib/types';
 import { cleanProductTitle } from '../lib/utils';
 import { addRecentlyViewed } from '../lib/recentlyViewed';
 
@@ -171,6 +171,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const [couponCopied, setCouponCopied] = useState(false);
   const [alertEnabled, setAlertEnabled] = useState(false);
   const [alertLoading, setAlertLoading] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const platformStyle = product.platform ? PLATFORM_COLORS[product.platform] : null;
 
@@ -199,6 +200,17 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     addRecentlyViewed(product.id);
+  }, [product.id]);
+
+  useEffect(() => {
+    supabase
+      .from('reviews')
+      .select('*')
+      .eq('product_id', product.id)
+      .not('review_text', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => { if (data) setReviews(data as Review[]); });
   }, [product.id]);
 
   const handleAlertToggle = async (value: boolean) => {
@@ -344,6 +356,38 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
           {/* Video Reviews */}
           <VideoReviewsSection productId={product.id} colors={colors} />
+
+          {/* User Reviews */}
+          {reviews.length > 0 && (
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 12 }}>User Reviews ({reviews.length})</Text>
+              {reviews.map((r) => (
+                <View key={r.id} style={{ backgroundColor: colors.background, borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Text style={{ fontSize: 13 }}>
+                        {r.sentiment === 'positive' ? '👍' : r.sentiment === 'negative' ? '👎' : '😐'}
+                      </Text>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: colors.textSub, textTransform: 'capitalize' }}>
+                        {r.sentiment ?? 'Review'}
+                      </Text>
+                    </View>
+                    {r.verified && (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.greenMuted, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 }}>
+                        <Text style={{ fontSize: 10, fontWeight: '700', color: colors.green }}>✓ Verified</Text>
+                      </View>
+                    )}
+                  </View>
+                  {r.review_text ? (
+                    <Text style={{ fontSize: 13, color: colors.textSub, lineHeight: 20 }} numberOfLines={4}>{r.review_text}</Text>
+                  ) : null}
+                  <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 6 }}>
+                    {new Date(r.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
 
           {/* Review & Earn CTA */}
           <Pressable
