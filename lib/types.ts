@@ -149,6 +149,18 @@ export interface Review {
   created_at: string;
 }
 
+export interface HomeBanner {
+  id: string;
+  image_url: string | null;
+  title: string;
+  subtitle: string | null;
+  link_url: string | null;
+  display_order: number;
+  is_active: boolean;
+  platform: string | null;
+  created_at: string;
+}
+
 export interface CommunityDeal {
   id: string;
   user_id: string;

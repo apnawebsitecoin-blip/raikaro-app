@@ -19,7 +19,7 @@ import { supabase } from '../lib/supabase';
 import { getRecentlyViewedIds } from '../lib/recentlyViewed';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Product, Coupon } from '../lib/types';
+import { Product, Coupon, HomeBanner } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
 import AppDrawer from '../components/AppDrawer';
@@ -65,6 +65,75 @@ const CATEGORY_MAP: Record<string, React.ComponentType<{ size: number; color: st
 };
 
 type Props = { navigation: NativeStackNavigationProp<any> };
+
+// ── Admin Banner Carousel ──────────────────────────────────────────────────────
+import { Image, Linking } from 'react-native';
+
+function AdminBannerCarousel({ banners }: { banners: HomeBanner[] }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const flatRef = useRef<FlatList>(null);
+  const CARD_W = SCREEN_WIDTH - 32;
+
+  useEffect(() => {
+    if (banners.length < 2) return;
+    const id = setInterval(() => {
+      setActiveIdx((i) => {
+        const next = (i + 1) % banners.length;
+        flatRef.current?.scrollToIndex({ index: next, animated: true });
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(id);
+  }, [banners.length]);
+
+  if (banners.length === 0) return null;
+
+  return (
+    <View style={{ marginBottom: 20 }}>
+      <FlatList
+        ref={flatRef}
+        data={banners}
+        keyExtractor={(b) => b.id}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={banners.length > 1}
+        onMomentumScrollEnd={(e) => {
+          setActiveIdx(Math.round(e.nativeEvent.contentOffset.x / (CARD_W + 32)));
+        }}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+        renderItem={({ item }) => (
+          <Pressable
+            onPress={() => item.link_url && Linking.openURL(item.link_url)}
+            style={{ width: CARD_W, borderRadius: 16, overflow: 'hidden', backgroundColor: '#1E1B4B', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}
+          >
+            {item.image_url ? (
+              <Image source={{ uri: item.image_url }} style={{ width: CARD_W, height: 160 }} resizeMode="cover" />
+            ) : (
+              <View style={{ width: CARD_W, height: 160, backgroundColor: INDIGO, alignItems: 'center', justifyContent: 'center' }}>
+                <ShoppingBag size={40} color="rgba(255,255,255,0.2)" />
+              </View>
+            )}
+            {(item.title || item.subtitle) && (
+              <View style={{ padding: 14 }}>
+                {item.title && <Text style={{ fontSize: 15, fontWeight: '800', color: '#fff' }}>{item.title}</Text>}
+                {item.subtitle && <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 3 }}>{item.subtitle}</Text>}
+              </View>
+            )}
+          </Pressable>
+        )}
+      />
+      {banners.length > 1 && (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 5 }}>
+          {banners.map((_, i) => (
+            <View key={i} style={{ width: i === activeIdx ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === activeIdx ? INDIGO : '#D1D5DB' }} />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
 
 // ── Hero Carousel ──────────────────────────────────────────────────────────────
 
@@ -159,6 +228,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [homeBanners, setHomeBanners] = useState<HomeBanner[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -167,10 +237,11 @@ export default function HomeScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchData = useCallback(async () => {
-    const [featuredRes, allRes, couponsRes] = await Promise.all([
+    const [featuredRes, allRes, couponsRes, bannersRes] = await Promise.all([
       supabase.from('products').select('*').or('is_featured.eq.true,is_sponsored.eq.true').order('created_at', { ascending: false }).limit(10),
       supabase.from('products').select('*').order('created_at', { ascending: false }).limit(60),
       supabase.from('coupons').select('*').eq('is_active', true).order('discount_value', { ascending: false }).limit(10),
+      supabase.from('home_banners').select('*').eq('is_active', true).order('display_order', { ascending: true }).limit(8),
     ]);
 
     if (featuredRes.data) setFeatured(featuredRes.data as Product[]);
@@ -181,6 +252,7 @@ export default function HomeScreen({ navigation }: Props) {
       setCategories(cats);
     }
     if (couponsRes.data) setCoupons(couponsRes.data as Coupon[]);
+    if (bannersRes.data) setHomeBanners(bannersRes.data as HomeBanner[]);
 
     if (userId) {
       const notifRes = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('read', false);
@@ -326,7 +398,10 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Sections shown only when not searching */}
         {!isSearching && (
           <>
-            {/* Hero Carousel */}
+            {/* Admin-controlled banners (from home_banners table) */}
+            <AdminBannerCarousel banners={homeBanners} />
+
+            {/* Coupon carousel */}
             <HeroBanner coupons={coupons.slice(0, 5)} />
 
             {/* Platform cashback cards */}
