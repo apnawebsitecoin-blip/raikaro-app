@@ -28,6 +28,14 @@ interface Section {
   data: Product[];
 }
 
+interface PriceRange { label: string; min: number; max: number; }
+const PRICE_RANGES: PriceRange[] = [
+  { label: 'Under ₹500',  min: 0,    max: 500 },
+  { label: '₹500–₹2K',   min: 500,  max: 2000 },
+  { label: '₹2K–₹5K',    min: 2000, max: 5000 },
+  { label: '₹5K+',       min: 5000, max: Infinity },
+];
+
 export default function DealsScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const initialPlatform: string | null = route.params?.filterPlatform ?? null;
@@ -40,6 +48,7 @@ export default function DealsScreen({ navigation, route }: Props) {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(initialPlatform);
+  const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
 
   const fetchProducts = useCallback(async () => {
     const { data } = await supabase
@@ -105,7 +114,10 @@ export default function DealsScreen({ navigation, route }: Props) {
     const matchPlat = selectedPlatform
       ? p.platform?.toLowerCase() === selectedPlatform.toLowerCase()
       : true;
-    return matchSearch && matchCat && matchPlat;
+    const matchPrice = priceRange
+      ? (p.price != null && p.price >= priceRange.min && p.price < priceRange.max)
+      : true;
+    return matchSearch && matchCat && matchPlat && matchPrice;
   });
 
   // Build sections: group by category if no category filter, else one section
@@ -211,6 +223,22 @@ export default function DealsScreen({ navigation, route }: Props) {
           })}
         </ScrollView>
       )}
+
+      {/* Price range filter */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
+        {PRICE_RANGES.map((range) => {
+          const active = priceRange?.label === range.label;
+          return (
+            <Pressable
+              key={range.label}
+              onPress={() => setPriceRange(active ? null : range)}
+              style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: active ? '#F59E0B' : colors.borderStrong, backgroundColor: active ? '#FEF3C7' : colors.card }}
+            >
+              <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#B45309' : colors.textSub }}>{range.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
 
       {/* Sectioned horizontal product lists */}
       <ScrollView
