@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Product, ProductImage, Coupon, VideoReview } from '../lib/types';
 import { cleanProductTitle } from '../lib/utils';
+import { addRecentlyViewed } from '../lib/recentlyViewed';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const INDIGO = '#4F46E5';
@@ -195,6 +196,10 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
     supabase.from('price_alerts').select('id').eq('user_id', userId).eq('product_id', product.id).maybeSingle()
       .then(({ data }) => setAlertEnabled(!!data));
   }, [userId, product.id]);
+
+  useEffect(() => {
+    addRecentlyViewed(product.id);
+  }, [product.id]);
 
   const handleAlertToggle = async (value: boolean) => {
     if (!userId || alertLoading) return;

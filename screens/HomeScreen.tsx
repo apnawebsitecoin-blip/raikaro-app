@@ -12,9 +12,11 @@ import {
   Ticket, Copy, CheckCheck, Tag, PenLine,
 } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 
 import { supabase } from '../lib/supabase';
+import { getRecentlyViewedIds } from '../lib/recentlyViewed';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Product, Coupon } from '../lib/types';
@@ -131,6 +133,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   const [featured, setFeatured] = useState<Product[]>([]);
   const [all, setAll] = useState<Product[]>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -161,9 +164,22 @@ export default function HomeScreen({ navigation }: Props) {
     }
   }, [userId]);
 
+  const loadRecentlyViewed = useCallback(async () => {
+    const ids = await getRecentlyViewedIds();
+    if (ids.length === 0) { setRecentlyViewed([]); return; }
+    const { data } = await supabase.from('products').select('*').in('id', ids);
+    if (data) {
+      const map = new Map((data as Product[]).map((p) => [p.id, p]));
+      setRecentlyViewed(ids.map((id) => map.get(id)).filter(Boolean) as Product[]);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData().finally(() => setLoading(false));
-  }, [fetchData]);
+    loadRecentlyViewed();
+  }, [fetchData, loadRecentlyViewed]);
+
+  useFocusEffect(useCallback(() => { loadRecentlyViewed(); }, [loadRecentlyViewed]));
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -385,6 +401,21 @@ export default function HomeScreen({ navigation }: Props) {
                 <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>🔥 Top Deals</Text>
                 <FlatList
                   data={featured}
+                  keyExtractor={(item) => item.id}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+                  renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
+                />
+              </View>
+            )}
+
+            {/* Recently Viewed */}
+            {recentlyViewed.length > 0 && (
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Recently Viewed</Text>
+                <FlatList
+                  data={recentlyViewed}
                   keyExtractor={(item) => item.id}
                   horizontal
                   showsHorizontalScrollIndicator={false}
