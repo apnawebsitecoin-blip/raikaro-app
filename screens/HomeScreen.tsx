@@ -378,7 +378,7 @@ export default function HomeScreen({ navigation }: Props) {
       >
 
         {/* Search bar */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginBottom: 20, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginTop: 16, marginBottom: 20, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}>
           <ShoppingBag size={16} color={colors.textMuted} />
           <TextInput
             style={{ flex: 1, fontSize: 14, color: colors.text }}
@@ -494,7 +494,7 @@ export default function HomeScreen({ navigation }: Props) {
             )}
 
             {/* Earning Story Animation */}
-            <View style={{ marginHorizontal: 16, marginBottom: 24, backgroundColor: colors.card, borderRadius: 18, padding: 20, borderWidth: 1, borderColor: colors.border }}>
+            <View style={{ marginHorizontal: 16, marginBottom: 24, backgroundColor: colors.card, borderRadius: 18, padding: 20, borderWidth: 1, borderColor: colors.borderStrong, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 4 }}>How It Works</Text>
               <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginBottom: 12 }}>Shop, review, earn — it's that simple</Text>
               <EarningStoryAnimation />
@@ -520,22 +520,22 @@ export default function HomeScreen({ navigation }: Props) {
               const plats = catPlatformMap[cat] ?? [];
               if (!plats.length) return null;
               return (
-                <View key={cat} style={{ marginBottom: 20, paddingHorizontal: 16 }}>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 10 }}>
-                    Get Cashback on {cat} buys
+                <View key={cat} style={{ marginBottom: 24 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 10 }}>
+                    Cashback on {cat}
                   </Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
                     {plats.map((p) => {
-                      const s = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', text: '#374151', cashback: 'Cashback available' };
+                      const s = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', imgBg: '#E5E7EB', text: '#374151', cashback: 'Cashback', shoppers: '1K+ shopped' };
                       return (
                         <Pressable
                           key={p}
                           onPress={() => handlePlatformShopNow(p)}
-                          style={{ backgroundColor: s.bg, borderRadius: 14, padding: 14, width: 130 }}
+                          style={{ backgroundColor: s.bg, borderRadius: 14, padding: 14, width: 138, borderWidth: 1, borderColor: s.text + '18', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
                         >
                           <Text style={{ fontSize: 14, fontWeight: '800', color: s.text, marginBottom: 2 }}>{p}</Text>
-                          <Text style={{ fontSize: 11, color: s.text, opacity: 0.8, marginBottom: 10 }} numberOfLines={2}>{s.cashback}</Text>
-                          <View style={{ backgroundColor: s.text, borderRadius: 8, paddingVertical: 5, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 11, color: s.text, opacity: 0.75, marginBottom: 10 }} numberOfLines={1}>{s.cashback} cashback</Text>
+                          <View style={{ backgroundColor: s.text, borderRadius: 8, paddingVertical: 6, alignItems: 'center' }}>
                             <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>Shop Now</Text>
                           </View>
                         </Pressable>
