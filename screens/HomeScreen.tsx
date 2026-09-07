@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Bell, Menu, Wallet, MessageCircle, ShoppingCart, ChevronRight,
+  Bell, Menu, Wallet, ShoppingCart, ChevronRight,
   Smartphone, Shirt, Home as HomeIcon, Sparkles,
   Dumbbell, BookOpen, ShoppingBag, UtensilsCrossed, Plane,
   Ticket, Copy, CheckCheck, Tag, PenLine,
@@ -333,53 +333,33 @@ export default function HomeScreen({ navigation }: Props) {
         paddingHorizontal: 16, paddingVertical: 11,
         backgroundColor: colors.indigo,
       }}>
-        {/* Left — hamburger opens drawer */}
-        <Pressable hitSlop={12} onPress={() => setDrawerOpen(true)}>
-          <Menu size={22} color="#fff" />
-        </Pressable>
-
-        {/* Right — Help chip + Bell/Sign In + logo */}
+        {/* Left — hamburger + wallet icon mark + split-color wordmark */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Pressable
-            hitSlop={8}
-            onPress={() => {}}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 }}
-          >
-            <MessageCircle size={13} color="#fff" />
-            <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff', letterSpacing: 0.1 }}>Help</Text>
+          <Pressable hitSlop={12} onPress={() => setDrawerOpen(true)}>
+            <Menu size={22} color="#fff" />
           </Pressable>
-          {session ? (
-            <Pressable
-              hitSlop={12}
-              onPress={() => navigation.navigate('Notifications')}
-              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Bell size={18} color="#fff" />
-              {unreadCount > 0 && (
-                <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
-              )}
-            </Pressable>
-          ) : (
-            <Pressable
-              hitSlop={8}
-              onPress={() => navigation.navigate('Login')}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 6 }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: '800', color: colors.indigo, letterSpacing: 0.1 }}>Sign In</Text>
-            </Pressable>
-          )}
-
-          {/* Logo — wallet icon mark + split-color wordmark */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
-              <Wallet size={14} color={colors.indigo} />
-            </View>
-            <Text style={{ fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
-              <Text style={{ color: '#fff' }}>Rai</Text>
-              <Text style={{ color: colors.amber }}>karo</Text>
-            </Text>
+          <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+            <Wallet size={14} color={colors.indigo} />
           </View>
+          <Text style={{ fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
+            <Text style={{ color: '#fff' }}>Rai</Text>
+            <Text style={{ color: colors.amber }}>karo</Text>
+          </Text>
         </View>
+
+        {/* Right — Bell for logged-in users; empty for guests (Sign In is in the drawer) */}
+        {session && (
+          <Pressable
+            hitSlop={12}
+            onPress={() => navigation.navigate('Notifications')}
+            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Bell size={18} color="#fff" />
+            {unreadCount > 0 && (
+              <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
+            )}
+          </Pressable>
+        )}
       </View>
 
       {/* Body — white background below header */}
