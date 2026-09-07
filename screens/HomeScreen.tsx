@@ -357,13 +357,21 @@ export default function HomeScreen({ navigation }: Props) {
                   <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 10 }}>
                     Get Cashback on {cat} buys
                   </Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
                     {plats.map((p) => {
-                      const s = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', text: '#374151' };
+                      const s = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', text: '#374151', cashback: 'Cashback available' };
                       return (
-                        <View key={p} style={{ backgroundColor: s.bg, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8 }}>
-                          <Text style={{ fontSize: 13, fontWeight: '700', color: s.text }}>{p}</Text>
-                        </View>
+                        <Pressable
+                          key={p}
+                          onPress={() => handlePlatformShopNow(p)}
+                          style={{ backgroundColor: s.bg, borderRadius: 14, padding: 14, width: 130 }}
+                        >
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: s.text, marginBottom: 2 }}>{p}</Text>
+                          <Text style={{ fontSize: 11, color: s.text, opacity: 0.8, marginBottom: 10 }} numberOfLines={2}>{s.cashback}</Text>
+                          <View style={{ backgroundColor: s.text, borderRadius: 8, paddingVertical: 5, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>Shop Now</Text>
+                          </View>
+                        </Pressable>
                       );
                     })}
                   </ScrollView>
