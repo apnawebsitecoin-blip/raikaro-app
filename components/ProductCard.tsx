@@ -19,7 +19,9 @@ function ImageOrPlaceholder({ uri, width, height }: { uri: string | null; width:
   }
   return (
     <View style={{ width, height, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' }}>
-      <ShoppingBag size={32} color="#9CA3AF" />
+      <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' }}>
+        <ShoppingBag size={24} color="#9CA3AF" />
+      </View>
     </View>
   );
 }
