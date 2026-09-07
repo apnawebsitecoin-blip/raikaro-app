@@ -15,10 +15,10 @@ import ProductCard from '../components/ProductCard';
 const INDIGO = '#4F46E5';
 
 const PLATFORM_COLORS: Record<string, { bg: string; text: string }> = {
-  Amazon:   { bg: '#FEF3C7', text: '#92400E' },
-  Flipkart: { bg: '#DBEAFE', text: '#1E40AF' },
-  Meesho:   { bg: '#FCE7F3', text: '#9D174D' },
-  Myntra:   { bg: '#FEE2E2', text: '#991B1B' },
+  Amazon:   { bg: '#FEF9EC', text: '#92400E' },
+  Flipkart: { bg: '#EFF6FF', text: '#1E40AF' },
+  Meesho:   { bg: '#FAF5FF', text: '#7C3AED' },
+  Myntra:   { bg: '#FFF1F2', text: '#BE123C' },
 };
 
 type Props = { navigation: NativeStackNavigationProp<any>; route: any };

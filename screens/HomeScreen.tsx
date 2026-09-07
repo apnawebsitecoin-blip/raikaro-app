@@ -27,10 +27,10 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const INDIGO = '#4F46E5';
 
 const PLATFORM_COLORS: Record<string, { bg: string; text: string; cashback: string }> = {
-  Amazon:   { bg: '#FEF3C7', text: '#92400E', cashback: 'Up to 8% cashback' },
-  Flipkart: { bg: '#DBEAFE', text: '#1E40AF', cashback: 'Up to 6% cashback' },
-  Meesho:   { bg: '#FCE7F3', text: '#9D174D', cashback: 'Up to 10% cashback' },
-  Myntra:   { bg: '#FEE2E2', text: '#991B1B', cashback: 'Up to 7% cashback' },
+  Amazon:   { bg: '#FEF9EC', text: '#92400E', cashback: 'Up to 8% cashback' },
+  Flipkart: { bg: '#EFF6FF', text: '#1E40AF', cashback: 'Up to 6% cashback' },
+  Meesho:   { bg: '#FAF5FF', text: '#7C3AED', cashback: 'Up to 10% cashback' },
+  Myntra:   { bg: '#FFF1F2', text: '#BE123C', cashback: 'Up to 7% cashback' },
 };
 
 const CATEGORY_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
@@ -93,19 +93,22 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
             ? `${item.discount_value}% OFF`
             : `₹${item.discount_value} FLAT OFF`;
           return (
-            <View style={{ width: CARD_W, backgroundColor: '#EEF2FF', borderRadius: 18, padding: 20, borderWidth: 1, borderColor: '#C7D2FE' }}>
-              {item.category && (
-                <View style={{ backgroundColor: INDIGO, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 99, marginBottom: 8 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>{item.category}</Text>
-                </View>
-              )}
-              <Text style={{ fontSize: 28, fontWeight: '900', color: INDIGO, marginBottom: 4 }}>{discountText}</Text>
-              <Text style={{ fontSize: 14, color: '#374151', marginBottom: 14 }} numberOfLines={2}>{item.title}</Text>
+            <View style={{ width: CARD_W, backgroundColor: '#EEF2FF', borderRadius: 18, padding: 20, borderWidth: 1, borderColor: '#DDE3FF' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                {item.category ? (
+                  <View style={{ backgroundColor: INDIGO, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 99 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '700', color: '#fff', letterSpacing: 0.5 }}>{item.category.toUpperCase()}</Text>
+                  </View>
+                ) : <View />}
+                <Text style={{ fontSize: 11, fontWeight: '600', color: '#6366F1', opacity: 0.7 }}>Limited offer</Text>
+              </View>
+              <Text style={{ fontSize: 30, fontWeight: '900', color: INDIGO, letterSpacing: -1, marginBottom: 2 }}>{discountText}</Text>
+              <Text style={{ fontSize: 13, color: '#4338CA', marginBottom: 16, lineHeight: 19, opacity: 0.85 }} numberOfLines={2}>{item.title}</Text>
               <Pressable
-                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1.5, borderColor: '#A5B4FC', borderStyle: 'dashed' }}
+                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1, borderColor: '#C7D2FE', borderStyle: 'dashed' }}
                 onPress={() => handleCopy(item.code)}
               >
-                <Text style={{ fontSize: 15, fontWeight: '800', color: INDIGO, letterSpacing: 1.5 }}>{item.code}</Text>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: INDIGO, letterSpacing: 2 }}>{item.code}</Text>
                 {copied ? <CheckCheck size={16} color="#059669" /> : <Copy size={16} color={INDIGO} />}
               </Pressable>
             </View>
@@ -287,16 +290,16 @@ export default function HomeScreen({ navigation }: Props) {
                 <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Shop & Earn Cashback</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
                   {platforms.map((platform) => {
-                    const style = PLATFORM_COLORS[platform] ?? { bg: '#F3F4F6', text: '#374151', cashback: 'Cashback available' };
+                    const style = PLATFORM_COLORS[platform] ?? { bg: '#F8F9FB', text: '#374151', cashback: 'Cashback available' };
                     return (
                       <Pressable
                         key={platform}
                         onPress={() => handlePlatformShopNow(platform)}
-                        style={{ backgroundColor: style.bg, borderRadius: 16, padding: 16, width: 140 }}
+                        style={{ backgroundColor: style.bg, borderRadius: 14, padding: 16, width: 138, borderWidth: 1, borderColor: style.text + '20' }}
                       >
-                        <Text style={{ fontSize: 16, fontWeight: '800', color: style.text, marginBottom: 4 }}>{platform}</Text>
-                        <Text style={{ fontSize: 11, color: style.text, opacity: 0.8, marginBottom: 12 }}>{style.cashback}</Text>
-                        <View style={{ backgroundColor: style.text, borderRadius: 8, paddingVertical: 6, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 15, fontWeight: '800', color: style.text, marginBottom: 3 }}>{platform}</Text>
+                        <Text style={{ fontSize: 11, color: style.text, opacity: 0.75, marginBottom: 14, lineHeight: 16 }}>{style.cashback}</Text>
+                        <View style={{ backgroundColor: style.text, borderRadius: 8, paddingVertical: 7, alignItems: 'center' }}>
                           <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>Shop Now</Text>
                         </View>
                       </Pressable>
@@ -437,9 +440,9 @@ export default function HomeScreen({ navigation }: Props) {
               </Text>
               <Pressable
                 onPress={() => navigation.getParent()?.navigate('Deals')}
-                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 99, backgroundColor: colors.indigoMuted }}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 99, backgroundColor: colors.amberMuted }}
               >
-                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.indigo }}>View All →</Text>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.amber }}>View All →</Text>
               </Pressable>
             </View>
             {filteredProducts.length === 0 ? (

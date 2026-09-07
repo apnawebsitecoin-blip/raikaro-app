@@ -11,22 +11,26 @@ export type ThemeColors = {
   indigoMuted:  string;
   green:        string;
   greenMuted:   string;
+  amber:        string;
+  amberMuted:   string;
   statusBar:    'dark-content' | 'light-content';
 };
 
 export const LightColors: ThemeColors = {
-  background:   '#F9FAFB',
+  background:   '#F8F9FB',
   card:         '#FFFFFF',
   cardAlt:      '#F3F4F6',
   text:         '#111827',
   textSub:      '#6B7280',
   textMuted:    '#9CA3AF',
-  border:       '#F3F4F6',
+  border:       '#F0F0F2',
   borderStrong: '#E5E7EB',
   indigo:       '#4F46E5',
   indigoMuted:  '#EEF2FF',
   green:        '#059669',
   greenMuted:   '#ECFDF5',
+  amber:        '#D97706',
+  amberMuted:   '#FEF3C7',
   statusBar:    'dark-content',
 };
 
@@ -43,5 +47,7 @@ export const DarkColors: ThemeColors = {
   indigoMuted:  '#1E1B4B',
   green:        '#34D399',
   greenMuted:   '#052E16',
+  amber:        '#FBBF24',
+  amberMuted:   '#451A03',
   statusBar:    'light-content',
 };
