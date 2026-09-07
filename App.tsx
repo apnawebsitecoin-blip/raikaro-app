@@ -7,6 +7,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProfileProvider, useProfile } from './context/ProfileContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import SignupScreen from './screens/auth/SignupScreen';
@@ -20,6 +21,8 @@ import WishlistScreen from './screens/WishlistScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import WriteReviewScreen from './screens/WriteReviewScreen';
 import SubmitDealScreen from './screens/SubmitDealScreen';
+import BlogScreen from './screens/BlogScreen';
+import BlogPostScreen from './screens/BlogPostScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -71,6 +74,8 @@ function AccountStack() {
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
       <Stack.Screen name="SubmitDeal" component={SubmitDealScreen} options={{ title: 'Submit a Deal' }} />
+      <Stack.Screen name="Blog" component={BlogScreen} options={{ title: 'Guides & Blog' }} />
+      <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: '' }} />
     </Stack.Navigator>
   );
 }
@@ -142,9 +147,11 @@ export default function App() {
   return (
     <AuthProvider>
       <ProfileProvider>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
+        <ThemeProvider>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </ThemeProvider>
       </ProfileProvider>
     </AuthProvider>
   );
