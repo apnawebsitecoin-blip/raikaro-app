@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Bell, Menu, HelpCircle,
+  Bell, Menu, Wallet,
   Smartphone, Shirt, Home as HomeIcon, Sparkles,
   Dumbbell, BookOpen, ShoppingBag, UtensilsCrossed, Plane,
   Ticket, Copy, CheckCheck, Tag, PenLine,
@@ -230,35 +230,49 @@ export default function HomeScreen({ navigation }: Props) {
   const isSearching = searchQuery.trim().length > 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
+    // SafeAreaView bg = indigo so the status-bar area strip is also branded
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.indigo }} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.indigo} />
+
+      {/* Header — pinned above the scroll, always indigo */}
+      <View style={{
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        paddingHorizontal: 16, paddingVertical: 11,
+        backgroundColor: colors.indigo,
+      }}>
+        {/* Left — hamburger in white */}
+        <Pressable hitSlop={12} onPress={() => {}}>
+          <Menu size={22} color="#fff" />
+        </Pressable>
+
+        {/* Center — white square icon mark + white wordmark */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+          <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+            <Wallet size={14} color={colors.indigo} />
+          </View>
+          <Text style={{ fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 }}>Raikaro</Text>
+        </View>
+
+        {/* Right — bell only, semi-white circle on indigo */}
+        <Pressable
+          hitSlop={12}
+          onPress={() => navigation.navigate('Notifications')}
+          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Bell size={18} color="#fff" />
+          {unreadCount > 0 && (
+            <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
+          )}
+        </Pressable>
+      </View>
+
+      {/* Body — white background below header */}
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
-        {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
-          <Pressable hitSlop={12} onPress={() => {}}>
-            <Menu size={24} color={colors.textSub} />
-          </Pressable>
-          <Text style={{ fontSize: 22, fontWeight: '900', color: colors.indigo, letterSpacing: -0.5 }}>Raikaro</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Pressable hitSlop={12} onPress={() => {}}>
-              <HelpCircle size={22} color={colors.textSub} />
-            </Pressable>
-            <Pressable
-              hitSlop={12}
-              onPress={() => navigation.navigate('Notifications')}
-              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.indigoMuted, alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Bell size={18} color={colors.indigo} />
-              {unreadCount > 0 && (
-                <View style={{ position: 'absolute', top: 5, right: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigoMuted }} />
-              )}
-            </Pressable>
-          </View>
-        </View>
 
         {/* Search bar */}
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginBottom: 20, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8 }}>
@@ -486,6 +500,7 @@ export default function HomeScreen({ navigation }: Props) {
           </>
         )}
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
