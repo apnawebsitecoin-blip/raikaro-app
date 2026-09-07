@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe,
   ChevronRight, Shield, Heart, Wallet, Users, PenLine,
-  Tag, AlertCircle, BookOpen,
+  Tag, AlertCircle, BookOpen, Crown,
 } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
@@ -120,6 +120,12 @@ export default function AccountScreen({ navigation }: Props) {
           ) : (
             <Pressable style={s.nameRow} onPress={() => setEditingName(true)}>
               <Text style={[s.nameText, { color: colors.text }]}>{profile?.name ?? 'Set your name'}</Text>
+              {profile?.is_premium && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF3C7', borderRadius: 99, paddingHorizontal: 7, paddingVertical: 3, marginLeft: 8, gap: 3 }}>
+                  <Crown size={11} color="#D97706" />
+                  <Text style={{ fontSize: 10, fontWeight: '800', color: '#D97706' }}>Premium</Text>
+                </View>
+              )}
               <Edit2 size={14} color={colors.textMuted} style={{ marginLeft: 8 }} />
             </Pressable>
           )}
@@ -262,6 +268,25 @@ export default function AccountScreen({ navigation }: Props) {
             <ChevronRight size={16} color={colors.textMuted} />
           </Pressable>
         </View>
+
+        {/* Premium banner */}
+        <Pressable
+          onPress={() => navigation.navigate('Premium')}
+          style={{ marginBottom: 16, borderRadius: 16, overflow: 'hidden', backgroundColor: '#FEF3C7', borderWidth: 1, borderColor: '#FDE68A', padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14 }}
+        >
+          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#FDE68A', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Crown size={22} color="#D97706" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 15, fontWeight: '800', color: '#92400E' }}>
+              {profile?.is_premium ? '✓ You\'re Premium!' : 'Go Premium — ₹99/month'}
+            </Text>
+            <Text style={{ fontSize: 12, color: '#B45309', marginTop: 2 }}>
+              {profile?.is_premium ? 'Enjoy ad-free deals & priority support' : 'Ad-free · Early deals · Priority support'}
+            </Text>
+          </View>
+          <ChevronRight size={18} color="#D97706" />
+        </Pressable>
 
         {/* Logout */}
         <Pressable style={s.logoutBtn} onPress={handleLogout}>

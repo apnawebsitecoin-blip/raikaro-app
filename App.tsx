@@ -23,6 +23,7 @@ import WriteReviewScreen from './screens/WriteReviewScreen';
 import SubmitDealScreen from './screens/SubmitDealScreen';
 import BlogScreen from './screens/BlogScreen';
 import BlogPostScreen from './screens/BlogPostScreen';
+import PremiumScreen from './screens/PremiumScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -76,6 +77,7 @@ function AccountStack() {
       <Stack.Screen name="SubmitDeal" component={SubmitDealScreen} options={{ title: 'Submit a Deal' }} />
       <Stack.Screen name="Blog" component={BlogScreen} options={{ title: 'Guides & Blog' }} />
       <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: '' }} />
+      <Stack.Screen name="Premium" component={PremiumScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

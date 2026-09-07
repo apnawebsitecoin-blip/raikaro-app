@@ -35,6 +35,7 @@ export interface Profile {
   trust_score: number;
   wallet_balance: number;
   is_admin: boolean;
+  is_premium: boolean;
   is_blocked: boolean;
   referred_by: string | null;
   referral_code: string | null;
