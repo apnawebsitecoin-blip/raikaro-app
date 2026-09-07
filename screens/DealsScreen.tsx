@@ -2,53 +2,128 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, ScrollView, Pressable,
   TextInput, ActivityIndicator, StatusBar, RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, ShoppingBag, Tag, SlidersHorizontal } from 'lucide-react-native';
+import { Search, ShoppingBag, Tag } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
+import { ThemeColors } from '../lib/theme';
 import { Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 
-const INDIGO = '#4F46E5';
-
-const PLATFORM_COLORS: Record<string, { bg: string; text: string }> = {
-  Amazon:   { bg: '#FEF9EC', text: '#92400E' },
-  Flipkart: { bg: '#EFF6FF', text: '#1E40AF' },
-  Meesho:   { bg: '#FAF5FF', text: '#7C3AED' },
-  Myntra:   { bg: '#FFF1F2', text: '#BE123C' },
+// ─── Platform brand tokens ────────────────────────────────────────────────────
+const PLATFORM_COLORS: Record<string, {
+  dot: string;
+  activeBg: string;
+  activeBorder: string;
+  activeText: string;
+}> = {
+  Amazon:   { dot: '#F59E0B', activeBg: '#FEF3C7', activeBorder: '#D97706', activeText: '#92400E' },
+  Flipkart: { dot: '#3B82F6', activeBg: '#DBEAFE', activeBorder: '#2563EB', activeText: '#1E40AF' },
+  Meesho:   { dot: '#A78BFA', activeBg: '#EDE9FE', activeBorder: '#7C3AED', activeText: '#6D28D9' },
+  Myntra:   { dot: '#FB7185', activeBg: '#FFE4E6', activeBorder: '#E11D48', activeText: '#BE123C' },
 };
 
+// ─── Shared chip styles ───────────────────────────────────────────────────────
+const CHIP_H = 36;
+const CHIP_RADIUS = 18;
+const CHIP_PX = 14;
+
+function chipBase(colors: ThemeColors): object {
+  return {
+    height: CHIP_H,
+    borderRadius: CHIP_RADIUS,
+    paddingHorizontal: CHIP_PX,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    // inactive base
+    backgroundColor: colors.card,
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
+    // lift shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  };
+}
+
+// ─── FilterChip component ─────────────────────────────────────────────────────
+type FilterChipProps = {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  colors: ThemeColors;
+  dot?: string;
+  activeBg?: string;
+  activeBorder?: string;
+  activeText?: string;
+};
+
+function FilterChip({
+  label, active, onPress, colors,
+  dot, activeBg, activeBorder, activeText,
+}: FilterChipProps) {
+  const base = chipBase(colors);
+  const bg     = active ? (activeBg     ?? colors.indigoMuted) : colors.card;
+  const border = active ? (activeBorder ?? colors.indigo)      : colors.borderStrong;
+  const text   = active ? (activeText   ?? colors.indigo)      : colors.textSub;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[base, {
+        backgroundColor: bg,
+        borderColor: border,
+        shadowColor: active ? border : '#000',
+        shadowOpacity: active ? 0.15 : 0.07,
+      }]}
+    >
+      {dot !== undefined && (
+        <View style={{
+          width: 7, height: 7, borderRadius: 3.5,
+          backgroundColor: dot,
+        }} />
+      )}
+      <Text style={{ fontSize: 13, fontWeight: '700', color: text, letterSpacing: 0.1 }}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 type Props = { navigation: NativeStackNavigationProp<any>; route: any };
 
-interface Section {
-  title: string;
-  data: Product[];
-}
+interface Section { title: string; data: Product[]; }
 
 interface PriceRange { label: string; min: number; max: number; }
 const PRICE_RANGES: PriceRange[] = [
-  { label: 'Under ₹500',  min: 0,    max: 500 },
-  { label: '₹500–₹2K',   min: 500,  max: 2000 },
-  { label: '₹2K–₹5K',    min: 2000, max: 5000 },
-  { label: '₹5K+',       min: 5000, max: Infinity },
+  { label: 'Under ₹500', min: 0,    max: 500 },
+  { label: '₹500–₹2K',  min: 500,  max: 2000 },
+  { label: '₹2K–₹5K',   min: 2000, max: 5000 },
+  { label: '₹5K+',      min: 5000, max: Infinity },
 ];
 
+// ─── Screen ───────────────────────────────────────────────────────────────────
 export default function DealsScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const initialPlatform: string | null = route.params?.filterPlatform ?? null;
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [platforms, setPlatforms] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [search, setSearch] = useState('');
+  const [products,         setProducts]         = useState<Product[]>([]);
+  const [categories,       setCategories]       = useState<string[]>([]);
+  const [platforms,        setPlatforms]        = useState<string[]>([]);
+  const [loading,          setLoading]          = useState(true);
+  const [refreshing,       setRefreshing]       = useState(false);
+  const [search,           setSearch]           = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(initialPlatform);
-  const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
+  const [priceRange,       setPriceRange]       = useState<PriceRange | null>(null);
 
   const fetchProducts = useCallback(async () => {
     const { data } = await supabase
@@ -59,7 +134,7 @@ export default function DealsScreen({ navigation, route }: Props) {
     if (data) {
       const prods = data as Product[];
 
-      // Deduplicate products by original_url
+      // Deduplicate by original_url
       const seen = new Set<string>();
       const deduped = prods.filter((p) => {
         if (seen.has(p.original_url)) return false;
@@ -70,8 +145,8 @@ export default function DealsScreen({ navigation, route }: Props) {
 
       const cats = Array.from(new Set(deduped.map((p) => p.category).filter(Boolean))) as string[];
 
-      // Deduplicate platforms case-insensitively
-      const platMap = new Map<string, string>(); // lowercase -> canonical display name
+      // Case-insensitive platform dedup → canonical display name
+      const platMap = new Map<string, string>();
       deduped.forEach((p) => {
         if (p.platform) {
           const key = p.platform.toLowerCase();
@@ -83,10 +158,9 @@ export default function DealsScreen({ navigation, route }: Props) {
           }
         }
       });
-      const plats = Array.from(platMap.values());
 
       setCategories(cats);
-      setPlatforms(plats);
+      setPlatforms(Array.from(platMap.values()));
     }
   }, []);
 
@@ -95,9 +169,7 @@ export default function DealsScreen({ navigation, route }: Props) {
   }, [fetchProducts]);
 
   useEffect(() => {
-    if (route.params?.filterPlatform) {
-      setSelectedPlatform(route.params.filterPlatform);
-    }
+    if (route.params?.filterPlatform) setSelectedPlatform(route.params.filterPlatform);
   }, [route.params?.filterPlatform]);
 
   const onRefresh = useCallback(async () => {
@@ -110,17 +182,12 @@ export default function DealsScreen({ navigation, route }: Props) {
 
   const filtered = products.filter((p) => {
     const matchSearch = search.trim() ? p.name.toLowerCase().includes(search.toLowerCase()) : true;
-    const matchCat = selectedCategory ? p.category === selectedCategory : true;
-    const matchPlat = selectedPlatform
-      ? p.platform?.toLowerCase() === selectedPlatform.toLowerCase()
-      : true;
-    const matchPrice = priceRange
-      ? (p.price != null && p.price >= priceRange.min && p.price < priceRange.max)
-      : true;
+    const matchCat    = selectedCategory ? p.category === selectedCategory : true;
+    const matchPlat   = selectedPlatform ? p.platform?.toLowerCase() === selectedPlatform.toLowerCase() : true;
+    const matchPrice  = priceRange ? (p.price != null && p.price >= priceRange.min && p.price < priceRange.max) : true;
     return matchSearch && matchCat && matchPlat && matchPrice;
   });
 
-  // Build sections: group by category if no category filter, else one section
   const sections: Section[] = (() => {
     if (selectedCategory || search.trim()) {
       return [{ title: selectedCategory ?? `Results for "${search}"`, data: filtered }];
@@ -149,19 +216,19 @@ export default function DealsScreen({ navigation, route }: Props) {
       <StatusBar barStyle={colors.statusBar} backgroundColor={colors.background} />
 
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View style={s.header}>
+        <View style={s.headerLeft}>
           <Tag size={20} color={colors.indigo} />
-          <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text }}>Deals</Text>
+          <Text style={[s.headerTitle, { color: colors.text }]}>Deals</Text>
         </View>
-        <Text style={{ fontSize: 13, color: colors.textSub }}>{filtered.length} products</Text>
+        <Text style={[s.headerCount, { color: colors.textSub }]}>{filtered.length} products</Text>
       </View>
 
-      {/* Search */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: colors.borderStrong, gap: 8 }}>
+      {/* Search bar */}
+      <View style={[s.searchBar, { backgroundColor: colors.card, borderColor: colors.borderStrong }]}>
         <Search size={16} color={colors.textMuted} />
         <TextInput
-          style={{ flex: 1, fontSize: 14, color: colors.text }}
+          style={[s.searchInput, { color: colors.text }]}
           placeholder="Search deals..."
           placeholderTextColor={colors.textMuted}
           value={search}
@@ -175,88 +242,100 @@ export default function DealsScreen({ navigation, route }: Props) {
         )}
       </View>
 
-      {/* Platform filter */}
+      {/* ── Platform filter chips ── */}
       {platforms.length > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 10 }}>
-          <Pressable
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={s.chipRow}
+        >
+          <FilterChip
+            label="All Platforms"
+            active={selectedPlatform === null}
             onPress={() => setSelectedPlatform(null)}
-            style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: selectedPlatform === null ? colors.indigo : colors.borderStrong, backgroundColor: selectedPlatform === null ? colors.indigoMuted : colors.card }}
-          >
-            <Text style={{ fontSize: 13, fontWeight: '600', color: selectedPlatform === null ? colors.indigo : colors.textSub }}>All Platforms</Text>
-          </Pressable>
+            colors={colors}
+          />
           {platforms.map((p) => {
-            const style = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', text: '#374151' };
-            const active = selectedPlatform === p;
+            const pc = PLATFORM_COLORS[p];
             return (
-              <Pressable
+              <FilterChip
                 key={p}
-                onPress={() => setSelectedPlatform(active ? null : p)}
-                style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: active ? style.text : colors.borderStrong, backgroundColor: active ? style.bg : colors.card }}
-              >
-                <Text style={{ fontSize: 13, fontWeight: '600', color: active ? style.text : colors.textSub }}>{p}</Text>
-              </Pressable>
+                label={p}
+                active={selectedPlatform === p}
+                onPress={() => setSelectedPlatform(selectedPlatform === p ? null : p)}
+                colors={colors}
+                dot={pc?.dot}
+                activeBg={pc?.activeBg}
+                activeBorder={pc?.activeBorder}
+                activeText={pc?.activeText}
+              />
             );
           })}
         </ScrollView>
       )}
 
-      {/* Category filter */}
+      {/* ── Category filter chips ── */}
       {categories.length > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
-          <Pressable
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={s.chipRow}
+        >
+          <FilterChip
+            label="All"
+            active={selectedCategory === null}
             onPress={() => setSelectedCategory(null)}
-            style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: selectedCategory === null ? colors.indigo : colors.borderStrong, backgroundColor: selectedCategory === null ? colors.indigo : colors.card }}
-          >
-            <Text style={{ fontSize: 12, fontWeight: '700', color: selectedCategory === null ? '#fff' : colors.textSub }}>All</Text>
-          </Pressable>
-          {categories.map((cat) => {
-            const active = selectedCategory === cat;
-            return (
-              <Pressable
-                key={cat}
-                onPress={() => setSelectedCategory(active ? null : cat)}
-                style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: active ? colors.indigo : colors.borderStrong, backgroundColor: active ? colors.indigo : colors.card }}
-              >
-                <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#fff' : colors.textSub }}>{cat}</Text>
-              </Pressable>
-            );
-          })}
+            colors={colors}
+          />
+          {categories.map((cat) => (
+            <FilterChip
+              key={cat}
+              label={cat}
+              active={selectedCategory === cat}
+              onPress={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+              colors={colors}
+            />
+          ))}
         </ScrollView>
       )}
 
-      {/* Price range filter */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
-        {PRICE_RANGES.map((range) => {
-          const active = priceRange?.label === range.label;
-          return (
-            <Pressable
-              key={range.label}
-              onPress={() => setPriceRange(active ? null : range)}
-              style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: active ? '#F59E0B' : colors.borderStrong, backgroundColor: active ? '#FEF3C7' : colors.card }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: '700', color: active ? '#B45309' : colors.textSub }}>{range.label}</Text>
-            </Pressable>
-          );
-        })}
+      {/* ── Price range chips ── */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={s.chipRow}
+      >
+        {PRICE_RANGES.map((range) => (
+          <FilterChip
+            key={range.label}
+            label={range.label}
+            active={priceRange?.label === range.label}
+            onPress={() => setPriceRange(priceRange?.label === range.label ? null : range)}
+            colors={colors}
+            activeBg="#FEF3C7"
+            activeBorder="#D97706"
+            activeText="#92400E"
+          />
+        ))}
       </ScrollView>
 
-      {/* Sectioned horizontal product lists */}
+      {/* Sectioned product lists */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         {sections.length === 0 ? (
-          <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 80 }}>
+          <View style={s.empty}>
             <ShoppingBag size={48} color={colors.textMuted} />
-            <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
+            <Text style={[s.emptyText, { color: colors.textSub }]}>No products found</Text>
           </View>
         ) : (
           sections.map((section) => (
             <View key={section.title} style={{ marginBottom: 24 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 10 }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{section.title}</Text>
-                <Text style={{ fontSize: 12, color: colors.textMuted }}>{section.data.length}</Text>
+              <View style={s.sectionHeader}>
+                <Text style={[s.sectionTitle, { color: colors.text }]}>{section.title}</Text>
+                <Text style={[s.sectionCount, { color: colors.textMuted }]}>{section.data.length}</Text>
               </View>
               <FlatList
                 data={section.data}
@@ -273,3 +352,23 @@ export default function DealsScreen({ navigation, route }: Props) {
     </SafeAreaView>
   );
 }
+
+// ─── Layout styles (no colors here) ─────────────────────────────────────────
+const s = StyleSheet.create({
+  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
+  headerLeft:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, fontWeight: '800' },
+  headerCount: { fontSize: 13 },
+
+  searchBar:   { flexDirection: 'row', alignItems: 'center', borderRadius: 12, marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, gap: 8 },
+  searchInput: { flex: 1, fontSize: 14 },
+
+  chipRow:     { paddingHorizontal: 16, gap: 8, marginBottom: 10, alignItems: 'center' },
+
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 10 },
+  sectionTitle:  { fontSize: 16, fontWeight: '700' },
+  sectionCount:  { fontSize: 12 },
+
+  empty:     { alignItems: 'center', justifyContent: 'center', paddingVertical: 80 },
+  emptyText: { marginTop: 12, fontSize: 15 },
+});
