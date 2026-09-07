@@ -396,27 +396,60 @@ export default function HomeScreen({ navigation }: Props) {
           </>
         )}
 
-        {/* Products section */}
-        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>
-          {isSearching ? `Results for "${searchQuery.trim()}"` : (selectedCategory ?? 'All Products')}
-          <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textMuted }}>  ({filteredProducts.length})</Text>
-        </Text>
-
-        {filteredProducts.length === 0 ? (
-          <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
-            <ShoppingBag size={48} color={colors.textMuted} />
-            <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredProducts}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
-            renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
-            scrollEnabled={true}
-          />
+        {/* Products preview */}
+        {!isSearching && (
+          <>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 12 }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>
+                {selectedCategory ?? 'All Products'}
+                <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textMuted }}>  ({filteredProducts.length})</Text>
+              </Text>
+              <Pressable
+                onPress={() => navigation.getParent()?.navigate('Deals')}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 99, backgroundColor: colors.indigoMuted }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: '700', color: colors.indigo }}>View All →</Text>
+              </Pressable>
+            </View>
+            {filteredProducts.length === 0 ? (
+              <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
+                <ShoppingBag size={48} color={colors.textMuted} />
+                <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredProducts.slice(0, 8)}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+                renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
+              />
+            )}
+          </>
+        )}
+        {isSearching && (
+          <>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>
+              Results for "{searchQuery.trim()}"
+              <Text style={{ fontSize: 13, fontWeight: '400', color: colors.textMuted }}>  ({filteredProducts.length})</Text>
+            </Text>
+            {filteredProducts.length === 0 ? (
+              <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
+                <ShoppingBag size={48} color={colors.textMuted} />
+                <Text style={{ color: colors.textSub, marginTop: 12, fontSize: 15 }}>No products found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredProducts}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+                renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
+              />
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
