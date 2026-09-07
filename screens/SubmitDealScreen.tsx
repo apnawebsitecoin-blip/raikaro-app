@@ -4,6 +4,7 @@ import {
   Alert, ActivityIndicator, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link, Sparkles } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -11,17 +12,69 @@ import { useAuth } from '../context/AuthContext';
 const INDIGO = '#4F46E5';
 const CATEGORIES = ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books', 'Food', 'Travel', 'Other'];
 
+async function scrapeMetaTags(url: string): Promise<{ title?: string; image?: string; price?: string }> {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    },
+  });
+  const html = await res.text();
+
+  const ogTitle =
+    html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i)?.[1] ||
+    html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i)?.[1] ||
+    html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1];
+
+  const ogImage =
+    html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)?.[1] ||
+    html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i)?.[1];
+
+  const priceRaw =
+    html.match(/<meta[^>]*property=["']product:price:amount["'][^>]*content=["']([^"']+)["']/i)?.[1] ||
+    html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']product:price:amount["']/i)?.[1];
+
+  return {
+    title: ogTitle?.trim(),
+    image: ogImage?.trim(),
+    price: priceRaw?.trim(),
+  };
+}
+
 export default function SubmitDealScreen() {
   const { session } = useAuth();
   const userId = session?.user.id;
 
+  const [pasteUrl, setPasteUrl] = useState('');
+  const [scraping, setScraping] = useState(false);
+
   const [productName, setProductName] = useState('');
   const [productUrl, setProductUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const handleScrape = async () => {
+    const url = pasteUrl.trim();
+    if (!url) { Alert.alert('Enter URL', 'Paste the product URL first.'); return; }
+    setScraping(true);
+    try {
+      const { title, image, price: priceStr } = await scrapeMetaTags(url);
+      if (title) setProductName(title);
+      if (image) setImageUrl(image);
+      if (priceStr) {
+        const parsed = parseFloat(priceStr);
+        if (!isNaN(parsed)) setPrice(String(Math.round(parsed)));
+      }
+      setProductUrl(url);
+    } catch {
+      Alert.alert('Could not fetch', 'Failed to load product info. Please fill in manually.');
+    } finally {
+      setScraping(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!userId) return;
@@ -33,6 +86,7 @@ export default function SubmitDealScreen() {
       user_id: userId,
       product_name: productName.trim(),
       product_url: productUrl.trim(),
+      image_url: imageUrl.trim() || null,
       price: price ? parseFloat(price) : null,
       category: category || null,
       description: description.trim() || null,
@@ -62,6 +116,35 @@ export default function SubmitDealScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['bottom']}>
       <StatusBar barStyle="dark-content" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+
+        {/* Auto-fill from URL */}
+        <View style={{ backgroundColor: '#EEF2FF', borderRadius: 14, padding: 16, marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <Sparkles size={16} color={INDIGO} />
+            <Text style={{ fontSize: 14, fontWeight: '700', color: INDIGO }}>Auto-fill from link</Text>
+          </View>
+          <Text style={{ fontSize: 12, color: '#4338CA', marginBottom: 12 }}>Paste a product URL and we'll fill the form automatically.</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TextInput
+              style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 13, color: '#111827', borderWidth: 1, borderColor: '#C7D2FE' }}
+              placeholder="https://amazon.in/..."
+              placeholderTextColor="#9CA3AF"
+              value={pasteUrl}
+              onChangeText={setPasteUrl}
+              autoCapitalize="none"
+              keyboardType="url"
+            />
+            <Pressable
+              onPress={handleScrape}
+              disabled={scraping}
+              style={{ backgroundColor: INDIGO, borderRadius: 10, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' }}
+            >
+              {scraping
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <Link size={18} color="#fff" />}
+            </Pressable>
+          </View>
+        </View>
 
         <View style={{ backgroundColor: '#EEF2FF', borderRadius: 14, padding: 16, marginBottom: 24 }}>
           <Text style={{ fontSize: 15, fontWeight: '700', color: INDIGO, marginBottom: 4 }}>Found a great deal?</Text>
