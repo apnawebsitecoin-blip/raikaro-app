@@ -338,15 +338,7 @@ export default function HomeScreen({ navigation }: Props) {
           <Menu size={22} color="#fff" />
         </Pressable>
 
-        {/* Center — white square icon mark + white wordmark */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
-          <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
-            <Wallet size={14} color={colors.indigo} />
-          </View>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 }}>Raikaro</Text>
-        </View>
-
-        {/* Right — Help chip + Bell (auth) or Sign In (guest) */}
+        {/* Right — Help chip + Bell/Sign In + logo */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Pressable
             hitSlop={8}
@@ -376,6 +368,17 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={{ fontSize: 12, fontWeight: '800', color: colors.indigo, letterSpacing: 0.1 }}>Sign In</Text>
             </Pressable>
           )}
+
+          {/* Logo — wallet icon mark + split-color wordmark */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+              <Wallet size={14} color={colors.indigo} />
+            </View>
+            <Text style={{ fontSize: 20, fontWeight: '900', letterSpacing: -0.5 }}>
+              <Text style={{ color: '#fff' }}>Rai</Text>
+              <Text style={{ color: colors.amber }}>karo</Text>
+            </Text>
+          </View>
         </View>
       </View>
 
