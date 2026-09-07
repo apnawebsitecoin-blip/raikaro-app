@@ -11,6 +11,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Profile, TopReferrer } from '../lib/types';
+import GuestPrompt from '../components/GuestPrompt';
 
 const INDIGO = '#4F46E5';
 
@@ -73,6 +74,23 @@ export default function ReferScreen() {
     return (
       <SafeAreaView style={[s.centered, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.indigo} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!session) {
+    return (
+      <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
+        <StatusBar barStyle={colors.statusBar} />
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>Refer & Earn</Text>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <GuestPrompt
+            title="Refer friends, earn ₹50"
+            message="Sign in to get your unique referral code and start earning cashback for every friend you invite."
+          />
+        </View>
       </SafeAreaView>
     );
   }

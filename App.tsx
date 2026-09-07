@@ -122,17 +122,8 @@ function MainTabs() {
   );
 }
 
-function AuthStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-    </Stack.Navigator>
-  );
-}
-
 function RootNavigator() {
-  const { session, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -142,11 +133,13 @@ function RootNavigator() {
     );
   }
 
-  // key forces NavigationContainer to remount on auth change,
-  // wiping any stale nested navigation state from the previous session
   return (
-    <NavigationContainer key={session ? 'authed' : 'guest'}>
-      {session ? <MainTabs /> : <AuthStack />}
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Main" component={MainTabs} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="Signup" component={SignupScreen} options={{ presentation: 'modal' }} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

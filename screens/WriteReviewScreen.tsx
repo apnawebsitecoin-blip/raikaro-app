@@ -10,6 +10,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { Product, ReviewSentiment } from '../lib/types';
+import GuestPrompt from '../components/GuestPrompt';
 
 const INDIGO = '#4F46E5';
 
@@ -212,6 +213,19 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
       </Pressable>
     </View>
   );
+
+  if (!userId) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['bottom']}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <GuestPrompt
+            title="Write a Review"
+            message="Sign in to share your experience and earn rewards for honest product reviews."
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['bottom']}>

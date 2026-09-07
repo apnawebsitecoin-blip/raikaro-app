@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Pressable, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { X } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
 
 type Props = { navigation: NativeStackNavigationProp<any> };
@@ -14,11 +15,19 @@ export default function LoginScreen({ navigation }: Props) {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) Alert.alert('Login Error', error.message);
+    if (error) {
+      Alert.alert('Login Error', error.message);
+    } else {
+      navigation.goBack();
+    }
   }
 
   return (
     <View style={s.container}>
+      <Pressable style={s.closeBtn} onPress={() => navigation.goBack()} hitSlop={12}>
+        <X size={22} color="#9CA3AF" />
+      </Pressable>
+
       <Text style={s.brand}>Raikaro</Text>
       <Text style={s.subtitle}>Sign in to your account</Text>
 
@@ -55,6 +64,7 @@ export default function LoginScreen({ navigation }: Props) {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 24, justifyContent: 'center' },
+  closeBtn:  { position: 'absolute', top: 56, right: 24 },
   brand:     { fontSize: 32, fontWeight: '800', color: '#4F46E5', marginBottom: 6 },
   subtitle:  { fontSize: 15, color: '#6B7280', marginBottom: 32 },
   input:     { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, marginBottom: 16, color: '#111827' },

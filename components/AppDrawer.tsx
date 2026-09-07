@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Home, Wallet, Users, User, Tag, Heart,
-  Bell, HelpCircle, LogOut, X, ChevronRight,
+  Bell, HelpCircle, LogOut, LogIn, X, ChevronRight,
   ShoppingBag, BookOpen, PenLine,
 } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
@@ -61,6 +61,11 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
   const handleLogout = async () => {
     onClose();
     await supabase.auth.signOut();
+  };
+
+  const handleSignIn = () => {
+    onClose();
+    setTimeout(() => navigation.navigate('Login'), 210);
   };
 
   const email = session?.user?.email ?? '';
@@ -121,11 +126,22 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
             </View>
             <View style={s.profileRow}>
               <View style={s.avatar}>
-                <Text style={s.avatarText}>{initials}</Text>
+                {session
+                  ? <Text style={s.avatarText}>{initials}</Text>
+                  : <User size={20} color="#fff" />}
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.emailText} numberOfLines={1}>{email}</Text>
-                <Text style={s.memberText}>Raikaro Member</Text>
+                {session ? (
+                  <>
+                    <Text style={s.emailText} numberOfLines={1}>{email}</Text>
+                    <Text style={s.memberText}>Raikaro Member</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={s.emailText}>Guest User</Text>
+                    <Text style={s.memberText}>Sign in to unlock cashback</Text>
+                  </>
+                )}
               </View>
             </View>
           </View>
@@ -151,10 +167,17 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
 
             <View style={[s.divider, { backgroundColor: colors.border }]} />
 
-            <Pressable onPress={handleLogout} style={s.row}>
-              <LogOut size={18} color="#EF4444" />
-              <Text style={[s.rowLabel, { color: '#EF4444' }]}>Logout</Text>
-            </Pressable>
+            {session ? (
+              <Pressable onPress={handleLogout} style={s.row}>
+                <LogOut size={18} color="#EF4444" />
+                <Text style={[s.rowLabel, { color: '#EF4444' }]}>Logout</Text>
+              </Pressable>
+            ) : (
+              <Pressable onPress={handleSignIn} style={s.row}>
+                <LogIn size={18} color={INDIGO} />
+                <Text style={[s.rowLabel, { color: INDIGO }]}>Sign In / Create Account</Text>
+              </Pressable>
+            )}
           </ScrollView>
         </SafeAreaView>
       </Animated.View>

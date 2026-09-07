@@ -11,6 +11,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { WishlistWithProduct, Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
+import GuestPrompt from '../components/GuestPrompt';
 
 const INDIGO = '#4F46E5';
 const CARD_WIDTH = (Dimensions.get('window').width - 48) / 2;
@@ -67,6 +68,20 @@ export default function WishlistScreen({ navigation }: Props) {
     return (
       <SafeAreaView style={s.centered}>
         <ActivityIndicator size="large" color={INDIGO} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <SafeAreaView style={[s.root, { backgroundColor: '#fff' }]} edges={['top']}>
+        <StatusBar barStyle="dark-content" />
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <GuestPrompt
+            title="My Wishlist"
+            message="Sign in to save products to your wishlist and never lose track of deals you love."
+          />
+        </View>
       </SafeAreaView>
     );
   }

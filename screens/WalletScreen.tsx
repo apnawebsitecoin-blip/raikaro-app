@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Profile, WithdrawalRequest, DailyCheckin, MissingCashbackRequest } from '../lib/types';
+import GuestPrompt from '../components/GuestPrompt';
 
 const INDIGO = '#4F46E5';
 const PLATFORMS = ['Amazon', 'Flipkart', 'Meesho', 'Myntra'];
@@ -174,6 +175,23 @@ export default function WalletScreen() {
     return (
       <SafeAreaView style={[s.centered, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.indigo} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!session) {
+    return (
+      <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
+        <StatusBar barStyle={colors.statusBar} />
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>Wallet</Text>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <GuestPrompt
+            title="Your wallet awaits"
+            message="Sign in to check your balance, withdraw earnings, and report missing cashback."
+          />
+        </View>
       </SafeAreaView>
     );
   }

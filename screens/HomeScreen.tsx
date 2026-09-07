@@ -346,7 +346,7 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={{ fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 }}>Raikaro</Text>
         </View>
 
-        {/* Right — Help chip + Bell */}
+        {/* Right — Help chip + Bell (auth) or Sign In (guest) */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Pressable
             hitSlop={8}
@@ -356,16 +356,26 @@ export default function HomeScreen({ navigation }: Props) {
             <MessageCircle size={13} color="#fff" />
             <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff', letterSpacing: 0.1 }}>Help</Text>
           </Pressable>
-          <Pressable
-            hitSlop={12}
-            onPress={() => navigation.navigate('Notifications')}
-            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Bell size={18} color="#fff" />
-            {unreadCount > 0 && (
-              <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
-            )}
-          </Pressable>
+          {session ? (
+            <Pressable
+              hitSlop={12}
+              onPress={() => navigation.navigate('Notifications')}
+              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Bell size={18} color="#fff" />
+              {unreadCount > 0 && (
+                <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
+              )}
+            </Pressable>
+          ) : (
+            <Pressable
+              hitSlop={8}
+              onPress={() => navigation.navigate('Login')}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 6 }}
+            >
+              <Text style={{ fontSize: 12, fontWeight: '800', color: colors.indigo, letterSpacing: 0.1 }}>Sign In</Text>
+            </Pressable>
+          )}
         </View>
       </View>
 

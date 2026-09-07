@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe,
   ChevronRight, Shield, Heart, Wallet, Users, PenLine,
-  Tag, AlertCircle, BookOpen, Crown,
+  Tag, AlertCircle, BookOpen, Crown, User, LogIn,
 } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
@@ -79,6 +79,76 @@ export default function AccountScreen({ navigation }: Props) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={colors.indigo} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!session) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+        <StatusBar barStyle={colors.statusBar} />
+        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+          {/* Guest profile card */}
+          <View style={[s.profileCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={[s.avatar, { backgroundColor: colors.cardAlt }]}>
+              <User size={28} color={colors.textMuted} />
+            </View>
+            <Text style={[s.nameText, { color: colors.text, marginTop: 4 }]}>Guest User</Text>
+            <Text style={{ fontSize: 13, color: colors.textSub, marginTop: 4 }}>Browsing without an account</Text>
+          </View>
+
+          {/* Sign in CTA */}
+          <Pressable
+            style={{ backgroundColor: '#4F46E5', borderRadius: 14, paddingVertical: 15, alignItems: 'center', marginBottom: 12, flexDirection: 'row', justifyContent: 'center', gap: 8 }}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <LogIn size={18} color="#fff" />
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>Sign In</Text>
+          </Pressable>
+          <Pressable
+            style={{ borderWidth: 1.5, borderColor: colors.borderStrong, borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginBottom: 24 }}
+            onPress={() => navigation.navigate('Signup')}
+          >
+            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>Create Account</Text>
+          </Pressable>
+
+          {/* Preferences still work for guests */}
+          <Text style={[s.sectionTitle, { color: colors.textMuted }]}>Preferences</Text>
+          <View style={[s.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={s.settingRow}>
+              <View style={s.settingLeft}>
+                <View style={[s.settingIcon, { backgroundColor: colors.cardAlt }]}>
+                  <Moon size={16} color={colors.text} />
+                </View>
+                <Text style={[s.settingLabel, { color: colors.text }]}>Dark Mode</Text>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: colors.borderStrong, true: '#A5B4FC' }}
+                thumbColor={isDark ? colors.indigo : colors.textMuted}
+              />
+            </View>
+            <View style={[s.divider, { backgroundColor: colors.border }]} />
+            <Pressable
+              style={s.settingRow}
+              onPress={() => navigation.navigate('Blog')}
+            >
+              <View style={s.settingLeft}>
+                <View style={[s.settingIcon, { backgroundColor: colors.indigoMuted }]}>
+                  <BookOpen size={16} color={colors.indigo} />
+                </View>
+                <View>
+                  <Text style={[s.settingLabel, { color: colors.text }]}>Guides & Blog</Text>
+                  <Text style={[s.settingHint, { color: colors.textSub }]}>Shopping tips and cashback guides</Text>
+                </View>
+              </View>
+              <ChevronRight size={16} color={colors.textMuted} />
+            </Pressable>
+          </View>
+
+          <Text style={[s.version, { color: colors.textMuted, marginTop: 24 }]}>Raikaro v{APP_VERSION}</Text>
+        </ScrollView>
       </SafeAreaView>
     );
   }
