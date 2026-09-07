@@ -112,6 +112,29 @@ export interface WishlistWithProduct {
   products: Product;
 }
 
+export interface VideoReview {
+  id: string;
+  product_id: string;
+  reviewer_id: string;
+  youtube_video_id: string;
+  title: string;
+  description: string | null;
+  status: 'processing' | 'live' | 'failed' | 'deleted';
+  created_at: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  cover_image: string | null;
+  category: string | null;
+  meta_description: string | null;
+  published_at: string | null;
+  created_at: string;
+}
+
 export type ReviewSentiment = 'positive' | 'neutral' | 'negative';
 
 export interface Review {
