@@ -140,7 +140,13 @@ function RootNavigator() {
     );
   }
 
-  return session ? <MainTabs /> : <AuthStack />;
+  // key forces NavigationContainer to remount on auth change,
+  // wiping any stale nested navigation state from the previous session
+  return (
+    <NavigationContainer key={session ? 'authed' : 'guest'}>
+      {session ? <MainTabs /> : <AuthStack />}
+    </NavigationContainer>
+  );
 }
 
 export default function App() {
@@ -148,9 +154,7 @@ export default function App() {
     <AuthProvider>
       <ProfileProvider>
         <ThemeProvider>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
+          <RootNavigator />
         </ThemeProvider>
       </ProfileProvider>
     </AuthProvider>

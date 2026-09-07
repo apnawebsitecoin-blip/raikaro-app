@@ -27,8 +27,12 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   }, [session?.user.id]);
 
   useEffect(() => {
+    if (!session?.user.id) {
+      setWalletBalance(0);
+      return;
+    }
     refreshBalance();
-  }, [refreshBalance]);
+  }, [session?.user.id, refreshBalance]);
 
   return (
     <ProfileContext.Provider value={{ walletBalance, refreshBalance }}>
