@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Bell, Menu, Wallet, ShoppingCart, ChevronRight,
+  Bell, Menu, Wallet, Globe, ShoppingCart, ChevronRight,
   Smartphone, Shirt, Home as HomeIcon, Sparkles,
   Dumbbell, BookOpen, ShoppingBag, UtensilsCrossed, Plane,
   Ticket, Copy, CheckCheck, Tag, PenLine,
@@ -19,6 +19,8 @@ import { supabase } from '../lib/supabase';
 import { getRecentlyViewedIds } from '../lib/recentlyViewed';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguagePicker from '../components/LanguagePicker';
 import { Product, Coupon, HomeBanner } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
@@ -221,6 +223,7 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
 export default function HomeScreen({ navigation }: Props) {
   const { session } = useAuth();
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [featured, setFeatured] = useState<Product[]>([]);
@@ -231,6 +234,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [homeBanners, setHomeBanners] = useState<HomeBanner[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [langPickerOpen, setLangPickerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -347,20 +351,31 @@ export default function HomeScreen({ navigation }: Props) {
           </Text>
         </View>
 
-        {/* Right — Bell for logged-in users; empty for guests (Sign In is in the drawer) */}
-        {session && (
+        {/* Right — Globe (always) + Bell (logged-in only) */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Pressable
             hitSlop={12}
-            onPress={() => navigation.navigate('Notifications')}
+            onPress={() => setLangPickerOpen(true)}
             style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Bell size={18} color="#fff" />
-            {unreadCount > 0 && (
-              <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
-            )}
+            <Globe size={18} color="#fff" />
           </Pressable>
-        )}
+          {session && (
+            <Pressable
+              hitSlop={12}
+              onPress={() => navigation.navigate('Notifications')}
+              style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Bell size={18} color="#fff" />
+              {unreadCount > 0 && (
+                <View style={{ position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: colors.indigo }} />
+              )}
+            </Pressable>
+          )}
+        </View>
       </View>
+
+      <LanguagePicker visible={langPickerOpen} onClose={() => setLangPickerOpen(false)} />
 
       {/* Body — white background below header */}
       <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -400,7 +415,7 @@ export default function HomeScreen({ navigation }: Props) {
             {/* Platform cashback cards */}
             {platforms.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Shop & Earn Cashback</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>{t('heading_shop_earn')}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
                   {platforms.map((platform) => {
                     const pc = PLATFORM_COLORS[platform] ?? { bg: '#F8F9FB', imgBg: '#F3F4F6', text: '#374151', cashback: 'Cashback', shoppers: '1K+ shopped' };
@@ -447,7 +462,7 @@ export default function HomeScreen({ navigation }: Props) {
             {categories.length > 0 && (
               <View style={{ marginBottom: 24 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 12 }}>
-                  <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>Categories</Text>
+                  <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>{t('heading_categories')}</Text>
                   <Pressable
                     onPress={() => navigation.getParent()?.navigate('Deals')}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FEF3C7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 }}
@@ -488,7 +503,7 @@ export default function HomeScreen({ navigation }: Props) {
 
             {/* Earning Story Animation */}
             <View style={{ marginHorizontal: 16, marginBottom: 24, backgroundColor: colors.card, borderRadius: 18, padding: 20, borderWidth: 1, borderColor: colors.borderStrong, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 4 }}>How It Works</Text>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 4 }}>{t('heading_how_it_works')}</Text>
               <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center', marginBottom: 12 }}>Shop, review, earn — it's that simple</Text>
               <EarningStoryAnimation />
             </View>
@@ -529,7 +544,7 @@ export default function HomeScreen({ navigation }: Props) {
                           <Text style={{ fontSize: 14, fontWeight: '800', color: s.text, marginBottom: 2 }}>{p}</Text>
                           <Text style={{ fontSize: 11, color: s.text, opacity: 0.75, marginBottom: 10 }} numberOfLines={1}>{s.cashback} cashback</Text>
                           <View style={{ backgroundColor: s.text, borderRadius: 8, paddingVertical: 6, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>Shop Now</Text>
+                            <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>{t('btn_shop_now')}</Text>
                           </View>
                         </Pressable>
                       );
@@ -557,7 +572,7 @@ export default function HomeScreen({ navigation }: Props) {
             {/* Recently Viewed */}
             {recentlyViewed.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>Recently Viewed</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>{t('heading_recently_viewed')}</Text>
                 <FlatList
                   data={recentlyViewed}
                   keyExtractor={(item) => item.id}

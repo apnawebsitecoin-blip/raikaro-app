@@ -8,6 +8,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProfileProvider, useProfile } from './context/ProfileContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import SignupScreen from './screens/auth/SignupScreen';
@@ -92,6 +93,7 @@ function WalletTabLabel({ color }: { color: string }) {
 }
 
 function MainTabs() {
+  const { t } = useLanguage();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -106,9 +108,12 @@ function MainTabs() {
           if (route.name === 'Refer') return <Users color={color} size={size} />;
           if (route.name === 'Account') return <User color={color} size={size} />;
         },
-        tabBarLabel: ({ color, focused }) => {
+        tabBarLabel: ({ color }) => {
           if (route.name === 'Wallet') return <WalletTabLabel color={color} />;
-          const labels: Record<string, string> = { Home: 'Home', Deals: 'Deals', Refer: 'Refer', Account: 'Account' };
+          const labels: Record<string, string> = {
+            Home: t('tab_home'), Deals: t('tab_deals'),
+            Refer: t('tab_refer'), Account: t('tab_account'),
+          };
           return <Text style={{ fontSize: 10, color, marginTop: 2 }}>{labels[route.name]}</Text>;
         },
       })}
@@ -149,7 +154,9 @@ export default function App() {
     <AuthProvider>
       <ProfileProvider>
         <ThemeProvider>
-          <RootNavigator />
+          <LanguageProvider>
+            <RootNavigator />
+          </LanguageProvider>
         </ThemeProvider>
       </ProfileProvider>
     </AuthProvider>

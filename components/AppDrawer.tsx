@@ -12,6 +12,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const DRAWER_W = Dimensions.get('window').width * 0.8;
 const INDIGO = '#4F46E5';
@@ -25,6 +26,7 @@ type Props = {
 export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
   const { colors } = useTheme();
   const { session } = useAuth();
+  const { t } = useLanguage();
   const slideX = useRef(new Animated.Value(-DRAWER_W)).current;
   const backdropAlpha = useRef(new Animated.Value(0)).current;
 
@@ -73,29 +75,29 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
 
   const SECTIONS = [
     {
-      title: 'Menu',
+      title: t('drawer_section_menu'),
       items: [
-        { label: 'Home',           Icon: Home,       onPress: onClose },
-        { label: 'Wallet & Cashback', Icon: Wallet,   onPress: () => goTab('Wallet') },
-        { label: 'Refer & Earn',   Icon: Users,      onPress: () => goTab('Refer') },
-        { label: 'My Account',     Icon: User,       onPress: () => goTab('Account') },
-        { label: 'Wishlist',       Icon: Heart,      onPress: () => goTab('Account', 'Wishlist') },
-        { label: 'Notifications',  Icon: Bell,       onPress: () => goStack('Notifications') },
+        { label: t('drawer_home'),          Icon: Home,       onPress: onClose },
+        { label: t('drawer_wallet'),        Icon: Wallet,     onPress: () => goTab('Wallet') },
+        { label: t('drawer_refer'),         Icon: Users,      onPress: () => goTab('Refer') },
+        { label: t('drawer_account'),       Icon: User,       onPress: () => goTab('Account') },
+        { label: t('drawer_wishlist'),      Icon: Heart,      onPress: () => goTab('Account', 'Wishlist') },
+        { label: t('drawer_notifications'), Icon: Bell,       onPress: () => goStack('Notifications') },
       ],
     },
     {
-      title: 'Shop & Save',
+      title: t('drawer_section_shop'),
       items: [
-        { label: 'All Deals',            Icon: Tag,         onPress: () => goTab('Deals') },
-        { label: 'Top Cashback Stores',  Icon: ShoppingBag, onPress: () => goTab('Deals') },
-        { label: 'Guides & Blog',        Icon: BookOpen,    onPress: () => goTab('Account', 'Blog') },
-        { label: 'Write a Review',       Icon: PenLine,     onPress: () => goStack('WriteReview') },
+        { label: t('drawer_all_deals'),    Icon: Tag,         onPress: () => goTab('Deals') },
+        { label: t('drawer_top_stores'),   Icon: ShoppingBag, onPress: () => goTab('Deals') },
+        { label: t('drawer_blog'),         Icon: BookOpen,    onPress: () => goTab('Account', 'Blog') },
+        { label: t('drawer_write_review'), Icon: PenLine,     onPress: () => goStack('WriteReview') },
       ],
     },
     {
-      title: 'Support',
+      title: t('drawer_section_support'),
       items: [
-        { label: 'Help & Support', Icon: HelpCircle, onPress: () => {} },
+        { label: t('drawer_help'), Icon: HelpCircle, onPress: () => {} },
       ],
     },
   ];
@@ -134,12 +136,12 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
                 {session ? (
                   <>
                     <Text style={s.emailText} numberOfLines={1}>{email}</Text>
-                    <Text style={s.memberText}>Raikaro Member</Text>
+                    <Text style={s.memberText}>{t('member_label')}</Text>
                   </>
                 ) : (
                   <>
-                    <Text style={s.emailText}>Guest User</Text>
-                    <Text style={s.memberText}>Sign in to unlock cashback</Text>
+                    <Text style={s.emailText}>{t('guest_user')}</Text>
+                    <Text style={s.memberText}>{t('guest_tagline')}</Text>
                   </>
                 )}
               </View>
@@ -170,12 +172,12 @@ export default function AppDrawer({ isOpen, onClose, navigation }: Props) {
             {session ? (
               <Pressable onPress={handleLogout} style={s.row}>
                 <LogOut size={18} color="#EF4444" />
-                <Text style={[s.rowLabel, { color: '#EF4444' }]}>Logout</Text>
+                <Text style={[s.rowLabel, { color: '#EF4444' }]}>{t('drawer_logout')}</Text>
               </Pressable>
             ) : (
               <Pressable onPress={handleSignIn} style={s.row}>
                 <LogIn size={18} color={INDIGO} />
-                <Text style={[s.rowLabel, { color: INDIGO }]}>Sign In / Create Account</Text>
+                <Text style={[s.rowLabel, { color: INDIGO }]}>{t('drawer_sign_in')}</Text>
               </Pressable>
             )}
           </ScrollView>
