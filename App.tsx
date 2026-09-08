@@ -31,6 +31,7 @@ import AdminSubmittedDealsScreen from './screens/AdminSubmittedDealsScreen';
 import AdminCouponsScreen from './screens/AdminCouponsScreen';
 import AdminBankOffersScreen from './screens/AdminBankOffersScreen';
 import MyReviewsScreen from './screens/MyReviewsScreen';
+import ReelsScreen from './screens/ReelsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,6 +45,7 @@ function HomeStack() {
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: 'Write a Review' }} />
+      <Stack.Screen name="Reels" component={ReelsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

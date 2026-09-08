@@ -611,7 +611,12 @@ export default function HomeScreen({ navigation }: Props) {
             {/* Video Reviews */}
             {videoReviews.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>📹 Video Reviews</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 12 }}>
+                  <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>📹 Video Reviews</Text>
+                  <Pressable onPress={() => navigation.navigate('Reels')} style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 99, backgroundColor: '#FEE2E2' }}>
+                    <Text style={{ fontSize: 12, fontWeight: '700', color: '#DC2626' }}>View all →</Text>
+                  </Pressable>
+                </View>
                 <FlatList
                   data={videoReviews}
                   keyExtractor={(item) => item.id}
