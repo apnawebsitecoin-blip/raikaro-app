@@ -22,7 +22,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SkeletonProductCard } from '../components/SkeletonCard';
 import LanguagePicker from '../components/LanguagePicker';
-import { Product, Coupon, HomeBanner } from '../lib/types';
+import { Product, Coupon, HomeBanner, VideoReview } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
 import AppDrawer from '../components/AppDrawer';
@@ -233,6 +233,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [categories, setCategories] = useState<string[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [homeBanners, setHomeBanners] = useState<HomeBanner[]>([]);
+  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [langPickerOpen, setLangPickerOpen] = useState(false);
@@ -242,11 +243,12 @@ export default function HomeScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchData = useCallback(async () => {
-    const [featuredRes, allRes, couponsRes, bannersRes] = await Promise.all([
+    const [featuredRes, allRes, couponsRes, bannersRes, videoRes] = await Promise.all([
       supabase.from('products').select('*').or('is_featured.eq.true,is_sponsored.eq.true').order('created_at', { ascending: false }).limit(10),
       supabase.from('products').select('*').order('created_at', { ascending: false }).limit(60),
       supabase.from('coupons').select('*').eq('is_active', true).order('discount_value', { ascending: false }).limit(10),
       supabase.from('home_banners').select('*').eq('is_active', true).order('display_order', { ascending: true }).limit(8),
+      supabase.from('video_reviews').select('*').eq('status', 'live').order('created_at', { ascending: false }).limit(10),
     ]);
 
     if (featuredRes.data) setFeatured(featuredRes.data as Product[]);
@@ -258,6 +260,7 @@ export default function HomeScreen({ navigation }: Props) {
     }
     if (couponsRes.data) setCoupons(couponsRes.data as Coupon[]);
     if (bannersRes.data) setHomeBanners(bannersRes.data as HomeBanner[]);
+    if (videoRes.data) setVideoReviews(videoRes.data as VideoReview[]);
 
     if (userId) {
       const notifRes = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('read', false);
@@ -581,6 +584,42 @@ export default function HomeScreen({ navigation }: Props) {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
                   renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
+                />
+              </View>
+            )}
+
+            {/* Video Reviews */}
+            {videoReviews.length > 0 && (
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>📹 Video Reviews</Text>
+                <FlatList
+                  data={videoReviews}
+                  keyExtractor={(item) => item.id}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${item.youtube_video_id}`)}
+                      style={{ width: 200, borderRadius: 14, overflow: 'hidden', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
+                    >
+                      <View style={{ position: 'relative' }}>
+                        <Image
+                          source={{ uri: `https://img.youtube.com/vi/${item.youtube_video_id}/hqdefault.jpg` }}
+                          style={{ width: 200, height: 112, backgroundColor: '#1F2937' }}
+                          resizeMode="cover"
+                        />
+                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+                          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ color: '#fff', fontSize: 16, marginLeft: 3 }}>▶</Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{ padding: 10 }}>
+                        <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text, lineHeight: 18 }} numberOfLines={2}>{item.title}</Text>
+                      </View>
+                    </Pressable>
+                  )}
                 />
               </View>
             )}
