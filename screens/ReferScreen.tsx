@@ -10,6 +10,7 @@ import { Copy, Share2, Users, Trophy, CheckCheck } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Profile, TopReferrer } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
@@ -18,6 +19,7 @@ const INDIGO = '#4F46E5';
 export default function ReferScreen() {
   const { session } = useAuth();
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -83,7 +85,7 @@ export default function ReferScreen() {
       <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
         <StatusBar barStyle={colors.statusBar} />
         <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
-          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>Refer & Earn</Text>
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>{t('drawer_refer')}</Text>
         </View>
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <GuestPrompt
@@ -105,17 +107,17 @@ export default function ReferScreen() {
       >
         {/* Referral code card */}
         <View style={s.codeCard}>
-          <Text style={s.codeLabel}>Your Referral Code</Text>
+          <Text style={s.codeLabel}>{t('refer_code_label')}</Text>
           <Text style={s.codeText}>{profile?.referral_code ?? '—'}</Text>
-          <Text style={s.codeHint}>Share this code and earn ₹50 per successful referral</Text>
+          <Text style={s.codeHint}>{t('refer_hint')}</Text>
           <View style={s.btnRow}>
             <Pressable style={s.copyBtn} onPress={handleCopy} android_ripple={{ color: '#6366F1' }}>
               {copied ? <CheckCheck size={16} color="#fff" /> : <Copy size={16} color="#fff" />}
-              <Text style={s.copyBtnText}>{copied ? 'Copied!' : 'Copy Code'}</Text>
+              <Text style={s.copyBtnText}>{copied ? t('refer_copied') : t('refer_copy')}</Text>
             </Pressable>
             <Pressable style={s.shareBtn} onPress={handleShare} android_ripple={{ color: '#E0E7FF' }}>
               <Share2 size={16} color={INDIGO} />
-              <Text style={s.shareBtnText}>Share</Text>
+              <Text style={s.shareBtnText}>{t('refer_share')}</Text>
             </Pressable>
           </View>
         </View>
@@ -125,12 +127,12 @@ export default function ReferScreen() {
           <View style={[s.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Users size={22} color={colors.indigo} />
             <Text style={[s.statNumber, { color: colors.text }]}>{referralCount}</Text>
-            <Text style={[s.statLabel, { color: colors.textSub }]}>Friends Referred</Text>
+            <Text style={[s.statLabel, { color: colors.textSub }]}>{t('refer_friends_count')}</Text>
           </View>
           <View style={[s.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Trophy size={22} color={colors.indigo} />
             <Text style={[s.statNumber, { color: colors.text }]}>{myRank > 0 ? `#${myRank}` : '—'}</Text>
-            <Text style={[s.statLabel, { color: colors.textSub }]}>Your Rank</Text>
+            <Text style={[s.statLabel, { color: colors.textSub }]}>{t('refer_your_rank')}</Text>
           </View>
         </View>
 
@@ -138,10 +140,10 @@ export default function ReferScreen() {
         <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={s.cardHeader}>
             <Trophy size={18} color={colors.indigo} />
-            <Text style={[s.cardTitle, { color: colors.text }]}>Top Referrers</Text>
+            <Text style={[s.cardTitle, { color: colors.text }]}>{t('refer_top_referrers')}</Text>
           </View>
           {leaderboard.length === 0 ? (
-            <Text style={[s.emptyText, { color: colors.textMuted }]}>No referrals yet — be the first!</Text>
+            <Text style={[s.emptyText, { color: colors.textMuted }]}>{t('refer_empty')}</Text>
           ) : (
             leaderboard.map((r, i) => {
               const isMe = r.id === userId;

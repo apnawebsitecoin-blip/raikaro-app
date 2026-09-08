@@ -10,6 +10,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ThemeColors } from '../lib/theme';
 import { Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
@@ -113,6 +114,7 @@ const PRICE_RANGES: PriceRange[] = [
 // ─── Screen ───────────────────────────────────────────────────────────────────
 export default function DealsScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const initialPlatform: string | null = route.params?.filterPlatform ?? null;
 
   const [products,         setProducts]         = useState<Product[]>([]);
@@ -219,7 +221,7 @@ export default function DealsScreen({ navigation, route }: Props) {
       <View style={s.header}>
         <View style={s.headerLeft}>
           <Tag size={20} color={colors.indigo} />
-          <Text style={[s.headerTitle, { color: colors.text }]}>Deals</Text>
+          <Text style={[s.headerTitle, { color: colors.text }]}>{t('deals_title')}</Text>
         </View>
         <Text style={[s.headerCount, { color: colors.textSub }]}>{filtered.length} products</Text>
       </View>
@@ -229,7 +231,7 @@ export default function DealsScreen({ navigation, route }: Props) {
         <Search size={16} color={colors.textMuted} />
         <TextInput
           style={[s.searchInput, { color: colors.text }]}
-          placeholder="Search deals..."
+          placeholder={t('deals_search_placeholder')}
           placeholderTextColor={colors.textMuted}
           value={search}
           onChangeText={setSearch}
@@ -250,7 +252,7 @@ export default function DealsScreen({ navigation, route }: Props) {
           contentContainerStyle={s.chipRow}
         >
           <FilterChip
-            label="All Platforms"
+            label={t('deals_all_platforms')}
             active={selectedPlatform === null}
             onPress={() => setSelectedPlatform(null)}
             colors={colors}
@@ -282,7 +284,7 @@ export default function DealsScreen({ navigation, route }: Props) {
           contentContainerStyle={s.chipRow}
         >
           <FilterChip
-            label="All"
+            label={t('deals_all_categories')}
             active={selectedCategory === null}
             onPress={() => setSelectedCategory(null)}
             colors={colors}
@@ -328,7 +330,7 @@ export default function DealsScreen({ navigation, route }: Props) {
         {sections.length === 0 ? (
           <View style={s.empty}>
             <ShoppingBag size={48} color={colors.textMuted} />
-            <Text style={[s.emptyText, { color: colors.textSub }]}>No products found</Text>
+            <Text style={[s.emptyText, { color: colors.textSub }]}>{t('deals_empty')}</Text>
           </View>
         ) : (
           sections.map((section) => (

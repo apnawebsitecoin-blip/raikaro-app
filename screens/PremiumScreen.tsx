@@ -17,6 +17,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#F59E0B';
 const GOLD_LIGHT = '#FEF3C7';
@@ -35,6 +36,7 @@ type Props = { navigation: any };
 export default function PremiumScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { session } = useAuth();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [isPremium, setIsPremium] = useState(false);
@@ -76,7 +78,7 @@ export default function PremiumScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} style={s.backBtn}>
           <ChevronLeft size={22} color={colors.text} />
         </Pressable>
-        <Text style={[s.navTitle, { color: colors.text }]}>Raikaro Premium</Text>
+        <Text style={[s.navTitle, { color: colors.text }]}>{t('premium_title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -87,8 +89,8 @@ export default function PremiumScreen({ navigation }: Props) {
           <View style={s.crownCircle}>
             <Crown size={36} color={GOLD} />
           </View>
-          <Text style={s.heroTitle}>Raikaro Premium</Text>
-          <Text style={s.heroSub}>Unlock the full cashback experience</Text>
+          <Text style={s.heroTitle}>{t('premium_title')}</Text>
+          <Text style={s.heroSub}>{t('premium_subtitle')}</Text>
 
           {/* Price pill */}
           <View style={s.pricePill}>
@@ -99,7 +101,7 @@ export default function PremiumScreen({ navigation }: Props) {
           {isPremium && (
             <View style={s.activeBadge}>
               <CheckCircle2 size={14} color="#059669" />
-              <Text style={s.activeBadgeText}>Active on your account</Text>
+              <Text style={s.activeBadgeText}>{t('premium_active_badge')}</Text>
             </View>
           )}
         </View>
@@ -112,7 +114,7 @@ export default function PremiumScreen({ navigation }: Props) {
         </View>
 
         {/* Benefits */}
-        <Text style={[s.sectionTitle, { color: colors.text }]}>What you get</Text>
+        <Text style={[s.sectionTitle, { color: colors.text }]}>{t('premium_what_you_get')}</Text>
         <View style={[s.benefitsCard, { backgroundColor: colors.card, borderColor: colors.borderStrong }]}>
           {BENEFITS.map(({ Icon, title, desc }, i) => (
             <View key={title}>
@@ -143,15 +145,13 @@ export default function PremiumScreen({ navigation }: Props) {
               <>
                 <Crown size={18} color={isPremium ? '#DC2626' : '#fff'} />
                 <Text style={[s.ctaText, { color: isPremium ? '#DC2626' : '#fff' }]}>
-                  {isPremium ? 'Cancel Premium (Demo)' : 'Subscribe — ₹99/month (Demo)'}
+                  {isPremium ? t('premium_cancel_btn') : t('premium_subscribe_btn')}
                 </Text>
               </>
             )}
         </Pressable>
 
-        <Text style={[s.footerNote, { color: colors.textMuted }]}>
-          No real charge will be made. This is a UI prototype for testing premium-gated features.
-        </Text>
+        <Text style={[s.footerNote, { color: colors.textMuted }]}>{t('premium_footer')}</Text>
       </ScrollView>
     </SafeAreaView>
   );

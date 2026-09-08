@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Profile } from '../lib/types';
 
 const APP_VERSION = '1.0.0';
@@ -24,6 +25,7 @@ export default function AccountScreen({ navigation }: Props) {
   const { session } = useAuth();
   const { walletBalance } = useProfile();
   const { colors, isDark, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
   const email = session?.user.email ?? '';
 
@@ -93,8 +95,8 @@ export default function AccountScreen({ navigation }: Props) {
             <View style={[s.avatar, { backgroundColor: colors.cardAlt }]}>
               <User size={28} color={colors.textMuted} />
             </View>
-            <Text style={[s.nameText, { color: colors.text, marginTop: 4 }]}>Guest User</Text>
-            <Text style={{ fontSize: 13, color: colors.textSub, marginTop: 4 }}>Browsing without an account</Text>
+            <Text style={[s.nameText, { color: colors.text, marginTop: 4 }]}>{t('guest_user')}</Text>
+            <Text style={{ fontSize: 13, color: colors.textSub, marginTop: 4 }}>{t('account_browsing_guest')}</Text>
           </View>
 
           {/* Sign in CTA */}
@@ -103,24 +105,24 @@ export default function AccountScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('Login')}
           >
             <LogIn size={18} color="#fff" />
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>Sign In</Text>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>{t('btn_sign_in')}</Text>
           </Pressable>
           <Pressable
             style={{ borderWidth: 1.5, borderColor: colors.borderStrong, borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginBottom: 24 }}
             onPress={() => navigation.navigate('Signup')}
           >
-            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>Create Account</Text>
+            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>{t('btn_create_account')}</Text>
           </Pressable>
 
           {/* Preferences still work for guests */}
-          <Text style={[s.sectionTitle, { color: colors.textMuted }]}>Preferences</Text>
+          <Text style={[s.sectionTitle, { color: colors.textMuted }]}>{t('account_preferences')}</Text>
           <View style={[s.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={s.settingRow}>
               <View style={s.settingLeft}>
                 <View style={[s.settingIcon, { backgroundColor: colors.cardAlt }]}>
                   <Moon size={16} color={colors.text} />
                 </View>
-                <Text style={[s.settingLabel, { color: colors.text }]}>Dark Mode</Text>
+                <Text style={[s.settingLabel, { color: colors.text }]}>{t('account_dark_mode')}</Text>
               </View>
               <Switch
                 value={isDark}
@@ -139,8 +141,8 @@ export default function AccountScreen({ navigation }: Props) {
                   <BookOpen size={16} color={colors.indigo} />
                 </View>
                 <View>
-                  <Text style={[s.settingLabel, { color: colors.text }]}>Guides & Blog</Text>
-                  <Text style={[s.settingHint, { color: colors.textSub }]}>Shopping tips and cashback guides</Text>
+                  <Text style={[s.settingLabel, { color: colors.text }]}>{t('drawer_blog')}</Text>
+                  <Text style={[s.settingHint, { color: colors.textSub }]}>{t('account_blog_hint')}</Text>
                 </View>
               </View>
               <ChevronRight size={16} color={colors.textMuted} />
@@ -213,12 +215,12 @@ export default function AccountScreen({ navigation }: Props) {
         </View>
 
         {/* Dashboard: 2-column quick cards */}
-        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>Dashboard</Text>
+        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>{t('account_dashboard')}</Text>
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
           <Pressable style={[s.dashCard, { flex: 1, backgroundColor: colors.indigo }]} onPress={() => navigation.getParent()?.navigate('Wallet')}>
             <Wallet size={22} color="#fff" />
             <Text style={{ fontSize: 22, fontWeight: '900', color: '#fff', marginTop: 6 }}>₹{walletBalance.toFixed(0)}</Text>
-            <Text style={{ fontSize: 12, color: '#C7D2FE', marginTop: 2 }}>My Wallet</Text>
+            <Text style={{ fontSize: 12, color: '#C7D2FE', marginTop: 2 }}>{t('account_my_wallet')}</Text>
           </Pressable>
           <Pressable style={[s.dashCard, { flex: 1, backgroundColor: colors.greenMuted }]} onPress={() => navigation.getParent()?.navigate('Refer')}>
             <Users size={22} color={colors.green} />
@@ -232,7 +234,7 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<Bell size={18} color={colors.indigo} />}
             iconBg={colors.indigoMuted}
-            label="Notifications"
+            label={t('account_notifications')}
             badge={unreadCount > 0 ? unreadCount : undefined}
             colors={colors}
             onPress={() => navigation.navigate('Notifications')}
@@ -241,7 +243,7 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<Heart size={18} color="#EF4444" />}
             iconBg="#FEF2F2"
-            label="My Wishlist"
+            label={t('account_my_wishlist')}
             badge={wishlistCount > 0 ? wishlistCount : undefined}
             colors={colors}
             onPress={() => navigation.navigate('Wishlist')}
@@ -250,8 +252,8 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<PenLine size={18} color={colors.indigo} />}
             iconBg={colors.indigoMuted}
-            label="Write a Review"
-            subtitle="Earn rewards for honest reviews"
+            label={t('account_write_review')}
+            subtitle={t('account_review_hint')}
             colors={colors}
             onPress={() => navigation.navigate('WriteReview')}
           />
@@ -259,8 +261,8 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<Tag size={18} color="#D97706" />}
             iconBg="#FEF3C7"
-            label="Submit a Deal"
-            subtitle="Share deals with the community"
+            label={t('account_submit_deal')}
+            subtitle={t('account_submit_deal_hint')}
             colors={colors}
             onPress={() => navigation.navigate('SubmitDeal')}
           />
@@ -268,8 +270,8 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<BookOpen size={18} color={colors.indigo} />}
             iconBg={colors.indigoMuted}
-            label="Guides & Blog"
-            subtitle="Shopping tips and cashback guides"
+            label={t('drawer_blog')}
+            subtitle={t('account_blog_hint')}
             colors={colors}
             onPress={() => navigation.navigate('Blog')}
           />
@@ -277,8 +279,8 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<AlertCircle size={18} color="#DC2626" />}
             iconBg="#FEF2F2"
-            label="Missing Cashback?"
-            subtitle="Report and track your request"
+            label={t('account_missing_cashback')}
+            subtitle={t('account_missing_hint')}
             colors={colors}
             onPress={() => navigation.getParent()?.navigate('Wallet')}
           />
@@ -286,21 +288,21 @@ export default function AccountScreen({ navigation }: Props) {
           <DashRow
             icon={<Shield size={18} color="#2563EB" />}
             iconBg="#EFF6FF"
-            label="Privacy Policy"
+            label={t('account_privacy')}
             colors={colors}
             onPress={() => {}}
           />
         </View>
 
         {/* Preferences */}
-        <Text style={[s.sectionTitle, { marginTop: 20, color: colors.textMuted }]}>Preferences</Text>
+        <Text style={[s.sectionTitle, { marginTop: 20, color: colors.textMuted }]}>{t('account_preferences')}</Text>
         <View style={[s.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={s.settingRow}>
             <View style={s.settingLeft}>
               <View style={[s.settingIcon, { backgroundColor: colors.indigoMuted }]}>
                 <Bell size={16} color={colors.indigo} />
               </View>
-              <Text style={[s.settingLabel, { color: colors.text }]}>Notifications</Text>
+              <Text style={[s.settingLabel, { color: colors.text }]}>{t('account_notifications')}</Text>
             </View>
             <Switch
               value={notifEnabled}
@@ -315,7 +317,7 @@ export default function AccountScreen({ navigation }: Props) {
               <View style={[s.settingIcon, { backgroundColor: colors.cardAlt }]}>
                 <Moon size={16} color={colors.text} />
               </View>
-              <Text style={[s.settingLabel, { color: colors.text }]}>Dark Mode</Text>
+              <Text style={[s.settingLabel, { color: colors.text }]}>{t('account_dark_mode')}</Text>
             </View>
             <Switch
               value={isDark}
@@ -331,7 +333,7 @@ export default function AccountScreen({ navigation }: Props) {
                 <Globe size={16} color={colors.green} />
               </View>
               <View>
-                <Text style={[s.settingLabel, { color: colors.text }]}>Language</Text>
+                <Text style={[s.settingLabel, { color: colors.text }]}>{t('account_language')}</Text>
                 <Text style={[s.settingHint, { color: colors.textMuted }]}>English — Coming soon</Text>
               </View>
             </View>
@@ -349,10 +351,10 @@ export default function AccountScreen({ navigation }: Props) {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 15, fontWeight: '800', color: '#92400E' }}>
-              {profile?.is_premium ? '✓ You\'re Premium!' : 'Go Premium — ₹99/month'}
+              {profile?.is_premium ? `✓ ${t('account_is_premium')}` : t('account_go_premium')}
             </Text>
             <Text style={{ fontSize: 12, color: '#B45309', marginTop: 2 }}>
-              {profile?.is_premium ? 'Enjoy ad-free deals & priority support' : 'Ad-free · Early deals · Priority support'}
+              {profile?.is_premium ? t('account_premium_benefits_active') : t('account_premium_benefits')}
             </Text>
           </View>
           <ChevronRight size={18} color="#D97706" />
@@ -361,7 +363,7 @@ export default function AccountScreen({ navigation }: Props) {
         {/* Logout */}
         <Pressable style={s.logoutBtn} onPress={handleLogout}>
           <LogOut size={18} color="#DC2626" />
-          <Text style={s.logoutText}>Sign Out</Text>
+          <Text style={s.logoutText}>{t('account_sign_out')}</Text>
         </Pressable>
 
         <Text style={[s.version, { color: colors.textMuted }]}>Raikaro v{APP_VERSION}</Text>

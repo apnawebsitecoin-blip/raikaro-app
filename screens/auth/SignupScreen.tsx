@@ -3,10 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, Pressable, Alert, ActivityIndi
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { X } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
+import { useLanguage } from '../../context/LanguageContext';
 
 type Props = { navigation: NativeStackNavigationProp<any> };
 
 export default function SignupScreen({ navigation }: Props) {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,11 +45,11 @@ export default function SignupScreen({ navigation }: Props) {
       </Pressable>
 
       <Text style={s.brand}>Raikaro</Text>
-      <Text style={s.subtitle}>Create your account</Text>
+      <Text style={s.subtitle}>{t('signup_subtitle')}</Text>
 
       <TextInput
         style={s.input}
-        placeholder="Email"
+        placeholder={t('login_email_placeholder')}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -56,7 +58,7 @@ export default function SignupScreen({ navigation }: Props) {
       />
       <TextInput
         style={[s.input, s.inputLast]}
-        placeholder="Password (min 6 characters)"
+        placeholder={t('signup_password_hint')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -64,12 +66,12 @@ export default function SignupScreen({ navigation }: Props) {
       />
 
       <TouchableOpacity style={s.btn} onPress={handleSignup} disabled={loading} activeOpacity={0.8}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={s.btnText}>Create Account</Text>}
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={s.btnText}>{t('btn_create_account')}</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
         <Text style={s.link}>
-          Already have an account? <Text style={s.linkBold}>Sign In</Text>
+          {t('signup_has_account')} <Text style={s.linkBold}>{t('btn_sign_in')}</Text>
         </Text>
       </TouchableOpacity>
     </View>

@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Profile, WithdrawalRequest, DailyCheckin, MissingCashbackRequest } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
@@ -30,6 +31,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; Icon: React.
 export default function WalletScreen() {
   const { session } = useAuth();
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -184,7 +186,7 @@ export default function WalletScreen() {
       <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
         <StatusBar barStyle={colors.statusBar} />
         <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
-          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>Wallet</Text>
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>{t('wallet_title')}</Text>
         </View>
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <GuestPrompt
@@ -208,17 +210,17 @@ export default function WalletScreen() {
         <View style={s.balanceCard}>
           <View style={s.balanceRow}>
             <Wallet size={22} color="#C7D2FE" />
-            <Text style={s.balanceLabel}>Wallet Balance</Text>
+            <Text style={s.balanceLabel}>{t('wallet_balance_label')}</Text>
           </View>
           <Text style={s.balanceAmount}>₹{(profile?.wallet_balance ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
           <View style={s.balanceBtnRow}>
             <Pressable style={s.withdrawBtn} onPress={() => setWithdrawModal(true)}>
               <ArrowDownCircle size={16} color="#fff" />
-              <Text style={s.withdrawBtnText}>Withdraw</Text>
+              <Text style={s.withdrawBtnText}>{t('wallet_withdraw')}</Text>
             </Pressable>
             <Pressable style={s.missingBtn} onPress={() => setMissingModal(true)}>
               <AlertCircle size={16} color="#C7D2FE" />
-              <Text style={s.missingBtnText}>Cashback missing?</Text>
+              <Text style={s.missingBtnText}>{t('wallet_cashback_missing')}</Text>
             </Pressable>
           </View>
         </View>
@@ -227,7 +229,7 @@ export default function WalletScreen() {
         <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={s.cardHeader}>
             <Gift size={18} color={colors.indigo} />
-            <Text style={[s.cardTitle, { color: colors.text }]}>Daily Check-in</Text>
+            <Text style={[s.cardTitle, { color: colors.text }]}>{t('wallet_daily_checkin')}</Text>
           </View>
           {todayCheckin ? (
             <View style={s.checkinDone}>
@@ -236,9 +238,9 @@ export default function WalletScreen() {
             </View>
           ) : (
             <>
-              <Text style={[s.checkinHint, { color: colors.textSub }]}>Check in daily and earn ₹5 each day</Text>
+              <Text style={[s.checkinHint, { color: colors.textSub }]}>{t('wallet_checkin_hint')}</Text>
               <Pressable style={[s.checkinBtn, { backgroundColor: colors.indigo }]} onPress={handleCheckin} disabled={checkinLoading}>
-                {checkinLoading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.checkinBtnText}>Check in — Earn ₹5</Text>}
+                {checkinLoading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.checkinBtnText}>{t('wallet_checkin_btn')}</Text>}
               </Pressable>
             </>
           )}
@@ -246,9 +248,9 @@ export default function WalletScreen() {
 
         {/* Withdrawal history */}
         <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[s.cardTitle, { color: colors.text }]}>Withdrawal History</Text>
+          <Text style={[s.cardTitle, { color: colors.text }]}>{t('wallet_withdrawal_history')}</Text>
           {withdrawals.length === 0 ? (
-            <Text style={[s.emptyText, { color: colors.textMuted }]}>No withdrawals yet</Text>
+            <Text style={[s.emptyText, { color: colors.textMuted }]}>{t('wallet_no_withdrawals')}</Text>
           ) : (
             withdrawals.map((w) => {
               const cfg = STATUS_CONFIG[w.status] ?? STATUS_CONFIG.pending;
@@ -273,7 +275,7 @@ export default function WalletScreen() {
         {/* Missing cashback requests */}
         {missingRequests.length > 0 && (
           <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[s.cardTitle, { color: colors.text }]}>Missing Cashback Requests</Text>
+            <Text style={[s.cardTitle, { color: colors.text }]}>{t('wallet_missing_requests')}</Text>
             {missingRequests.map((r) => {
               const cfg = STATUS_CONFIG[r.status] ?? STATUS_CONFIG.pending;
               return (
@@ -300,16 +302,16 @@ export default function WalletScreen() {
         <Pressable style={s.overlay} onPress={() => setWithdrawModal(false)}>
           <Pressable style={[s.sheet, { backgroundColor: colors.card }]} onPress={() => {}}>
             <View style={s.sheetHeader}>
-              <Text style={[s.sheetTitle, { color: colors.text }]}>Withdraw Funds</Text>
+              <Text style={[s.sheetTitle, { color: colors.text }]}>{t('wallet_withdraw_funds')}</Text>
               <Pressable onPress={() => setWithdrawModal(false)} hitSlop={12}><X size={20} color={colors.textSub} /></Pressable>
             </View>
             <Text style={[s.sheetBalance, { color: colors.textSub }]}>Balance: ₹{(profile?.wallet_balance ?? 0).toLocaleString('en-IN')}</Text>
-            <Text style={[s.inputLabel, { color: colors.text }]}>Amount (min ₹100)</Text>
+            <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_amount_label')}</Text>
             <TextInput style={[s.input, { color: colors.text, borderColor: colors.borderStrong, backgroundColor: colors.background }]} placeholder="Enter amount" value={withdrawAmount} onChangeText={setWithdrawAmount} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
-            <Text style={[s.inputLabel, { color: colors.text }]}>UPI ID</Text>
+            <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_upi_label')}</Text>
             <TextInput style={[s.input, { color: colors.text, borderColor: colors.borderStrong, backgroundColor: colors.background }]} placeholder="yourname@upi" value={withdrawUpi} onChangeText={setWithdrawUpi} autoCapitalize="none" placeholderTextColor={colors.textMuted} />
             <Pressable style={[s.modalBtn, { backgroundColor: colors.indigo }]} onPress={handleWithdraw} disabled={withdrawLoading}>
-              {withdrawLoading ? <ActivityIndicator color="#fff" /> : <Text style={s.modalBtnText}>Submit Request</Text>}
+              {withdrawLoading ? <ActivityIndicator color="#fff" /> : <Text style={s.modalBtnText}>{t('wallet_submit')}</Text>}
             </Pressable>
           </Pressable>
         </Pressable>
@@ -320,15 +322,15 @@ export default function WalletScreen() {
         <Pressable style={s.overlay} onPress={resetMissingModal}>
           <Pressable style={[s.sheet, { backgroundColor: colors.card }]} onPress={() => {}}>
             <View style={s.sheetHeader}>
-              <Text style={[s.sheetTitle, { color: colors.text }]}>Report Missing Cashback</Text>
+              <Text style={[s.sheetTitle, { color: colors.text }]}>{t('wallet_report_missing')}</Text>
               <Pressable onPress={resetMissingModal} hitSlop={12}><X size={20} color={colors.textSub} /></Pressable>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <Text style={[s.inputLabel, { color: colors.text }]}>Order URL / Order ID</Text>
+              <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_order_url_label')}</Text>
               <TextInput style={[s.input, { color: colors.text, borderColor: colors.borderStrong, backgroundColor: colors.background }]} placeholder="https://amazon.in/order/..." value={mcOrderUrl} onChangeText={setMcOrderUrl} autoCapitalize="none" placeholderTextColor={colors.textMuted} />
 
-              <Text style={[s.inputLabel, { color: colors.text }]}>Platform</Text>
+              <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_platform_label')}</Text>
               <View style={s.platformRow}>
                 {PLATFORMS.map((p) => (
                   <Pressable
@@ -341,26 +343,26 @@ export default function WalletScreen() {
                 ))}
               </View>
 
-              <Text style={[s.inputLabel, { color: colors.text }]}>Order Amount (₹)</Text>
+              <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_order_amount_label')}</Text>
               <TextInput style={[s.input, { color: colors.text, borderColor: colors.borderStrong, backgroundColor: colors.background }]} placeholder="1299" value={mcAmount} onChangeText={setMcAmount} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
 
-              <Text style={[s.inputLabel, { color: colors.text }]}>Order Date (YYYY-MM-DD)</Text>
+              <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_order_date_label')}</Text>
               <TextInput style={[s.input, { color: colors.text, borderColor: colors.borderStrong, backgroundColor: colors.background }]} placeholder="2026-08-15" value={mcDate} onChangeText={setMcDate} placeholderTextColor={colors.textMuted} />
 
-              <Text style={[s.inputLabel, { color: colors.text }]}>Screenshot (optional)</Text>
+              <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_screenshot_label')}</Text>
               <TouchableOpacity style={[s.uploadBtn, { borderColor: colors.borderStrong }]} onPress={pickScreenshot} disabled={mcUploading}>
                 {mcUploading
                   ? <ActivityIndicator size="small" color={INDIGO} />
                   : <>
                       <ImagePlus size={18} color={mcScreenshotUrl ? '#059669' : INDIGO} />
                       <Text style={[s.uploadBtnText, mcScreenshotUrl ? { color: '#059669' } : {}]}>
-                        {mcScreenshotUrl ? 'Screenshot uploaded ✓' : 'Upload screenshot'}
+                        {mcScreenshotUrl ? t('wallet_screenshot_uploaded') : t('wallet_upload_screenshot')}
                       </Text>
                     </>}
               </TouchableOpacity>
 
               <Pressable style={[s.modalBtn, { backgroundColor: colors.indigo }]} onPress={handleMissingSubmit} disabled={mcSubmitting}>
-                {mcSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={s.modalBtnText}>Submit Request</Text>}
+                {mcSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={s.modalBtnText}>{t('wallet_submit')}</Text>}
               </Pressable>
             </ScrollView>
           </Pressable>
