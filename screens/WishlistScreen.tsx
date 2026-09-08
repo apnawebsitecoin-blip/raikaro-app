@@ -9,6 +9,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { WishlistWithProduct, Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import GuestPrompt from '../components/GuestPrompt';
@@ -21,6 +23,8 @@ type Props = { navigation: NativeStackNavigationProp<any> };
 export default function WishlistScreen({ navigation }: Props) {
   const { session } = useAuth();
   const userId = session?.user.id;
+  const { colors } = useTheme();
+  const { t } = useLanguage();
 
   const [items, setItems] = useState<WishlistWithProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,14 +96,14 @@ export default function WishlistScreen({ navigation }: Props) {
         <StatusBar barStyle="dark-content" />
         <View style={s.emptyContainer}>
           <Heart size={64} color="#E5E7EB" />
-          <Text style={s.emptyTitle}>Wishlist khaali hai</Text>
-          <Text style={s.emptySubtitle}>Products add karo aur baad mein easily dhundho</Text>
+          <Text style={s.emptyTitle}>{t('wishlist_empty_title')}</Text>
+          <Text style={s.emptySubtitle}>{t('wishlist_empty_subtitle')}</Text>
           <Pressable
             style={s.browseBtn}
             onPress={() => navigation.getParent()?.navigate('Deals')}
           >
             <ShoppingBag size={16} color="#fff" />
-            <Text style={s.browseBtnText}>Products Dekho</Text>
+            <Text style={s.browseBtnText}>{t('wishlist_browse_btn')}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -121,7 +125,7 @@ export default function WishlistScreen({ navigation }: Props) {
             <ProductCard product={item.products} onPress={goToProduct} />
             <Pressable style={s.removeBtn} onPress={() => handleRemove(item)}>
               <Heart size={14} color="#EF4444" fill="#EF4444" />
-              <Text style={s.removeBtnText}>Remove</Text>
+              <Text style={s.removeBtnText}>{t('wishlist_remove')}</Text>
             </Pressable>
           </View>
         )}

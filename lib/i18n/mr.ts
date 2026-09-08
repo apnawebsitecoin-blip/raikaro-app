@@ -114,6 +114,15 @@ const mr: T = {
   signup_password_hint:     'पासवर्ड (किमान 6 अक्षरे)',
   signup_has_account:       'आधीच खाते आहे?',
 
+  notif_empty_title:    'अद्याप कोणत्याही सूचना नाहीत',
+  notif_empty_subtitle: 'नव्या सूचना येथे दिसतील',
+  notif_mark_all_read:  'सर्व वाचले म्हणून चिन्हांकित करा',
+
+  wishlist_empty_title:    'तुमची विशलिस्ट रिकामी आहे',
+  wishlist_empty_subtitle: 'उत्पादने जोडा आणि नंतर सहज शोधा',
+  wishlist_browse_btn:     'उत्पादने पहा',
+  wishlist_remove:         'काढा',
+
   premium_title:         'रायकारो प्रीमियम',
   premium_subtitle:      'पूर्ण कॅशबॅक अनुभव अनलॉक करा',
   premium_active_badge:  'तुमच्या खात्यावर सक्रिय',

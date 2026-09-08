@@ -123,6 +123,17 @@ const en = {
   signup_password_hint:     'Password (min 6 characters)',
   signup_has_account:       'Already have an account?',
 
+  // NotificationsScreen
+  notif_empty_title:    'No notifications yet',
+  notif_empty_subtitle: 'New notifications will appear here',
+  notif_mark_all_read:  'Mark all as read',
+
+  // WishlistScreen
+  wishlist_empty_title:    'Your wishlist is empty',
+  wishlist_empty_subtitle: 'Add products to find them easily later',
+  wishlist_browse_btn:     'Browse Products',
+  wishlist_remove:         'Remove',
+
   // PremiumScreen
   premium_title:         'Raikaro Premium',
   premium_subtitle:      'Unlock the full cashback experience',

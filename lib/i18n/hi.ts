@@ -114,6 +114,15 @@ const hi: T = {
   signup_password_hint:     'पासवर्ड (न्यूनतम 6 अक्षर)',
   signup_has_account:       'पहले से खाता है?',
 
+  notif_empty_title:    'अभी कोई सूचना नहीं',
+  notif_empty_subtitle: 'नई सूचनाएं यहां दिखाई देंगी',
+  notif_mark_all_read:  'सभी पढ़े हुए के रूप में चिह्नित करें',
+
+  wishlist_empty_title:    'आपकी विशलिस्ट खाली है',
+  wishlist_empty_subtitle: 'उत्पाद जोड़ें और बाद में आसानी से खोजें',
+  wishlist_browse_btn:     'उत्पाद देखें',
+  wishlist_remove:         'हटाएं',
+
   premium_title:         'रायकारो प्रीमियम',
   premium_subtitle:      'पूरे कैशबैक अनुभव को अनलॉक करें',
   premium_active_badge:  'आपके खाते पर सक्रिय',

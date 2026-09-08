@@ -114,6 +114,15 @@ const ta: T = {
   signup_password_hint:     'கடவுச்சொல் (குறைந்தது 6 எழுத்துகள்)',
   signup_has_account:       'ஏற்கனவே கணக்கு உள்ளதா?',
 
+  notif_empty_title:    'இன்னும் அறிவிப்புகள் இல்லை',
+  notif_empty_subtitle: 'புதிய அறிவிப்புகள் இங்கே தோன்றும்',
+  notif_mark_all_read:  'அனைத்தையும் படிக்கப்பட்டதாக குறிக்கவும்',
+
+  wishlist_empty_title:    'உங்கள் விருப்பப்பட்டியல் காலியாக உள்ளது',
+  wishlist_empty_subtitle: 'பொருட்களை சேர்த்து பின்னர் எளிதாக தேடுங்கள்',
+  wishlist_browse_btn:     'பொருட்களை பார்க்கவும்',
+  wishlist_remove:         'அகற்று',
+
   premium_title:         'ரைகாரோ பிரீமியம்',
   premium_subtitle:      'முழு கேஷ்பேக் அனுபவத்தை திறக்கவும்',
   premium_active_badge:  'உங்கள் கணக்கில் செயலில் உள்ளது',

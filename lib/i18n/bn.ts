@@ -114,6 +114,15 @@ const bn: T = {
   signup_password_hint:     'পাসওয়ার্ড (ন্যূনতম 6 অক্ষর)',
   signup_has_account:       'ইতিমধ্যে অ্যাকাউন্ট আছে?',
 
+  notif_empty_title:    'এখনো কোনো বিজ্ঞপ্তি নেই',
+  notif_empty_subtitle: 'নতুন বিজ্ঞপ্তি এখানে দেখাবে',
+  notif_mark_all_read:  'সব পঠিত হিসেবে চিহ্নিত করুন',
+
+  wishlist_empty_title:    'আপনার উইশলিস্ট খালি',
+  wishlist_empty_subtitle: 'পণ্য যোগ করুন এবং পরে সহজে খুঁজুন',
+  wishlist_browse_btn:     'পণ্য দেখুন',
+  wishlist_remove:         'সরিয়ে দিন',
+
   premium_title:         'রাইকারো প্রিমিয়াম',
   premium_subtitle:      'সম্পূর্ণ ক্যাশব্যাক অভিজ্ঞতা আনলক করুন',
   premium_active_badge:  'আপনার অ্যাকাউন্টে সক্রিয়',

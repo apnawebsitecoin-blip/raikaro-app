@@ -8,12 +8,16 @@ import { Bell, BellOff } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Notification } from '../lib/types';
 
 const INDIGO = '#4F46E5';
 
 export default function NotificationsScreen() {
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -83,7 +87,7 @@ export default function NotificationsScreen() {
 
       {unreadCount > 0 && (
         <Pressable style={s.markAllRow} onPress={markAllRead}>
-          <Text style={s.markAllText}>Mark all as read ({unreadCount})</Text>
+          <Text style={[s.markAllText, { color: colors.indigo }]}>{t('notif_mark_all_read')} ({unreadCount})</Text>
         </Pressable>
       )}
 
@@ -96,8 +100,8 @@ export default function NotificationsScreen() {
         ListEmptyComponent={
           <View style={s.emptyContainer}>
             <BellOff size={56} color="#E5E7EB" />
-            <Text style={s.emptyTitle}>Koi notification nahi</Text>
-            <Text style={s.emptySubtitle}>Nayi notifications yahan dikhayenge</Text>
+            <Text style={s.emptyTitle}>{t('notif_empty_title')}</Text>
+            <Text style={s.emptySubtitle}>{t('notif_empty_subtitle')}</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -121,7 +125,7 @@ const s = StyleSheet.create({
   root:          { flex: 1, backgroundColor: '#F9FAFB' },
   centered:      { flex: 1, alignItems: 'center', justifyContent: 'center' },
   markAllRow:    { paddingHorizontal: 16, paddingVertical: 10, alignItems: 'flex-end' },
-  markAllText:   { fontSize: 13, fontWeight: '600', color: INDIGO },
+  markAllText:   { fontSize: 13, fontWeight: '600' },
   list:          { paddingHorizontal: 16, paddingBottom: 32 },
   emptyFlex:     { flexGrow: 1 },
   emptyContainer:{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },

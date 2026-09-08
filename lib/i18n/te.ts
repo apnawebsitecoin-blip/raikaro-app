@@ -114,6 +114,15 @@ const te: T = {
   signup_password_hint:     'పాస్‌వర్డ్ (కనీసం 6 అక్షరాలు)',
   signup_has_account:       'ఇప్పటికే ఖాతా ఉందా?',
 
+  notif_empty_title:    'ఇంకా నోటిఫికేషన్‌లు లేవు',
+  notif_empty_subtitle: 'కొత్త నోటిఫికేషన్‌లు ఇక్కడ కనిపిస్తాయి',
+  notif_mark_all_read:  'అన్నింటినీ చదివినట్లు గుర్తించండి',
+
+  wishlist_empty_title:    'మీ విష్‌లిస్ట్ ఖాళీగా ఉంది',
+  wishlist_empty_subtitle: 'ఉత్పత్తులు జోడించి తర్వాత సులభంగా వెతకండి',
+  wishlist_browse_btn:     'ఉత్పత్తులు చూడండి',
+  wishlist_remove:         'తొలగించు',
+
   premium_title:         'రైకారో ప్రీమియమ్',
   premium_subtitle:      'పూర్తి క్యాష్‌బ్యాక్ అనుభవాన్ని అన్‌లాక్ చేయండి',
   premium_active_badge:  'మీ ఖాతాలో యాక్టివ్',
