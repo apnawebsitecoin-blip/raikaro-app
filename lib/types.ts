@@ -90,6 +90,8 @@ export interface Coupon {
   category: string | null;
   expires_at: string | null;
   is_active: boolean;
+  is_expired: boolean;
+  last_verified_at: string | null;
   created_at: string;
 }
 

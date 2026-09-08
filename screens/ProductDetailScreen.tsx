@@ -22,6 +22,15 @@ import { logProductClick } from '../lib/analytics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+function verifiedLabel(lastVerifiedAt: string | null): string | null {
+  if (!lastVerifiedAt) return null;
+  const days = Math.floor((Date.now() - new Date(lastVerifiedAt).getTime()) / 86_400_000);
+  if (days === 0) return 'Verified today';
+  if (days < 7)  return `Verified ${days}d ago`;
+  if (days < 30) return `Verified ${Math.floor(days / 7)}w ago`;
+  return null;
+}
+
 const PLATFORM_COLORS: Record<string, { bg: string; text: string }> = {
   Amazon:   { bg: '#FEF3C7', text: '#92400E' },
   Flipkart: { bg: '#DBEAFE', text: '#1E40AF' },
@@ -182,7 +191,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const platformStyle = product.platform ? PLATFORM_COLORS[product.platform] : null;
 
   useEffect(() => {
-    supabase.from('coupons').select('*').eq('product_id', product.id).eq('is_active', true).maybeSingle()
+    supabase.from('coupons').select('*').eq('product_id', product.id).eq('is_active', true).eq('is_expired', false).maybeSingle()
       .then(({ data }) => { if (data) setCoupon(data as Coupon); });
   }, [product.id]);
 
@@ -298,6 +307,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
     setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH));
   };
 
+  const couponVerifiedLabel = coupon ? verifiedLabel(coupon.last_verified_at) : null;
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }} edges={['top', 'bottom']}>
       <StatusBar barStyle={colors.statusBar} />
@@ -411,9 +422,17 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
                 setTimeout(() => setCouponCopied(false), 2000);
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Ticket size={15} color={colors.green} />
-                <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>{t('detail_coupon_label')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Ticket size={15} color={colors.green} />
+                  <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>{t('detail_coupon_label')}</Text>
+                </View>
+                {couponVerifiedLabel && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', borderRadius: 99, paddingHorizontal: 8, paddingVertical: 3 }}>
+                    <CheckCheck size={11} color="#059669" />
+                    <Text style={{ fontSize: 10, fontWeight: '700', color: '#059669' }}>{couponVerifiedLabel}</Text>
+                  </View>
+                )}
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#A7F3D0', borderStyle: 'dashed' }}>
                 <Text style={{ fontSize: 16, fontWeight: '800', color: colors.green, letterSpacing: 2 }}>{coupon.code}</Text>

@@ -28,6 +28,7 @@ import PremiumScreen from './screens/PremiumScreen';
 import AdminScreen from './screens/AdminScreen';
 import AdminProductsScreen from './screens/AdminProductsScreen';
 import AdminSubmittedDealsScreen from './screens/AdminSubmittedDealsScreen';
+import AdminCouponsScreen from './screens/AdminCouponsScreen';
 import MyReviewsScreen from './screens/MyReviewsScreen';
 
 const Stack = createNativeStackNavigator();
@@ -87,6 +88,7 @@ function AccountStack() {
       <Stack.Screen name="Admin" component={AdminScreen} options={{ title: 'Admin Panel' }} />
       <Stack.Screen name="AdminProducts" component={AdminProductsScreen} options={{ title: 'Products' }} />
       <Stack.Screen name="AdminSubmittedDeals" component={AdminSubmittedDealsScreen} options={{ title: 'Submitted Deals' }} />
+      <Stack.Screen name="AdminCoupons" component={AdminCouponsScreen} options={{ title: 'Coupons' }} />
     </Stack.Navigator>
   );
 }

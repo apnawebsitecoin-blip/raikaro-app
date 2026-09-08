@@ -24,6 +24,15 @@ import { useLanguage } from '../context/LanguageContext';
 import { SkeletonProductCard } from '../components/SkeletonCard';
 import LanguagePicker from '../components/LanguagePicker';
 import { Product, Coupon, HomeBanner, VideoReview } from '../lib/types';
+
+function verifiedLabel(lastVerifiedAt: string | null): string | null {
+  if (!lastVerifiedAt) return null;
+  const days = Math.floor((Date.now() - new Date(lastVerifiedAt).getTime()) / 86_400_000);
+  if (days === 0) return 'Verified today';
+  if (days < 7)  return `Verified ${days}d ago`;
+  if (days < 30) return `Verified ${Math.floor(days / 7)}w ago`;
+  return null;
+}
 import ProductCard from '../components/ProductCard';
 import EarningStoryAnimation from '../components/EarningStoryAnimation';
 import AppDrawer from '../components/AppDrawer';
@@ -193,7 +202,14 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
                     <Text style={{ fontSize: 10, fontWeight: '700', color: '#fff', letterSpacing: 0.5 }}>{item.category.toUpperCase()}</Text>
                   </View>
                 ) : <View />}
-                <Text style={{ fontSize: 11, fontWeight: '600', color: '#6366F1', opacity: 0.7 }}>Limited offer</Text>
+                {verifiedLabel(item.last_verified_at) ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#DCFCE7', borderRadius: 99, paddingHorizontal: 8, paddingVertical: 3 }}>
+                    <CheckCheck size={11} color="#059669" />
+                    <Text style={{ fontSize: 10, fontWeight: '700', color: '#059669' }}>{verifiedLabel(item.last_verified_at)}</Text>
+                  </View>
+                ) : (
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: '#6366F1', opacity: 0.7 }}>Limited offer</Text>
+                )}
               </View>
               <Text style={{ fontSize: 30, fontWeight: '900', color: colors.indigo, letterSpacing: -1, marginBottom: 2 }}>{discountText}</Text>
               <Text style={{ fontSize: 13, color: '#4338CA', marginBottom: 16, lineHeight: 19, opacity: 0.85 }} numberOfLines={2}>{item.title}</Text>
@@ -247,7 +263,7 @@ export default function HomeScreen({ navigation }: Props) {
     const [featuredRes, allRes, couponsRes, bannersRes, videoRes] = await Promise.all([
       supabase.from('products').select('*').or('is_featured.eq.true,is_sponsored.eq.true').order('created_at', { ascending: false }).limit(10),
       supabase.from('products').select('*').order('created_at', { ascending: false }).limit(60),
-      supabase.from('coupons').select('*').eq('is_active', true).order('discount_value', { ascending: false }).limit(10),
+      supabase.from('coupons').select('*').eq('is_active', true).eq('is_expired', false).order('discount_value', { ascending: false }).limit(10),
       supabase.from('home_banners').select('*').eq('is_active', true).order('display_order', { ascending: true }).limit(8),
       supabase.from('video_reviews').select('*').eq('status', 'live').order('created_at', { ascending: false }).limit(10),
     ]);

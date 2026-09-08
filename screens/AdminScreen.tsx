@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Package, ClipboardList, ChevronRight, ShieldCheck } from 'lucide-react-native';
+import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 
@@ -34,6 +34,22 @@ export default function AdminScreen({ navigation }: Props) {
           subtitle="Review and approve community submissions"
           colors={colors}
           onPress={() => navigation.navigate('AdminSubmittedDeals')}
+        />
+        <AdminRow
+          icon={<Ticket size={20} color="#059669" />}
+          iconBg="#DCFCE7"
+          label="Coupons"
+          subtitle="Add coupons, verify freshness, mark expired"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminCoupons')}
+        />
+        <AdminRow
+          icon={<Landmark size={20} color="#2563EB" />}
+          iconBg="#DBEAFE"
+          label="Bank Offers"
+          subtitle="Manage bank/card discount offers"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminBankOffers')}
         />
       </View>
     </SafeAreaView>
