@@ -153,6 +153,17 @@ export interface Review {
   created_at: string;
 }
 
+export interface BankOffer {
+  id: string;
+  bank_name: string;
+  card_type: string;
+  discount_description: string;
+  applicable_platforms: string[];
+  valid_until: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface HomeBanner {
   id: string;
   image_url: string | null;

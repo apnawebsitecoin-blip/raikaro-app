@@ -15,7 +15,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Product, ProductImage, Coupon, VideoReview, Review } from '../lib/types';
+import { Product, ProductImage, Coupon, VideoReview, Review, BankOffer } from '../lib/types';
 import { cleanProductTitle } from '../lib/utils';
 import { addRecentlyViewed } from '../lib/recentlyViewed';
 import { logProductClick } from '../lib/analytics';
@@ -101,6 +101,63 @@ function PriceHistoryChart({ productId, currentPrice, colors }: {
         <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>↑ High ₹{maxP.toLocaleString('en-IN')}</Text>
       </View>
     </View>
+  );
+}
+
+// ── Bank Offers Section ───────────────────────────────────────────────────────
+
+function BankOffersSection({ platform }: { platform: string | null }) {
+  const { colors } = useTheme();
+  const [offers, setOffers] = useState<BankOffer[]>([]);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from('bank_offers')
+      .select('*')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (!data) return;
+        const all = data as BankOffer[];
+        const filtered = platform
+          ? all.filter((o) => o.applicable_platforms.includes(platform) || o.applicable_platforms.includes('All'))
+          : all.filter((o) => o.applicable_platforms.includes('All'));
+        setOffers(filtered);
+      });
+  }, [platform]);
+
+  if (offers.length === 0) return null;
+
+  return (
+    <Pressable
+      onPress={() => setExpanded((e) => !e)}
+      style={{ backgroundColor: '#EFF6FF', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: '#BFDBFE' }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 16 }}>🏦</Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E40AF' }}>
+            Bank Offers Available ({offers.length})
+          </Text>
+        </View>
+        <Text style={{ fontSize: 16, color: '#1E40AF' }}>{expanded ? '▲' : '▼'}</Text>
+      </View>
+      {expanded && (
+        <View style={{ marginTop: 12, gap: 10 }}>
+          {offers.map((o) => (
+            <View key={o.id} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#BFDBFE' }}>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E40AF' }}>
+                {o.bank_name} {o.card_type}
+              </Text>
+              <Text style={{ fontSize: 12, color: '#1D4ED8', marginTop: 3, lineHeight: 18 }}>{o.discount_description}</Text>
+              {o.valid_until && (
+                <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>Valid until {o.valid_until}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+    </Pressable>
   );
 }
 
@@ -412,6 +469,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text }}>{product.category}</Text>
             </View>
           )}
+
+          <BankOffersSection platform={product.platform} />
 
           {coupon && (
             <Pressable

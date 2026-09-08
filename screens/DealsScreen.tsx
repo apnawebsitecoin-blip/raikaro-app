@@ -15,8 +15,60 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SkeletonProductCard } from '../components/SkeletonCard';
 import { ThemeColors } from '../lib/theme';
-import { Product } from '../lib/types';
+import { Product, BankOffer } from '../lib/types';
 import ProductCard from '../components/ProductCard';
+
+// ── Bank Offers Banner ────────────────────────────────────────────────────────
+function BankOffersBanner({ platform }: { platform: string | null }) {
+  const { colors } = useTheme();
+  const [offers, setOffers] = useState<BankOffer[]>([]);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from('bank_offers')
+      .select('*')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (!data) return;
+        const all = data as BankOffer[];
+        const filtered = platform
+          ? all.filter((o) => o.applicable_platforms.includes(platform) || o.applicable_platforms.includes('All'))
+          : all;
+        setOffers(filtered);
+      });
+  }, [platform]);
+
+  if (offers.length === 0) return null;
+
+  return (
+    <Pressable
+      onPress={() => setExpanded((e) => !e)}
+      style={{ marginHorizontal: 16, marginBottom: 12, backgroundColor: '#EFF6FF', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#BFDBFE' }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 15 }}>🏦</Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E40AF' }}>
+            Bank Offers ({offers.length})
+          </Text>
+        </View>
+        <Text style={{ fontSize: 14, color: '#1E40AF' }}>{expanded ? '▲' : '▼'}</Text>
+      </View>
+      {expanded && (
+        <View style={{ marginTop: 12, gap: 8 }}>
+          {offers.map((o) => (
+            <View key={o.id} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#BFDBFE' }}>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: '#1E40AF' }}>{o.bank_name} {o.card_type}</Text>
+              <Text style={{ fontSize: 12, color: '#1D4ED8', marginTop: 3, lineHeight: 18 }}>{o.discount_description}</Text>
+              <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 3 }}>{o.applicable_platforms.join(' · ')}{o.valid_until ? ` · Until ${o.valid_until}` : ''}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </Pressable>
+  );
+}
 
 // ─── Platform brand tokens ────────────────────────────────────────────────────
 const PLATFORM_COLORS: Record<string, {
@@ -352,6 +404,8 @@ export default function DealsScreen({ navigation, route }: Props) {
           />
         ))}
       </ScrollView>
+
+      <BankOffersBanner platform={selectedPlatform} />
 
       {/* Sectioned product lists */}
       <ScrollView
