@@ -27,8 +27,6 @@ import EarningStoryAnimation from '../components/EarningStoryAnimation';
 import AppDrawer from '../components/AppDrawer';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const INDIGO = '#4F46E5';
-
 const PLATFORM_COLORS: Record<string, { bg: string; imgBg: string; text: string; cashback: string; shoppers: string }> = {
   Amazon:   { bg: '#FEF9EC', imgBg: '#FEF3C7', text: '#92400E', cashback: 'Up to 8%',  shoppers: '3.2K+ shopped' },
   Flipkart: { bg: '#EFF6FF', imgBg: '#DBEAFE', text: '#1E40AF', cashback: 'Up to 6%',  shoppers: '4.1K+ shopped' },
@@ -72,6 +70,7 @@ type Props = { navigation: NativeStackNavigationProp<any> };
 import { Image, Linking } from 'react-native';
 
 function AdminBannerCarousel({ banners }: { banners: HomeBanner[] }) {
+  const { colors } = useTheme();
   const [activeIdx, setActiveIdx] = useState(0);
   const flatRef = useRef<FlatList>(null);
   const CARD_W = SCREEN_WIDTH - 32;
@@ -113,7 +112,7 @@ function AdminBannerCarousel({ banners }: { banners: HomeBanner[] }) {
             {item.image_url ? (
               <Image source={{ uri: item.image_url }} style={{ width: CARD_W, height: 160 }} resizeMode="cover" />
             ) : (
-              <View style={{ width: CARD_W, height: 160, backgroundColor: INDIGO, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: CARD_W, height: 160, backgroundColor: colors.indigo, alignItems: 'center', justifyContent: 'center' }}>
                 <ShoppingBag size={40} color="rgba(255,255,255,0.2)" />
               </View>
             )}
@@ -129,7 +128,7 @@ function AdminBannerCarousel({ banners }: { banners: HomeBanner[] }) {
       {banners.length > 1 && (
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 5 }}>
           {banners.map((_, i) => (
-            <View key={i} style={{ width: i === activeIdx ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === activeIdx ? INDIGO : '#D1D5DB' }} />
+            <View key={i} style={{ width: i === activeIdx ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === activeIdx ? colors.indigo : '#D1D5DB' }} />
           ))}
         </View>
       )}
@@ -140,6 +139,7 @@ function AdminBannerCarousel({ banners }: { banners: HomeBanner[] }) {
 // ── Hero Carousel ──────────────────────────────────────────────────────────────
 
 function HeroBanner({ coupons }: { coupons: Coupon[] }) {
+  const { colors } = useTheme();
   const [activeIdx, setActiveIdx] = useState(0);
   const flatRef = useRef<FlatList>(null);
   const [copied, setCopied] = useState(false);
@@ -187,20 +187,20 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
             <View style={{ width: CARD_W, backgroundColor: '#EEF2FF', borderRadius: 18, padding: 20, borderWidth: 1, borderColor: '#DDE3FF' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                 {item.category ? (
-                  <View style={{ backgroundColor: INDIGO, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 99 }}>
+                  <View style={{ backgroundColor: colors.indigo, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 99 }}>
                     <Text style={{ fontSize: 10, fontWeight: '700', color: '#fff', letterSpacing: 0.5 }}>{item.category.toUpperCase()}</Text>
                   </View>
                 ) : <View />}
                 <Text style={{ fontSize: 11, fontWeight: '600', color: '#6366F1', opacity: 0.7 }}>Limited offer</Text>
               </View>
-              <Text style={{ fontSize: 30, fontWeight: '900', color: INDIGO, letterSpacing: -1, marginBottom: 2 }}>{discountText}</Text>
+              <Text style={{ fontSize: 30, fontWeight: '900', color: colors.indigo, letterSpacing: -1, marginBottom: 2 }}>{discountText}</Text>
               <Text style={{ fontSize: 13, color: '#4338CA', marginBottom: 16, lineHeight: 19, opacity: 0.85 }} numberOfLines={2}>{item.title}</Text>
               <Pressable
                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1, borderColor: '#C7D2FE', borderStyle: 'dashed' }}
                 onPress={() => handleCopy(item.code)}
               >
-                <Text style={{ fontSize: 16, fontWeight: '800', color: INDIGO, letterSpacing: 2 }}>{item.code}</Text>
-                {copied ? <CheckCheck size={16} color="#059669" /> : <Copy size={16} color={INDIGO} />}
+                <Text style={{ fontSize: 16, fontWeight: '800', color: colors.indigo, letterSpacing: 2 }}>{item.code}</Text>
+                {copied ? <CheckCheck size={16} color="#059669" /> : <Copy size={16} color={colors.indigo} />}
               </Pressable>
             </View>
           );
@@ -210,7 +210,7 @@ function HeroBanner({ coupons }: { coupons: Coupon[] }) {
       {coupons.length > 1 && (
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10, gap: 6 }}>
           {coupons.map((_, i) => (
-            <View key={i} style={{ width: i === activeIdx ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === activeIdx ? INDIGO : '#D1D5DB' }} />
+            <View key={i} style={{ width: i === activeIdx ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === activeIdx ? colors.indigo : '#D1D5DB' }} />
           ))}
         </View>
       )}
@@ -381,7 +381,7 @@ export default function HomeScreen({ navigation }: Props) {
       <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
 
@@ -511,7 +511,7 @@ export default function HomeScreen({ navigation }: Props) {
             {/* CTA: Likho Review, Kamao Paisa */}
             <Pressable
               onPress={() => navigation.navigate('WriteReview')}
-              style={{ marginHorizontal: 16, marginBottom: 24, borderRadius: 18, overflow: 'hidden', backgroundColor: INDIGO, padding: 20, flexDirection: 'row', alignItems: 'center', gap: 16 }}
+              style={{ marginHorizontal: 16, marginBottom: 24, borderRadius: 18, overflow: 'hidden', backgroundColor: colors.indigo, padding: 20, flexDirection: 'row', alignItems: 'center', gap: 16 }}
             >
               <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <PenLine size={24} color="#fff" />

@@ -17,7 +17,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { Profile, WithdrawalRequest, DailyCheckin, MissingCashbackRequest } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
-const INDIGO = '#4F46E5';
 const PLATFORMS = ['Amazon', 'Flipkart', 'Meesho', 'Myntra'];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; Icon: React.ComponentType<any> }> = {
@@ -203,11 +202,11 @@ export default function WalletScreen() {
       <StatusBar barStyle={colors.statusBar} />
       <ScrollView
         contentContainerStyle={s.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         showsVerticalScrollIndicator={false}
       >
         {/* Balance card */}
-        <View style={s.balanceCard}>
+        <View style={[s.balanceCard, { backgroundColor: colors.indigo }]}>
           <View style={s.balanceRow}>
             <Wallet size={22} color="#C7D2FE" />
             <Text style={s.balanceLabel}>{t('wallet_balance_label')}</Text>
@@ -352,10 +351,10 @@ export default function WalletScreen() {
               <Text style={[s.inputLabel, { color: colors.text }]}>{t('wallet_screenshot_label')}</Text>
               <TouchableOpacity style={[s.uploadBtn, { borderColor: colors.borderStrong }]} onPress={pickScreenshot} disabled={mcUploading}>
                 {mcUploading
-                  ? <ActivityIndicator size="small" color={INDIGO} />
+                  ? <ActivityIndicator size="small" color={colors.indigo} />
                   : <>
-                      <ImagePlus size={18} color={mcScreenshotUrl ? '#059669' : INDIGO} />
-                      <Text style={[s.uploadBtnText, mcScreenshotUrl ? { color: '#059669' } : {}]}>
+                      <ImagePlus size={18} color={mcScreenshotUrl ? '#059669' : colors.indigo} />
+                      <Text style={[s.uploadBtnText, { color: mcScreenshotUrl ? '#059669' : colors.indigo }]}>
                         {mcScreenshotUrl ? t('wallet_screenshot_uploaded') : t('wallet_upload_screenshot')}
                       </Text>
                     </>}
@@ -376,7 +375,7 @@ const s = StyleSheet.create({
   root:                { flex: 1, backgroundColor: '#F9FAFB' },
   centered:            { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll:              { padding: 16, paddingBottom: 40 },
-  balanceCard:         { backgroundColor: INDIGO, borderRadius: 20, padding: 24, marginBottom: 16 },
+  balanceCard:         { borderRadius: 20, padding: 24, marginBottom: 16 },
   balanceRow:          { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   balanceLabel:        { color: '#C7D2FE', fontSize: 14, fontWeight: '500' },
   balanceAmount:       { fontSize: 40, fontWeight: '800', color: '#fff', marginBottom: 20, letterSpacing: -1 },
@@ -389,7 +388,7 @@ const s = StyleSheet.create({
   cardHeader:          { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
   cardTitle:           { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 },
   checkinHint:         { fontSize: 13, color: '#6B7280', marginBottom: 12 },
-  checkinBtn:          { backgroundColor: INDIGO, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  checkinBtn:          { borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   checkinBtnText:      { color: '#fff', fontWeight: '700', fontSize: 14 },
   checkinDone:         { flexDirection: 'row', alignItems: 'center', gap: 8 },
   checkinDoneText:     { color: '#059669', fontWeight: '600', fontSize: 14 },
@@ -409,11 +408,9 @@ const s = StyleSheet.create({
   input:               { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: '#111827', marginBottom: 16 },
   platformRow:         { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   platformChip:        { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: '#E5E7EB', backgroundColor: '#F9FAFB' },
-  platformChipActive:  { borderColor: INDIGO, backgroundColor: '#EEF2FF' },
   platformChipText:    { fontSize: 13, fontWeight: '600', color: '#374151' },
-  platformChipTextActive:{ color: INDIGO },
   uploadBtn:           { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1.5, borderColor: '#E5E7EB', borderStyle: 'dashed', borderRadius: 12, paddingVertical: 14, paddingHorizontal: 16, marginBottom: 20, justifyContent: 'center' },
-  uploadBtnText:       { fontSize: 14, fontWeight: '600', color: INDIGO },
-  modalBtn:            { backgroundColor: INDIGO, borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 4 },
+  uploadBtnText:       { fontSize: 14, fontWeight: '600' },
+  modalBtn:            { borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 4 },
   modalBtnText:        { color: '#fff', fontWeight: '700', fontSize: 16 },
 });

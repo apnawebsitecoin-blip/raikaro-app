@@ -15,7 +15,6 @@ import { WishlistWithProduct, Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import GuestPrompt from '../components/GuestPrompt';
 
-const INDIGO = '#4F46E5';
 const CARD_WIDTH = (Dimensions.get('window').width - 48) / 2;
 
 type Props = { navigation: NativeStackNavigationProp<any> };
@@ -71,7 +70,7 @@ export default function WishlistScreen({ navigation }: Props) {
   if (loading) {
     return (
       <SafeAreaView style={s.centered}>
-        <ActivityIndicator size="large" color={INDIGO} />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </SafeAreaView>
     );
   }
@@ -99,7 +98,7 @@ export default function WishlistScreen({ navigation }: Props) {
           <Text style={s.emptyTitle}>{t('wishlist_empty_title')}</Text>
           <Text style={s.emptySubtitle}>{t('wishlist_empty_subtitle')}</Text>
           <Pressable
-            style={s.browseBtn}
+            style={[s.browseBtn, { backgroundColor: colors.indigo }]}
             onPress={() => navigation.getParent()?.navigate('Deals')}
           >
             <ShoppingBag size={16} color="#fff" />
@@ -119,7 +118,7 @@ export default function WishlistScreen({ navigation }: Props) {
         numColumns={2}
         columnWrapperStyle={s.columnWrapper}
         contentContainerStyle={s.list}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         renderItem={({ item }) => (
           <View style={{ width: CARD_WIDTH }}>
             <ProductCard product={item.products} onPress={goToProduct} />
@@ -143,7 +142,7 @@ const s = StyleSheet.create({
   emptyContainer:{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   emptyTitle:    { fontSize: 20, fontWeight: '700', color: '#111827', marginTop: 16, marginBottom: 8 },
   emptySubtitle: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 24 },
-  browseBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: INDIGO, paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14 },
+  browseBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14 },
   browseBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   removeBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, marginTop: -8, marginBottom: 12 },
   removeBtnText: { fontSize: 12, color: '#EF4444', fontWeight: '600' },

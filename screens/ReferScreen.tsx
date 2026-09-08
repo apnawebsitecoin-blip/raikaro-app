@@ -14,8 +14,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { Profile, TopReferrer } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
-const INDIGO = '#4F46E5';
-
 export default function ReferScreen() {
   const { session } = useAuth();
   const { colors } = useTheme();
@@ -102,11 +100,11 @@ export default function ReferScreen() {
       <StatusBar barStyle={colors.statusBar} />
       <ScrollView
         contentContainerStyle={s.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         showsVerticalScrollIndicator={false}
       >
         {/* Referral code card */}
-        <View style={s.codeCard}>
+        <View style={[s.codeCard, { backgroundColor: colors.indigo }]}>
           <Text style={s.codeLabel}>{t('refer_code_label')}</Text>
           <Text style={s.codeText}>{profile?.referral_code ?? '—'}</Text>
           <Text style={s.codeHint}>{t('refer_hint')}</Text>
@@ -116,8 +114,8 @@ export default function ReferScreen() {
               <Text style={s.copyBtnText}>{copied ? t('refer_copied') : t('refer_copy')}</Text>
             </Pressable>
             <Pressable style={s.shareBtn} onPress={handleShare} android_ripple={{ color: '#E0E7FF' }}>
-              <Share2 size={16} color={INDIGO} />
-              <Text style={s.shareBtnText}>{t('refer_share')}</Text>
+              <Share2 size={16} color={colors.indigo} />
+              <Text style={[s.shareBtnText, { color: colors.indigo }]}>{t('refer_share')}</Text>
             </Pressable>
           </View>
         </View>
@@ -189,7 +187,7 @@ const s = StyleSheet.create({
   root:          { flex: 1, backgroundColor: '#F9FAFB' },
   centered:      { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll:        { padding: 16, paddingBottom: 40 },
-  codeCard:      { backgroundColor: INDIGO, borderRadius: 20, padding: 24, marginBottom: 16 },
+  codeCard:      { borderRadius: 20, padding: 24, marginBottom: 16 },
   codeLabel:     { color: '#C7D2FE', fontSize: 13, fontWeight: '600', marginBottom: 8 },
   codeText:      { fontSize: 36, fontWeight: '800', color: '#fff', letterSpacing: 4, marginBottom: 8 },
   codeHint:      { color: '#C7D2FE', fontSize: 13, marginBottom: 20 },
@@ -197,7 +195,7 @@ const s = StyleSheet.create({
   copyBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 12, paddingVertical: 12 },
   copyBtnText:   { color: '#fff', fontWeight: '700', fontSize: 14 },
   shareBtn:      { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, paddingVertical: 12 },
-  shareBtnText:  { color: INDIGO, fontWeight: '700', fontSize: 14 },
+  shareBtnText:  { fontWeight: '700', fontSize: 14 },
   statsRow:      { flexDirection: 'row', gap: 12, marginBottom: 16 },
   statCard:      { flex: 1, backgroundColor: '#fff', borderRadius: 16, padding: 16, alignItems: 'center', gap: 6, borderWidth: 1, borderColor: '#F3F4F6' },
   statNumber:    { fontSize: 28, fontWeight: '800', color: '#111827' },
@@ -210,11 +208,10 @@ const s = StyleSheet.create({
   leaderRowMe:   { backgroundColor: '#EEF2FF', marginHorizontal: -16, paddingHorizontal: 16, borderRadius: 8 },
   medal:         { fontSize: 18, width: 36 },
   leaderName:    { flex: 1, fontSize: 14, fontWeight: '500', color: '#374151' },
-  leaderNameMe:  { color: INDIGO, fontWeight: '700' },
   leaderBadge:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#F3F4F6', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 },
   leaderCount:   { fontSize: 13, fontWeight: '700', color: '#374151' },
   stepRow:       { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
   stepBadge:     { width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center' },
-  stepNum:       { fontSize: 14, fontWeight: '800', color: INDIGO },
+  stepNum:       { fontSize: 14, fontWeight: '800' },
   stepText:      { flex: 1, fontSize: 14, color: '#374151' },
 });

@@ -20,7 +20,6 @@ import { cleanProductTitle } from '../lib/utils';
 import { addRecentlyViewed } from '../lib/recentlyViewed';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const INDIGO = '#4F46E5';
 
 const PLATFORM_COLORS: Record<string, { bg: string; text: string }> = {
   Amazon:   { bg: '#FEF3C7', text: '#92400E' },
@@ -352,7 +351,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               {alertLoading ? <ActivityIndicator size="small" color={colors.indigo} /> : (
                 <Switch value={alertEnabled} onValueChange={handleAlertToggle}
                   trackColor={{ false: colors.borderStrong, true: '#A5B4FC' }}
-                  thumbColor={alertEnabled ? INDIGO : colors.textMuted} />
+                  thumbColor={alertEnabled ? colors.indigo : colors.textMuted} />
               )}
             </View>
           )}

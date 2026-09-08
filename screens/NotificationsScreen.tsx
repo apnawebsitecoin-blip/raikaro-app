@@ -12,8 +12,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Notification } from '../lib/types';
 
-const INDIGO = '#4F46E5';
-
 export default function NotificationsScreen() {
   const { session } = useAuth();
   const { colors } = useTheme();
@@ -76,7 +74,7 @@ export default function NotificationsScreen() {
   if (loading) {
     return (
       <SafeAreaView style={s.centered}>
-        <ActivityIndicator size="large" color={INDIGO} />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </SafeAreaView>
     );
   }
@@ -95,7 +93,7 @@ export default function NotificationsScreen() {
         data={notifications}
         keyExtractor={(item) => item.id}
         contentContainerStyle={notifications.length === 0 ? s.emptyFlex : s.list}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={INDIGO} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.indigo} />}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={s.emptyContainer}>
@@ -109,7 +107,7 @@ export default function NotificationsScreen() {
             style={[s.card, !item.read && s.cardUnread]}
             onPress={() => !item.read && markRead(item.id)}
           >
-            <View style={[s.dot, item.read ? s.dotRead : s.dotUnread]} />
+            <View style={[s.dot, item.read ? s.dotRead : { backgroundColor: colors.indigo }]} />
             <View style={s.cardBody}>
               <Text style={[s.message, !item.read && s.messageUnread]}>{item.message}</Text>
               <Text style={s.time}>{formatTime(item.created_at)}</Text>
@@ -134,7 +132,6 @@ const s = StyleSheet.create({
   card:          { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F3F4F6' },
   cardUnread:    { backgroundColor: '#EEF2FF', borderColor: '#C7D2FE' },
   dot:           { width: 8, height: 8, borderRadius: 4, marginTop: 5, marginRight: 12, flexShrink: 0 },
-  dotUnread:     { backgroundColor: INDIGO },
   dotRead:       { backgroundColor: '#D1D5DB' },
   cardBody:      { flex: 1 },
   message:       { fontSize: 14, color: '#374151', lineHeight: 20 },
