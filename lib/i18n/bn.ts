@@ -144,6 +144,7 @@ const bn: T = {
   submit_deal_price:            'মূল্য (₹)',
   submit_deal_category:         'বিভাগ',
   submit_deal_description:      'বিবরণ (ঐচ্ছিক)',
+  submit_deal_affiliate_link:   'অ্যাফিলিয়েট লিঙ্ক (ঐচ্ছিক)',
   submit_deal_btn:              'ডিল জমা দিন',
   submit_deal_success_title:    'ডিল জমা হয়েছে!',
   submit_deal_success_subtitle: 'আমাদের দল আপনার ডিল পর্যালোচনা করবে। অনুমোদিত হলে এটি অ্যাপে সবার জন্য দেখাবে!',

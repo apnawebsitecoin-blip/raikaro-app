@@ -144,6 +144,7 @@ const mr: T = {
   submit_deal_price:            'किंमत (₹)',
   submit_deal_category:         'श्रेणी',
   submit_deal_description:      'वर्णन (पर्यायी)',
+  submit_deal_affiliate_link:   'संलग्न दुवा (पर्यायी)',
   submit_deal_btn:              'डील सबमिट करा',
   submit_deal_success_title:    'डील सबमिट झाली!',
   submit_deal_success_subtitle: 'आमची टीम तुमच्या डीलचे पुनरावलोकन करेल. मंजूर झाल्यास ती सर्वांना दिसेल!',

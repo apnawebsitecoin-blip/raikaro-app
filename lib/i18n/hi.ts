@@ -144,6 +144,7 @@ const hi: T = {
   submit_deal_price:            'कीमत (₹)',
   submit_deal_category:         'श्रेणी',
   submit_deal_description:      'विवरण (वैकल्पिक)',
+  submit_deal_affiliate_link:   'एफिलिएट लिंक (वैकल्पिक)',
   submit_deal_btn:              'डील सबमिट करें',
   submit_deal_success_title:    'डील सबमिट हो गई!',
   submit_deal_success_subtitle: 'हमारी टीम आपकी डील की समीक्षा करेगी। अप्रूव होने पर यह ऐप पर सभी को दिखेगी!',

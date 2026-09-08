@@ -144,6 +144,7 @@ const te: T = {
   submit_deal_price:            'ధర (₹)',
   submit_deal_category:         'వర్గం',
   submit_deal_description:      'వివరణ (ఐచ్ఛికం)',
+  submit_deal_affiliate_link:   'అనుబంధ లింక్ (ఐచ్ఛికం)',
   submit_deal_btn:              'డీల్ సమర్పించండి',
   submit_deal_success_title:    'డీల్ సమర్పించబడింది!',
   submit_deal_success_subtitle: 'మా టీమ్ మీ డీల్‌ను సమీక్షిస్తుంది. ఆమోదించిన తర్వాత అందరికీ కనిపిస్తుంది!',

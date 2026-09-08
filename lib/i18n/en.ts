@@ -157,6 +157,7 @@ const en = {
   submit_deal_price:             'Price (₹)',
   submit_deal_category:          'Category',
   submit_deal_description:       'Description (optional)',
+  submit_deal_affiliate_link:    'Affiliate Link (optional)',
   submit_deal_btn:               'Submit Deal',
   submit_deal_success_title:     'Deal Submitted!',
   submit_deal_success_subtitle:  'Our team will review your deal. If approved, it will appear on the app for everyone!',

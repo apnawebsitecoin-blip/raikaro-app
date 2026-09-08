@@ -144,6 +144,7 @@ const ta: T = {
   submit_deal_price:            'விலை (₹)',
   submit_deal_category:         'வகை',
   submit_deal_description:      'விளக்கம் (விரும்பினால்)',
+  submit_deal_affiliate_link:   'இணைப்பு இணைப்பு (விரும்பினால்)',
   submit_deal_btn:              'சலுகை சமர்ப்பிக்கவும்',
   submit_deal_success_title:    'சலுகை சமர்ப்பிக்கப்பட்டது!',
   submit_deal_success_subtitle: 'நமது குழு உங்கள் சலுகையை ஆய்வு செய்யும். அனுமதிக்கப்பட்டால் அனைவருக்கும் காட்டப்படும்!',

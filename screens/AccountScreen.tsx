@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe,
   ChevronRight, Shield, Heart, Wallet, Users, PenLine,
-  Tag, AlertCircle, BookOpen, Crown, User, LogIn,
+  Tag, AlertCircle, BookOpen, Crown, User, LogIn, ShieldCheck,
 } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
@@ -292,6 +292,19 @@ export default function AccountScreen({ navigation }: Props) {
             colors={colors}
             onPress={() => {}}
           />
+          {profile?.is_admin && (
+            <>
+              <View style={[s.divider, { backgroundColor: colors.border }]} />
+              <DashRow
+                icon={<ShieldCheck size={18} color="#7C3AED" />}
+                iconBg="#EDE9FE"
+                label="Admin Panel"
+                subtitle="Manage products and community deals"
+                colors={colors}
+                onPress={() => navigation.navigate('Admin')}
+              />
+            </>
+          )}
         </View>
 
         {/* Preferences */}

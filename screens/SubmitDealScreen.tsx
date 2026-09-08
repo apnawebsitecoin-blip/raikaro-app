@@ -51,6 +51,7 @@ export default function SubmitDealScreen() {
 
   const [productName, setProductName] = useState('');
   const [productUrl, setProductUrl] = useState('');
+  const [affiliateLink, setAffiliateLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
@@ -88,6 +89,7 @@ export default function SubmitDealScreen() {
       user_id: userId,
       product_name: productName.trim(),
       product_url: productUrl.trim(),
+      affiliate_link: affiliateLink.trim() || null,
       image_url: imageUrl.trim() || null,
       price: price ? parseFloat(price) : null,
       category: category || null,
@@ -174,6 +176,9 @@ export default function SubmitDealScreen() {
             </Pressable>
           ))}
         </View>
+
+        <Label text={t('submit_deal_affiliate_link')} />
+        <Input placeholder="https://amzn.to/..." value={affiliateLink} onChangeText={setAffiliateLink} autoCapitalize="none" keyboardType="url" />
 
         <Label text={t('submit_deal_description')} />
         <TextInput

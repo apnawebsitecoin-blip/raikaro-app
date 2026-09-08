@@ -5,6 +5,7 @@ export interface Product {
   price: number | null;
   platform: string | null;
   original_url: string;
+  affiliate_link?: string | null;
   category: string | null;
   is_featured: boolean;
   is_sponsored: boolean;
@@ -167,6 +168,7 @@ export interface CommunityDeal {
   user_id: string;
   product_name: string;
   product_url: string;
+  affiliate_link: string | null;
   price: number | null;
   category: string | null;
   image_url: string | null;
