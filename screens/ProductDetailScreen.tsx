@@ -365,21 +365,26 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
           {coupon && (
             <Pressable
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.greenMuted, borderRadius: 12, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: '#A7F3D0' }}
+              style={{ backgroundColor: colors.greenMuted, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: '#A7F3D0' }}
               onPress={async () => {
                 await Clipboard.setStringAsync(coupon.code);
                 setCouponCopied(true);
                 setTimeout(() => setCouponCopied(false), 2000);
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-                <Ticket size={18} color={colors.green} />
-                <View>
-                  <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>{t('detail_coupon_label')}</Text>
-                  <Text style={{ fontSize: 15, fontWeight: '800', color: colors.green, letterSpacing: 1 }}>{coupon.code}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Ticket size={15} color={colors.green} />
+                <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>{t('detail_coupon_label')}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#A7F3D0', borderStyle: 'dashed' }}>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: colors.green, letterSpacing: 2 }}>{coupon.code}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                  {couponCopied
+                    ? <><CheckCheck size={15} color={colors.green} /><Text style={{ fontSize: 12, fontWeight: '700', color: colors.green }}>Copied!</Text></>
+                    : <><Copy size={15} color={colors.green} /><Text style={{ fontSize: 12, fontWeight: '600', color: colors.green }}>Tap to copy</Text></>
+                  }
                 </View>
               </View>
-              {couponCopied ? <CheckCheck size={18} color={colors.green} /> : <Copy size={18} color={colors.green} />}
             </Pressable>
           )}
 
