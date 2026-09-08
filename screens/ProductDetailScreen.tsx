@@ -18,6 +18,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Product, ProductImage, Coupon, VideoReview, Review } from '../lib/types';
 import { cleanProductTitle } from '../lib/utils';
 import { addRecentlyViewed } from '../lib/recentlyViewed';
+import { logProductClick } from '../lib/analytics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -276,6 +277,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   };
 
   const handleBuyNow = async () => {
+    logProductClick(userId, product.id, 'product_detail');
     const supported = await Linking.canOpenURL(product.original_url);
     if (supported) Linking.openURL(product.original_url);
     else Alert.alert('Error', 'Cannot open this URL');

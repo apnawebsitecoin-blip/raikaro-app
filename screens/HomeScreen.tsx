@@ -17,6 +17,7 @@ import * as Clipboard from 'expo-clipboard';
 
 import { supabase } from '../lib/supabase';
 import { getRecentlyViewedIds } from '../lib/recentlyViewed';
+import { logProductClick } from '../lib/analytics';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -291,7 +292,10 @@ export default function HomeScreen({ navigation }: Props) {
     setRefreshing(false);
   }, [fetchData]);
 
-  const goToDetail = (product: Product) => navigation.navigate('ProductDetail', { product });
+  const goToDetail = (product: Product) => {
+    logProductClick(userId, product.id, 'home_featured');
+    navigation.navigate('ProductDetail', { product });
+  };
 
   const filteredProducts = all.filter((p) => {
     const matchCat = selectedCategory ? p.category === selectedCategory : true;

@@ -9,6 +9,8 @@ import { Search, ShoppingBag, Tag } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
+import { logProductClick } from '../lib/analytics';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SkeletonProductCard } from '../components/SkeletonCard';
@@ -114,8 +116,10 @@ const PRICE_RANGES: PriceRange[] = [
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 export default function DealsScreen({ navigation, route }: Props) {
+  const { session } = useAuth();
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const userId = session?.user.id;
   const initialPlatform: string | null = route.params?.filterPlatform ?? null;
 
   const [products,         setProducts]         = useState<Product[]>([]);
@@ -205,7 +209,10 @@ export default function DealsScreen({ navigation, route }: Props) {
     setRefreshing(false);
   }, [fetchProducts]);
 
-  const goToDetail = (product: Product) => navigation.navigate('ProductDetail', { product });
+  const goToDetail = (product: Product) => {
+    logProductClick(userId, product.id, 'deals_card');
+    navigation.navigate('ProductDetail', { product });
+  };
 
   const filtered = products.filter((p) => {
     const matchSearch = search.trim() ? p.name.toLowerCase().includes(search.toLowerCase()) : true;
