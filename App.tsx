@@ -27,6 +27,7 @@ import BlogPostScreen from './screens/BlogPostScreen';
 import PremiumScreen from './screens/PremiumScreen';
 import AdminScreen from './screens/AdminScreen';
 import AdminProductsScreen from './screens/AdminProductsScreen';
+import AdminSubmittedDealsScreen from './screens/AdminSubmittedDealsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,6 +84,7 @@ function AccountStack() {
       <Stack.Screen name="Premium" component={PremiumScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Admin" component={AdminScreen} options={{ title: 'Admin Panel' }} />
       <Stack.Screen name="AdminProducts" component={AdminProductsScreen} options={{ title: 'Products' }} />
+      <Stack.Screen name="AdminSubmittedDeals" component={AdminSubmittedDealsScreen} options={{ title: 'Submitted Deals' }} />
     </Stack.Navigator>
   );
 }
