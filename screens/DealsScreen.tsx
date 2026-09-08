@@ -121,6 +121,7 @@ export default function DealsScreen({ navigation, route }: Props) {
   const [products,         setProducts]         = useState<Product[]>([]);
   const [categories,       setCategories]       = useState<string[]>([]);
   const [platforms,        setPlatforms]        = useState<string[]>([]);
+  const [ratingsMap,       setRatingsMap]       = useState<Record<string, { score: number; count: number }>>({});
   const [loading,          setLoading]          = useState(true);
   const [refreshing,       setRefreshing]       = useState(false);
   const [search,           setSearch]           = useState('');
@@ -164,6 +165,29 @@ export default function DealsScreen({ navigation, route }: Props) {
 
       setCategories(cats);
       setPlatforms(Array.from(platMap.values()));
+
+      // Fetch ratings for all products in one query
+      const ids = deduped.map((p) => p.id);
+      if (ids.length > 0) {
+        const { data: reviewData } = await supabase
+          .from('reviews')
+          .select('product_id, sentiment')
+          .in('product_id', ids)
+          .not('sentiment', 'is', null);
+        if (reviewData) {
+          const acc: Record<string, { total: number; count: number }> = {};
+          reviewData.forEach((r) => {
+            if (!acc[r.product_id]) acc[r.product_id] = { total: 0, count: 0 };
+            acc[r.product_id].total += r.sentiment === 'positive' ? 5 : r.sentiment === 'negative' ? 1 : 3;
+            acc[r.product_id].count++;
+          });
+          setRatingsMap(
+            Object.fromEntries(
+              Object.entries(acc).map(([id, { total, count }]) => [id, { score: total / count, count }])
+            )
+          );
+        }
+      }
     }
   }, []);
 
@@ -346,7 +370,7 @@ export default function DealsScreen({ navigation, route }: Props) {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
-                renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured />}
+                renderItem={({ item }) => <ProductCard product={item} onPress={goToDetail} featured rating={ratingsMap[item.id]} />}
               />
             </View>
           ))

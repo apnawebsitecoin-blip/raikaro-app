@@ -175,6 +175,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const [alertEnabled, setAlertEnabled] = useState(false);
   const [alertLoading, setAlertLoading] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [ratingData, setRatingData] = useState<{ score: number; count: number } | null>(null);
 
   const platformStyle = product.platform ? PLATFORM_COLORS[product.platform] : null;
 
@@ -223,6 +224,20 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
       .order('created_at', { ascending: false })
       .limit(5)
       .then(({ data }) => { if (data) setReviews(data as Review[]); });
+  }, [product.id]);
+
+  useEffect(() => {
+    supabase
+      .from('reviews')
+      .select('sentiment')
+      .eq('product_id', product.id)
+      .not('sentiment', 'is', null)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const total = data.reduce((sum, r) => sum + (r.sentiment === 'positive' ? 5 : r.sentiment === 'negative' ? 1 : 3), 0);
+          setRatingData({ score: total / data.length, count: data.length });
+        }
+      });
   }, [product.id]);
 
   const handleWishlistToggle = async () => {
@@ -333,9 +348,19 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, lineHeight: 28, marginBottom: 8 }}>{cleanName}</Text>
 
           {product.price != null && (
-            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.indigo, marginBottom: 12 }}>
+            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.indigo, marginBottom: 8 }}>
               ₹{product.price.toLocaleString('en-IN')}
             </Text>
+          )}
+
+          {ratingData && ratingData.count > 0 && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, color: '#F59E0B', letterSpacing: 1 }}>
+                {'★'.repeat(Math.round(ratingData.score))}{'☆'.repeat(5 - Math.round(ratingData.score))}
+              </Text>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: '#92400E' }}>{ratingData.score.toFixed(1)}</Text>
+              <Text style={{ fontSize: 12, color: colors.textSub }}>({ratingData.count} {ratingData.count === 1 ? 'review' : 'reviews'})</Text>
+            </View>
           )}
 
           {/* Price Drop Alert */}

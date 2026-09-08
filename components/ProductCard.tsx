@@ -40,9 +40,20 @@ type Props = {
   product: Product;
   onPress: (product: Product) => void;
   featured?: boolean;
+  rating?: { score: number; count: number };
 };
 
-export default function ProductCard({ product, onPress, featured = false }: Props) {
+function StarRating({ score, count }: { score: number; count: number }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 1 }}>
+      <Text style={{ fontSize: 11, color: '#F59E0B' }}>{'★'.repeat(Math.round(score))}{'☆'.repeat(5 - Math.round(score))}</Text>
+      <Text style={{ fontSize: 10, fontWeight: '700', color: '#92400E' }}>{score.toFixed(1)}</Text>
+      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>({count})</Text>
+    </View>
+  );
+}
+
+export default function ProductCard({ product, onPress, featured = false, rating }: Props) {
   const displayName = cleanProductTitle(product.name);
 
   if (featured) {
@@ -55,6 +66,7 @@ export default function ProductCard({ product, onPress, featured = false }: Prop
           {product.price != null && (
             <Text style={s.price}>₹{product.price.toLocaleString('en-IN')}</Text>
           )}
+          {rating && rating.count > 0 && <StarRating score={rating.score} count={rating.count} />}
         </View>
       </Pressable>
     );
@@ -69,6 +81,7 @@ export default function ProductCard({ product, onPress, featured = false }: Prop
         {product.price != null && (
           <Text style={s.price}>₹{product.price.toLocaleString('en-IN')}</Text>
         )}
+        {rating && rating.count > 0 && <StarRating score={rating.score} count={rating.count} />}
       </View>
     </Pressable>
   );
