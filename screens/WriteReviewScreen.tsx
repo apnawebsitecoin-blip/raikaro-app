@@ -4,8 +4,9 @@ import {
   Alert, ActivityIndicator, StatusBar, FlatList, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThumbsUp, ThumbsDown, Minus, Search, ShoppingBag } from 'lucide-react-native';
+import { ThumbsUp, ThumbsDown, Minus, Search, ShoppingBag, Video, X } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as ImagePicker from 'expo-image-picker';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +35,8 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
   const [search, setSearch] = useState('');
   const [sentiment, setSentiment] = useState<ReviewSentiment | null>(null);
   const [reviewText, setReviewText] = useState('');
+  const [videoUri, setVideoUri] = useState<string | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(!preselected);
   const [existingReview, setExistingReview] = useState(false);
@@ -67,6 +70,22 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const pickVideo = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow access to your photo library to attach a video.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: false,
+      quality: 1,
+    });
+    if (!result.canceled && result.assets[0]?.uri) {
+      setVideoUri(result.assets[0].uri);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!userId) return;
     if (!selected) { Alert.alert('Select a product', 'Please select the product you want to review.'); return; }
@@ -74,12 +93,38 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
     if (reviewText.trim().length < 10) { Alert.alert('Review too short', 'Please write at least 10 characters.'); return; }
     if (existingReview) { Alert.alert('Already reviewed', 'You have already reviewed this product.'); return; }
 
+    let mediaUrl: string | null = null;
+
+    if (videoUri) {
+      setUploadingVideo(true);
+      try {
+        const response = await fetch(videoUri);
+        const blob = await response.blob();
+        const ext = videoUri.split('.').pop() ?? 'mp4';
+        const path = `${userId}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('review-media')
+          .upload(path, blob, { contentType: `video/${ext}`, upsert: false });
+        if (uploadError) {
+          Alert.alert('Upload failed', uploadError.message);
+          setUploadingVideo(false);
+          return;
+        }
+        const { data: urlData } = supabase.storage.from('review-media').getPublicUrl(path);
+        mediaUrl = urlData.publicUrl;
+      } catch {
+        Alert.alert('Upload failed', 'Could not upload video. Your review will be submitted without it.');
+      }
+      setUploadingVideo(false);
+    }
+
     setSubmitting(true);
     const { error } = await supabase.from('reviews').insert({
       product_id: selected.id,
       reviewer_id: userId,
       sentiment,
       review_text: reviewText.trim(),
+      media_url: mediaUrl,
     });
     setSubmitting(false);
 
@@ -195,7 +240,7 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
       {/* Review text */}
       <Text style={{ fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 8 }}>{t('review_your_review')}</Text>
       <TextInput
-        style={{ borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, padding: 14, fontSize: 14, color: '#111827', minHeight: 120, textAlignVertical: 'top', marginBottom: 24 }}
+        style={{ borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, padding: 14, fontSize: 14, color: '#111827', minHeight: 120, textAlignVertical: 'top', marginBottom: 16 }}
         placeholder="Share your honest experience with this product..."
         placeholderTextColor="#9CA3AF"
         multiline
@@ -203,17 +248,39 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
         onChangeText={setReviewText}
       />
 
+      {/* Video attachment */}
+      {videoUri ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#ECFDF5', borderRadius: 10, padding: 12, marginBottom: 16, gap: 10 }}>
+          <Video size={18} color="#059669" />
+          <Text style={{ flex: 1, fontSize: 13, color: '#059669', fontWeight: '600' }} numberOfLines={1}>Video attached</Text>
+          <Pressable onPress={() => setVideoUri(null)} hitSlop={10}>
+            <X size={16} color="#6B7280" />
+          </Pressable>
+        </View>
+      ) : (
+        <Pressable
+          onPress={pickVideo}
+          style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderColor: '#E5E7EB', borderStyle: 'dashed', borderRadius: 12, padding: 14, marginBottom: 16, gap: 10 }}
+        >
+          <Video size={18} color="#9CA3AF" />
+          <Text style={{ fontSize: 14, color: '#6B7280' }}>Attach a video (optional)</Text>
+        </Pressable>
+      )}
+
       <Pressable
         onPress={handleSubmit}
-        disabled={submitting || existingReview}
-        style={{ backgroundColor: existingReview ? '#9CA3AF' : colors.indigo, borderRadius: 14, paddingVertical: 16, alignItems: 'center' }}
+        disabled={submitting || uploadingVideo || existingReview}
+        style={{ backgroundColor: existingReview ? '#9CA3AF' : colors.indigo, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 8 }}
       >
-        {submitting ? (
+        {(submitting || uploadingVideo) ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('review_submit_btn')}</Text>
         )}
       </Pressable>
+      {uploadingVideo && (
+        <Text style={{ fontSize: 12, color: '#6B7280', textAlign: 'center', marginBottom: 8 }}>Uploading video…</Text>
+      )}
     </View>
   );
 
