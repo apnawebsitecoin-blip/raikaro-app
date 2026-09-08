@@ -167,6 +167,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadingImages, setLoadingImages] = useState(true);
   const [wishlisted, setWishlisted] = useState(false);
+  const [wishlistId, setWishlistId] = useState<string | null>(null);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [couponCopied, setCouponCopied] = useState(false);
   const [alertEnabled, setAlertEnabled] = useState(false);
@@ -194,6 +196,15 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     if (!userId) return;
+    supabase.from('wishlists').select('id').eq('user_id', userId).eq('product_id', product.id).maybeSingle()
+      .then(({ data }) => {
+        setWishlisted(!!data);
+        setWishlistId(data?.id ?? null);
+      });
+  }, [userId, product.id]);
+
+  useEffect(() => {
+    if (!userId) return;
     supabase.from('price_alerts').select('id').eq('user_id', userId).eq('product_id', product.id).maybeSingle()
       .then(({ data }) => setAlertEnabled(!!data));
   }, [userId, product.id]);
@@ -212,6 +223,26 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
       .limit(5)
       .then(({ data }) => { if (data) setReviews(data as Review[]); });
   }, [product.id]);
+
+  const handleWishlistToggle = async () => {
+    if (!userId) { Alert.alert('Sign in required', 'Please sign in to save items to your wishlist.'); return; }
+    if (wishlistLoading) return;
+    setWishlistLoading(true);
+    if (wishlisted && wishlistId) {
+      await supabase.from('wishlists').delete().eq('id', wishlistId);
+      setWishlisted(false);
+      setWishlistId(null);
+    } else {
+      const { data } = await supabase
+        .from('wishlists')
+        .insert({ user_id: userId, product_id: product.id })
+        .select('id')
+        .single();
+      setWishlisted(true);
+      setWishlistId(data?.id ?? null);
+    }
+    setWishlistLoading(false);
+  };
 
   const handleAlertToggle = async (value: boolean) => {
     if (!userId || alertLoading) return;
@@ -414,8 +445,9 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
       {/* Bottom action bar */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 14, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.card }}>
         <Pressable
-          onPress={() => setWishlisted((w) => !w)}
-          style={{ width: 52, height: 52, borderRadius: 16, borderWidth: 1.5, borderColor: wishlisted ? '#EF4444' : colors.borderStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: wishlisted ? '#FEF2F2' : colors.card }}
+          onPress={handleWishlistToggle}
+          disabled={wishlistLoading}
+          style={{ width: 52, height: 52, borderRadius: 16, borderWidth: 1.5, borderColor: wishlisted ? '#EF4444' : colors.borderStrong, alignItems: 'center', justifyContent: 'center', backgroundColor: wishlisted ? '#FEF2F2' : colors.card, opacity: wishlistLoading ? 0.6 : 1 }}
         >
           <Heart size={22} color={wishlisted ? '#EF4444' : colors.textMuted} fill={wishlisted ? '#EF4444' : 'transparent'} />
         </Pressable>
