@@ -11,6 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { SkeletonProductCard } from '../components/SkeletonCard';
 import { ThemeColors } from '../lib/theme';
 import { Product } from '../lib/types';
 import ProductCard from '../components/ProductCard';
@@ -205,9 +206,9 @@ export default function DealsScreen({ navigation, route }: Props) {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={colors.indigo} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 16, paddingTop: 24 }}>
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonProductCard key={i} />)}
         </View>
       </SafeAreaView>
     );

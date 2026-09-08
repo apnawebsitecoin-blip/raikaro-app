@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { SkeletonBalanceCard } from '../components/SkeletonCard';
 import { Profile, WithdrawalRequest, DailyCheckin, MissingCashbackRequest } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
@@ -174,8 +175,11 @@ export default function WalletScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[s.centered, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color={colors.indigo} />
+      <SafeAreaView style={[s.root, { backgroundColor: colors.background }]} edges={['top']}>
+        <StatusBar barStyle={colors.statusBar} />
+        <View style={{ padding: 16 }}>
+          <SkeletonBalanceCard />
+        </View>
       </SafeAreaView>
     );
   }

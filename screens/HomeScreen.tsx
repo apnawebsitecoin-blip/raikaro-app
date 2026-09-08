@@ -20,6 +20,7 @@ import { getRecentlyViewedIds } from '../lib/recentlyViewed';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { SkeletonProductCard } from '../components/SkeletonCard';
 import LanguagePicker from '../components/LanguagePicker';
 import { Product, Coupon, HomeBanner } from '../lib/types';
 import ProductCard from '../components/ProductCard';
@@ -315,10 +316,10 @@ export default function HomeScreen({ navigation }: Props) {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
         <StatusBar barStyle={colors.statusBar} />
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={colors.indigo} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 16, paddingTop: 24 }}>
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonProductCard key={i} />)}
         </View>
       </SafeAreaView>
     );
