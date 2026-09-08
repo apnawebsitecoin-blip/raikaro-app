@@ -177,6 +177,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const [alertLoading, setAlertLoading] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [ratingData, setRatingData] = useState<{ score: number; count: number } | null>(null);
+  const [ratingLoaded, setRatingLoaded] = useState(false);
 
   const platformStyle = product.platform ? PLATFORM_COLORS[product.platform] : null;
 
@@ -238,6 +239,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           const total = data.reduce((sum, r) => sum + (r.sentiment === 'positive' ? 5 : r.sentiment === 'negative' ? 1 : 3), 0);
           setRatingData({ score: total / data.length, count: data.length });
         }
+        setRatingLoaded(true);
       });
   }, [product.id]);
 
@@ -355,14 +357,24 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
             </Text>
           )}
 
-          {ratingData && ratingData.count > 0 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <Text style={{ fontSize: 16, color: '#F59E0B', letterSpacing: 1 }}>
-                {'★'.repeat(Math.round(ratingData.score))}{'☆'.repeat(5 - Math.round(ratingData.score))}
-              </Text>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#92400E' }}>{ratingData.score.toFixed(1)}</Text>
-              <Text style={{ fontSize: 12, color: colors.textSub }}>({ratingData.count} {ratingData.count === 1 ? 'review' : 'reviews'})</Text>
-            </View>
+          {ratingLoaded && (
+            ratingData && ratingData.count > 0 ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <Text style={{ fontSize: 16, color: '#F59E0B', letterSpacing: 1 }}>
+                  {'★'.repeat(Math.round(ratingData.score))}{'☆'.repeat(5 - Math.round(ratingData.score))}
+                </Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#92400E' }}>{ratingData.score.toFixed(1)}</Text>
+                <Text style={{ fontSize: 12, color: colors.textSub }}>({ratingData.count} {ratingData.count === 1 ? 'review' : 'reviews'})</Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => navigation.navigate('WriteReview', { product })}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 }}
+              >
+                <Text style={{ fontSize: 13, color: '#9CA3AF' }}>☆☆☆☆☆</Text>
+                <Text style={{ fontSize: 12, color: colors.indigo, fontWeight: '600' }}>No reviews yet — be the first</Text>
+              </Pressable>
+            )
           )}
 
           {/* Price Drop Alert */}
