@@ -134,6 +134,41 @@ const en = {
   wishlist_browse_btn:     'Browse Products',
   wishlist_remove:         'Remove',
 
+  // WriteReviewScreen
+  review_select_product:     'Select a product you purchased:',
+  review_search_placeholder: 'Search products...',
+  review_no_products:        'No products found',
+  review_how_was_experience: 'How was your experience?',
+  review_your_review:        'Your review',
+  review_submit_btn:         'Submit Review',
+  review_change:             'Change',
+  review_already_reviewed:   'You have already reviewed this product.',
+  sentiment_positive:        'Positive',
+  sentiment_neutral:         'Neutral',
+  sentiment_negative:        'Negative',
+
+  // SubmitDealScreen
+  submit_deal_autofill:          'Auto-fill from link',
+  submit_deal_autofill_hint:     "Paste a product URL and we'll fill the form automatically.",
+  submit_deal_promo_title:       'Found a great deal?',
+  submit_deal_promo_subtitle:    'Share it with the community! Approved deals earn you bonus rewards.',
+  submit_deal_product_name:      'Product Name *',
+  submit_deal_product_url:       'Product URL *',
+  submit_deal_price:             'Price (₹)',
+  submit_deal_category:          'Category',
+  submit_deal_description:       'Description (optional)',
+  submit_deal_btn:               'Submit Deal',
+  submit_deal_success_title:     'Deal Submitted!',
+  submit_deal_success_subtitle:  'Our team will review your deal. If approved, it will appear on the app for everyone!',
+
+  // ProductDetailScreen
+  detail_review_earn_title:    'Write a review, earn rewards!',
+  detail_review_earn_subtitle: 'Get rewarded for writing an honest review',
+  detail_buy_now:              'Buy Now',
+  detail_price_alert_label:    'Notify me on price drop',
+  detail_price_alert_hint:     'Alert when price falls',
+  detail_coupon_label:         'Coupon Available',
+
   // PremiumScreen
   premium_title:         'Raikaro Premium',
   premium_subtitle:      'Unlock the full cashback experience',

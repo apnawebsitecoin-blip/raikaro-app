@@ -8,8 +8,8 @@ import { Link, Sparkles } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-
-const INDIGO = '#4F46E5';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 const CATEGORIES = ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books', 'Food', 'Travel', 'Other'];
 
 async function scrapeMetaTags(url: string): Promise<{ title?: string; image?: string; price?: string }> {
@@ -42,6 +42,8 @@ async function scrapeMetaTags(url: string): Promise<{ title?: string; image?: st
 
 export default function SubmitDealScreen() {
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const [pasteUrl, setPasteUrl] = useState('');
@@ -104,9 +106,9 @@ export default function SubmitDealScreen() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
         <Text style={{ fontSize: 48 }}>🎉</Text>
-        <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827', marginTop: 16, marginBottom: 8, textAlign: 'center' }}>Deal Submitted!</Text>
+        <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827', marginTop: 16, marginBottom: 8, textAlign: 'center' }}>{t('submit_deal_success_title')}</Text>
         <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center', lineHeight: 22 }}>
-          Our team will review your deal. If approved, it will appear on the app for everyone!
+          {t('submit_deal_success_subtitle')}
         </Text>
       </SafeAreaView>
     );
@@ -120,10 +122,10 @@ export default function SubmitDealScreen() {
         {/* Auto-fill from URL */}
         <View style={{ backgroundColor: '#EEF2FF', borderRadius: 14, padding: 16, marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <Sparkles size={16} color={INDIGO} />
-            <Text style={{ fontSize: 14, fontWeight: '700', color: INDIGO }}>Auto-fill from link</Text>
+            <Sparkles size={16} color={colors.indigo} />
+            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.indigo }}>{t('submit_deal_autofill')}</Text>
           </View>
-          <Text style={{ fontSize: 12, color: '#4338CA', marginBottom: 12 }}>Paste a product URL and we'll fill the form automatically.</Text>
+          <Text style={{ fontSize: 12, color: '#4338CA', marginBottom: 12 }}>{t('submit_deal_autofill_hint')}</Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <TextInput
               style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 13, color: '#111827', borderWidth: 1, borderColor: '#C7D2FE' }}
@@ -137,7 +139,7 @@ export default function SubmitDealScreen() {
             <Pressable
               onPress={handleScrape}
               disabled={scraping}
-              style={{ backgroundColor: INDIGO, borderRadius: 10, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' }}
+              style={{ backgroundColor: colors.indigo, borderRadius: 10, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' }}
             >
               {scraping
                 ? <ActivityIndicator color="#fff" size="small" />
@@ -147,33 +149,33 @@ export default function SubmitDealScreen() {
         </View>
 
         <View style={{ backgroundColor: '#EEF2FF', borderRadius: 14, padding: 16, marginBottom: 24 }}>
-          <Text style={{ fontSize: 15, fontWeight: '700', color: INDIGO, marginBottom: 4 }}>Found a great deal?</Text>
-          <Text style={{ fontSize: 13, color: '#4338CA', lineHeight: 20 }}>Share it with the community! Approved deals earn you bonus rewards.</Text>
+          <Text style={{ fontSize: 15, fontWeight: '700', color: colors.indigo, marginBottom: 4 }}>{t('submit_deal_promo_title')}</Text>
+          <Text style={{ fontSize: 13, color: '#4338CA', lineHeight: 20 }}>{t('submit_deal_promo_subtitle')}</Text>
         </View>
 
-        <Label text="Product Name *" />
+        <Label text={t('submit_deal_product_name')} />
         <Input placeholder="e.g. boAt Rockerz 450 Headphones" value={productName} onChangeText={setProductName} />
 
-        <Label text="Product URL *" />
+        <Label text={t('submit_deal_product_url')} />
         <Input placeholder="https://amazon.in/..." value={productUrl} onChangeText={setProductUrl} autoCapitalize="none" keyboardType="url" />
 
-        <Label text="Price (₹)" />
+        <Label text={t('submit_deal_price')} />
         <Input placeholder="e.g. 999" value={price} onChangeText={setPrice} keyboardType="numeric" />
 
-        <Label text="Category" />
+        <Label text={t('submit_deal_category')} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
           {CATEGORIES.map((cat) => (
             <Pressable
               key={cat}
               onPress={() => setCategory(category === cat ? '' : cat)}
-              style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: category === cat ? INDIGO : '#E5E7EB', backgroundColor: category === cat ? '#EEF2FF' : '#fff' }}
+              style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: 99, borderWidth: 1.5, borderColor: category === cat ? colors.indigo : '#E5E7EB', backgroundColor: category === cat ? '#EEF2FF' : '#fff' }}
             >
-              <Text style={{ fontSize: 13, fontWeight: '600', color: category === cat ? INDIGO : '#6B7280' }}>{cat}</Text>
+              <Text style={{ fontSize: 13, fontWeight: '600', color: category === cat ? colors.indigo : '#6B7280' }}>{cat}</Text>
             </Pressable>
           ))}
         </View>
 
-        <Label text="Description (optional)" />
+        <Label text={t('submit_deal_description')} />
         <TextInput
           style={{ borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, padding: 14, fontSize: 14, color: '#111827', minHeight: 100, textAlignVertical: 'top', marginBottom: 24, backgroundColor: '#fff' }}
           placeholder="Why is this a great deal? Any discount codes?"
@@ -186,9 +188,9 @@ export default function SubmitDealScreen() {
         <Pressable
           onPress={handleSubmit}
           disabled={submitting}
-          style={{ backgroundColor: INDIGO, borderRadius: 14, paddingVertical: 16, alignItems: 'center' }}
+          style={{ backgroundColor: colors.indigo, borderRadius: 14, paddingVertical: 16, alignItems: 'center' }}
         >
-          {submitting ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Submit Deal</Text>}
+          {submitting ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('submit_deal_btn')}</Text>}
         </Pressable>
       </ScrollView>
     </SafeAreaView>

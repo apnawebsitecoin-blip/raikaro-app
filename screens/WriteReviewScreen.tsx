@@ -9,21 +9,23 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Product, ReviewSentiment } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
 
-const INDIGO = '#4F46E5';
-
-const SENTIMENTS: { value: ReviewSentiment; label: string; Icon: React.ComponentType<any>; color: string; bg: string }[] = [
-  { value: 'positive', label: 'Positive', Icon: ThumbsUp,   color: '#059669', bg: '#ECFDF5' },
-  { value: 'neutral',  label: 'Neutral',  Icon: Minus,       color: '#D97706', bg: '#FFFBEB' },
-  { value: 'negative', label: 'Negative', Icon: ThumbsDown,  color: '#DC2626', bg: '#FEF2F2' },
+const SENTIMENTS: { value: ReviewSentiment; Icon: React.ComponentType<any>; color: string; bg: string }[] = [
+  { value: 'positive', Icon: ThumbsUp,   color: '#059669', bg: '#ECFDF5' },
+  { value: 'neutral',  Icon: Minus,       color: '#D97706', bg: '#FFFBEB' },
+  { value: 'negative', Icon: ThumbsDown,  color: '#DC2626', bg: '#FEF2F2' },
 ];
 
 type Props = { navigation: NativeStackNavigationProp<any>; route: any };
 
 export default function WriteReviewScreen({ navigation, route }: Props) {
   const { session } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
 
   const preselected: Product | undefined = route.params?.product;
@@ -98,20 +100,20 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
   const ProductPicker = (
     <View style={{ flex: 1 }}>
       <Text style={{ fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 10 }}>
-        Select a product you purchased:
+        {t('review_select_product')}
       </Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 12, gap: 8 }}>
         <Search size={16} color="#9CA3AF" />
         <TextInput
           style={{ flex: 1, fontSize: 14, color: '#111827' }}
-          placeholder="Search products..."
+          placeholder={t('review_search_placeholder')}
           placeholderTextColor="#9CA3AF"
           value={search}
           onChangeText={setSearch}
         />
       </View>
       {loadingProducts ? (
-        <ActivityIndicator color={INDIGO} style={{ marginTop: 40 }} />
+        <ActivityIndicator color={colors.indigo} style={{ marginTop: 40 }} />
       ) : (
         <FlatList
           data={filtered}
@@ -137,7 +139,7 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
               </View>
             </Pressable>
           )}
-          ListEmptyComponent={<Text style={{ color: '#9CA3AF', textAlign: 'center', marginTop: 24 }}>No products found</Text>}
+          ListEmptyComponent={<Text style={{ color: '#9CA3AF', textAlign: 'center', marginTop: 24 }}>{t('review_no_products')}</Text>}
         />
       )}
     </View>
@@ -160,22 +162,23 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
         )}
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }} numberOfLines={1}>{selected.name}</Text>
-          {selected.platform && <Text style={{ fontSize: 12, color: INDIGO }}>{selected.platform}</Text>}
+          {selected.platform && <Text style={{ fontSize: 12, color: colors.indigo }}>{selected.platform}</Text>}
         </View>
-        {!preselected && <Text style={{ fontSize: 12, color: '#6B7280' }}>Change</Text>}
+        {!preselected && <Text style={{ fontSize: 12, color: '#6B7280' }}>{t('review_change')}</Text>}
       </Pressable>
 
       {existingReview && (
         <View style={{ backgroundColor: '#FEF3C7', borderRadius: 10, padding: 12, marginBottom: 16 }}>
-          <Text style={{ fontSize: 13, color: '#92400E', fontWeight: '600' }}>You have already reviewed this product.</Text>
+          <Text style={{ fontSize: 13, color: '#92400E', fontWeight: '600' }}>{t('review_already_reviewed')}</Text>
         </View>
       )}
 
       {/* Sentiment */}
-      <Text style={{ fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 10 }}>How was your experience?</Text>
+      <Text style={{ fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 10 }}>{t('review_how_was_experience')}</Text>
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
-        {SENTIMENTS.map(({ value, label, Icon, color, bg }) => {
+        {SENTIMENTS.map(({ value, Icon, color, bg }) => {
           const active = sentiment === value;
+          const label = value === 'positive' ? t('sentiment_positive') : value === 'neutral' ? t('sentiment_neutral') : t('sentiment_negative');
           return (
             <Pressable
               key={value}
@@ -190,7 +193,7 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
       </View>
 
       {/* Review text */}
-      <Text style={{ fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 8 }}>Your review</Text>
+      <Text style={{ fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 8 }}>{t('review_your_review')}</Text>
       <TextInput
         style={{ borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, padding: 14, fontSize: 14, color: '#111827', minHeight: 120, textAlignVertical: 'top', marginBottom: 24 }}
         placeholder="Share your honest experience with this product..."
@@ -203,12 +206,12 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
       <Pressable
         onPress={handleSubmit}
         disabled={submitting || existingReview}
-        style={{ backgroundColor: existingReview ? '#9CA3AF' : INDIGO, borderRadius: 14, paddingVertical: 16, alignItems: 'center' }}
+        style={{ backgroundColor: existingReview ? '#9CA3AF' : colors.indigo, borderRadius: 14, paddingVertical: 16, alignItems: 'center' }}
       >
         {submitting ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Submit Review</Text>
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('review_submit_btn')}</Text>
         )}
       </Pressable>
     </View>

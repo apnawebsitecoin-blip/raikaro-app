@@ -14,6 +14,7 @@ import * as Clipboard from 'expo-clipboard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Product, ProductImage, Coupon, VideoReview, Review } from '../lib/types';
 import { cleanProductTitle } from '../lib/utils';
 import { addRecentlyViewed } from '../lib/recentlyViewed';
@@ -159,6 +160,7 @@ type Props = { navigation: NativeStackNavigationProp<any>; route: any };
 export default function ProductDetailScreen({ navigation, route }: Props) {
   const { session } = useAuth();
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const userId = session?.user.id;
   const { product }: { product: Product } = route.params;
   const cleanName = cleanProductTitle(product.name);
@@ -343,8 +345,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
                 <Bell size={16} color={alertEnabled ? colors.indigo : colors.textSub} />
                 <View>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: alertEnabled ? colors.indigo : colors.text }}>Notify me on price drop</Text>
-                  {alertEnabled && <Text style={{ fontSize: 11, color: colors.textSub, marginTop: 1 }}>Alert when price falls</Text>}
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: alertEnabled ? colors.indigo : colors.text }}>{t('detail_price_alert_label')}</Text>
+                  {alertEnabled && <Text style={{ fontSize: 11, color: colors.textSub, marginTop: 1 }}>{t('detail_price_alert_hint')}</Text>}
                 </View>
               </View>
               {alertLoading ? <ActivityIndicator size="small" color={colors.indigo} /> : (
@@ -374,7 +376,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
                 <Ticket size={18} color={colors.green} />
                 <View>
-                  <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>Coupon Available</Text>
+                  <Text style={{ fontSize: 12, color: colors.green, fontWeight: '600' }}>{t('detail_coupon_label')}</Text>
                   <Text style={{ fontSize: 15, fontWeight: '800', color: colors.green, letterSpacing: 1 }}>{coupon.code}</Text>
                 </View>
               </View>
@@ -429,8 +431,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               <PenLine size={18} color="#fff" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: colors.indigo }}>Review likho, paisa kamao!</Text>
-              <Text style={{ fontSize: 12, color: colors.textSub, marginTop: 2 }}>Ek honest review likhne par reward milega</Text>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: colors.indigo }}>{t('detail_review_earn_title')}</Text>
+              <Text style={{ fontSize: 12, color: colors.textSub, marginTop: 2 }}>{t('detail_review_earn_subtitle')}</Text>
             </View>
             <Text style={{ fontSize: 18, color: colors.indigo }}>→</Text>
           </Pressable>
@@ -461,7 +463,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           onPress={handleBuyNow}
           style={{ flex: 1, height: 52, borderRadius: 16, backgroundColor: colors.indigo, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}
         >
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Buy Now</Text>
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('detail_buy_now')}</Text>
           <ExternalLink size={16} color="#fff" />
         </Pressable>
       </View>
