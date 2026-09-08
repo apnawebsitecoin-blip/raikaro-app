@@ -259,6 +259,15 @@ export default function AccountScreen({ navigation }: Props) {
           />
           <View style={[s.divider, { backgroundColor: colors.border }]} />
           <DashRow
+            icon={<PenLine size={18} color="#7C3AED" />}
+            iconBg="#EDE9FE"
+            label="My Reviews"
+            subtitle="View, edit or delete your reviews"
+            colors={colors}
+            onPress={() => navigation.navigate('MyReviews')}
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <DashRow
             icon={<Tag size={18} color="#D97706" />}
             iconBg="#FEF3C7"
             label={t('account_submit_deal')}
