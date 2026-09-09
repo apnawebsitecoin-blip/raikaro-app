@@ -17,33 +17,40 @@ export function configureNotificationHandler() {
 }
 
 export async function registerForPushNotificationsAsync(userId: string): Promise<void> {
-  if (!Device.isDevice) return; // simulators don't get real Expo push tokens
+  // Expo Go dropped remote push support in SDK 53 — skip silently.
+  // Use a dev build (npx expo run:ios / run:android) to test push end-to-end.
+  if (Constants.executionEnvironment === 'storeClient') return;
+  if (!Device.isDevice) return;
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'Raikaro',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#4F46E5',
-    });
+  try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Raikaro',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#4F46E5',
+      });
+    }
+
+    const { status: existing } = await Notifications.getPermissionsAsync();
+    let finalStatus = existing;
+
+    if (existing !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') return;
+
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
+    const tokenData = await Notifications.getExpoPushTokenAsync(
+      projectId ? { projectId } : undefined
+    );
+    const token = tokenData.data;
+    if (!token) return;
+
+    await supabase.from('profiles').update({ push_token: token }).eq('id', userId);
+  } catch {
+    // Never let a push registration failure crash the app
   }
-
-  const { status: existing } = await Notifications.getPermissionsAsync();
-  let finalStatus = existing;
-
-  if (existing !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== 'granted') return;
-
-  const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
-  const tokenData = await Notifications.getExpoPushTokenAsync(
-    projectId ? { projectId } : undefined
-  );
-  const token = tokenData.data;
-  if (!token) return;
-
-  await supabase.from('profiles').update({ push_token: token }).eq('id', userId);
 }
