@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, Tag, Wallet, Users, User } from 'lucide-react-native';
 import { ActivityIndicator, Text, View } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import { configureNotificationHandler } from './lib/notifications';
 
 configureNotificationHandler();

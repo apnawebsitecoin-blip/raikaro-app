@@ -5,6 +5,10 @@ import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
 export function configureNotificationHandler() {
+  // setNotificationHandler internally calls addPushTokenListener, which is
+  // not supported in Expo Go since SDK 53 and will crash the app.
+  if (Constants.executionEnvironment === 'storeClient') return;
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
