@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, Tag, Wallet, Users, User } from 'lucide-react-native';
 import { ActivityIndicator, Text, View } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { configureNotificationHandler } from './lib/notifications';
+
+configureNotificationHandler();
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProfileProvider, useProfile } from './context/ProfileContext';
@@ -32,6 +36,7 @@ import AdminCouponsScreen from './screens/AdminCouponsScreen';
 import AdminBankOffersScreen from './screens/AdminBankOffersScreen';
 import MyReviewsScreen from './screens/MyReviewsScreen';
 import ReelsScreen from './screens/ReelsScreen';
+import AdminPushScreen from './screens/AdminPushScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -93,6 +98,7 @@ function AccountStack() {
       <Stack.Screen name="AdminSubmittedDeals" component={AdminSubmittedDealsScreen} options={{ title: 'Submitted Deals' }} />
       <Stack.Screen name="AdminCoupons" component={AdminCouponsScreen} options={{ title: 'Coupons' }} />
       <Stack.Screen name="AdminBankOffers" component={AdminBankOffersScreen} options={{ title: 'Bank Offers' }} />
+      <Stack.Screen name="AdminPush" component={AdminPushScreen} options={{ title: 'Push Notifications' }} />
     </Stack.Navigator>
   );
 }

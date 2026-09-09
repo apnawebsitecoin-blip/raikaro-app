@@ -40,6 +40,16 @@ export interface Profile {
   is_blocked: boolean;
   referred_by: string | null;
   referral_code: string | null;
+  push_token: string | null;
+  created_at: string;
+}
+
+export interface PriceAlert {
+  id: string;
+  user_id: string;
+  product_id: string;
+  target_price: number;
+  triggered_at: string | null;
   created_at: string;
 }
 

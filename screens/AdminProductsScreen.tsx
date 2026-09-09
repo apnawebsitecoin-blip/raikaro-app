@@ -95,6 +95,18 @@ export default function AdminProductsScreen() {
     if (error) {
       Alert.alert('Error', error.message);
     } else {
+      // Fire price-alert check when price changes on an existing product
+      const priceChanged =
+        editTarget &&
+        payload.price !== null &&
+        payload.price !== editTarget.price;
+      if (priceChanged) {
+        supabase.functions
+          .invoke('check-price-alerts', {
+            body: { product_id: editTarget!.id, new_price: payload.price },
+          })
+          .catch(() => {}); // fire-and-forget; don't block the UI
+      }
       setModalVisible(false);
       fetchProducts();
     }

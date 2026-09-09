@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+import { registerForPushNotificationsAsync } from '../lib/notifications';
 
 interface ProfileContextValue {
   walletBalance: number;
@@ -32,6 +33,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     refreshBalance();
+    registerForPushNotificationsAsync(session.user.id).catch(() => {});
   }, [session?.user.id, refreshBalance]);
 
   return (

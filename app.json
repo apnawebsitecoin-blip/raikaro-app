@@ -24,6 +24,14 @@
     "plugins": [
       "expo-secure-store",
       [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4F46E5",
+          "sounds": []
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "Allow Raikaro to access your photos to attach to reviews.",

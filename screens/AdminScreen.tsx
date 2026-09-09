@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark } from 'lucide-react-native';
+import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark, Bell } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 
@@ -50,6 +50,14 @@ export default function AdminScreen({ navigation }: Props) {
           subtitle="Manage bank/card discount offers"
           colors={colors}
           onPress={() => navigation.navigate('AdminBankOffers')}
+        />
+        <AdminRow
+          icon={<Bell size={20} color="#7C3AED" />}
+          iconBg="#EDE9FE"
+          label="Push Notifications"
+          subtitle="Broadcast alerts and test the pipeline"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminPush')}
         />
       </View>
     </SafeAreaView>
