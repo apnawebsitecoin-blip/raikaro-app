@@ -12,23 +12,29 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Crown, CheckCircle2, ChevronLeft, Zap, Shield, Star, Clock,
+  Heart, Gift, Bell, Check, Lock,
 } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { PremiumBenefit } from '../lib/types';
 
 const GOLD = '#F59E0B';
 const GOLD_LIGHT = '#FEF3C7';
 const GOLD_DARK = '#92400E';
 
-const BENEFITS = [
-  { Icon: Zap,        title: 'Ad-free experience',         desc: 'Browse deals without any interruptions' },
-  { Icon: Star,       title: 'Early access to deals',      desc: 'See flash deals 24 hours before everyone else' },
-  { Icon: Shield,     title: 'Priority cashback support',  desc: 'Missing cashback resolved in 24 hrs, not 7 days' },
-  { Icon: Crown,      title: 'Premium badge & profile',    desc: 'Gold crown on your profile and reviews' },
-  { Icon: Clock,      title: 'Extended coupon window',     desc: 'Coupons stay valid 2× longer for Premium members' },
+const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  Zap, Star, Shield, Crown, Clock, Heart, Gift, Bell, Check, Lock,
+};
+
+const DEFAULT_BENEFITS: PremiumBenefit[] = [
+  { icon: 'Zap',    title: 'Ad-free experience',        desc: 'Browse deals without any interruptions' },
+  { icon: 'Star',   title: 'Early access to deals',     desc: 'See flash deals 24 hours before everyone else' },
+  { icon: 'Shield', title: 'Priority cashback support', desc: 'Missing cashback resolved in 24 hrs, not 7 days' },
+  { icon: 'Crown',  title: 'Premium badge & profile',   desc: 'Gold crown on your profile and reviews' },
+  { icon: 'Clock',  title: 'Extended coupon window',    desc: 'Coupons stay valid 2× longer for Premium members' },
 ];
 
 type Props = { navigation: any };
@@ -42,6 +48,20 @@ export default function PremiumScreen({ navigation }: Props) {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [subscribing, setSubscribing] = useState(false);
+  const [priceDisplay, setPriceDisplay] = useState('₹99');
+  const [pricePeriod, setPricePeriod] = useState('/month');
+  const [benefits, setBenefits] = useState<PremiumBenefit[]>(DEFAULT_BENEFITS);
+
+  useEffect(() => {
+    supabase.from('premium_plan_config').select('*').eq('is_active', true).limit(1).maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setPriceDisplay(data.price_display);
+          setPricePeriod(data.price_period);
+          if (Array.isArray(data.benefits) && data.benefits.length > 0) setBenefits(data.benefits);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     if (!userId) return;
@@ -94,8 +114,8 @@ export default function PremiumScreen({ navigation }: Props) {
 
           {/* Price pill */}
           <View style={s.pricePill}>
-            <Text style={s.priceAmount}>₹99</Text>
-            <Text style={s.priceUnit}>/month</Text>
+            <Text style={s.priceAmount}>{priceDisplay}</Text>
+            <Text style={s.priceUnit}>{pricePeriod}</Text>
           </View>
 
           {isPremium && (
@@ -116,21 +136,24 @@ export default function PremiumScreen({ navigation }: Props) {
         {/* Benefits */}
         <Text style={[s.sectionTitle, { color: colors.text }]}>{t('premium_what_you_get')}</Text>
         <View style={[s.benefitsCard, { backgroundColor: colors.card, borderColor: colors.borderStrong }]}>
-          {BENEFITS.map(({ Icon, title, desc }, i) => (
-            <View key={title}>
-              {i > 0 && <View style={[s.divider, { backgroundColor: colors.border }]} />}
-              <View style={s.benefitRow}>
-                <View style={s.benefitIcon}>
-                  <Icon size={18} color={GOLD} />
+          {benefits.map(({ icon, title, desc }, i) => {
+            const Icon = ICON_MAP[icon] ?? Star;
+            return (
+              <View key={i}>
+                {i > 0 && <View style={[s.divider, { backgroundColor: colors.border }]} />}
+                <View style={s.benefitRow}>
+                  <View style={s.benefitIcon}>
+                    <Icon size={18} color={GOLD} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[s.benefitTitle, { color: colors.text }]}>{title}</Text>
+                    <Text style={[s.benefitDesc, { color: colors.textSub }]}>{desc}</Text>
+                  </View>
+                  <CheckCircle2 size={16} color={isPremium ? '#059669' : colors.textMuted} />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[s.benefitTitle, { color: colors.text }]}>{title}</Text>
-                  <Text style={[s.benefitDesc, { color: colors.textSub }]}>{desc}</Text>
-                </View>
-                <CheckCircle2 size={16} color={isPremium ? '#059669' : colors.textMuted} />
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
 
         {/* Subscribe / Unsubscribe button */}

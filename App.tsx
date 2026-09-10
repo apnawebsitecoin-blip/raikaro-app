@@ -39,6 +39,7 @@ import AdminPushScreen from './screens/AdminPushScreen';
 import AdminAffiliateScreen from './screens/AdminAffiliateScreen';
 import AdminCategoriesScreen from './screens/AdminCategoriesScreen';
 import AdminPlatformsScreen from './screens/AdminPlatformsScreen';
+import AdminPremiumScreen from './screens/AdminPremiumScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -104,6 +105,7 @@ function AccountStack() {
       <Stack.Screen name="AdminAffiliate" component={AdminAffiliateScreen} options={{ title: 'Affiliate Settings' }} />
       <Stack.Screen name="AdminCategories" component={AdminCategoriesScreen} options={{ title: 'Categories' }} />
       <Stack.Screen name="AdminPlatforms" component={AdminPlatformsScreen} options={{ title: 'Platforms' }} />
+      <Stack.Screen name="AdminPremium" component={AdminPremiumScreen} options={{ title: 'Premium Plan' }} />
     </Stack.Navigator>
   );
 }
