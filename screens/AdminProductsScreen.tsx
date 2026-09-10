@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, Pressable, TextInput,
   Alert, ActivityIndicator, Modal, ScrollView, StatusBar, StyleSheet,
@@ -8,6 +8,7 @@ import { Plus, X, Check } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
 import { Product } from '../lib/types';
+import { AffiliatePlatform, fetchAffiliateSettings, autoAffiliate } from '../lib/affiliateUtils';
 
 const CATEGORIES = ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books', 'Food', 'Travel', 'Other'];
 const PLATFORMS  = ['Amazon', 'Flipkart', 'Meesho', 'Myntra'];
@@ -35,6 +36,11 @@ export default function AdminProductsScreen() {
   const [editTarget, setEditTarget] = useState<Product | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const affiliateSettingsRef = useRef<Map<AffiliatePlatform, string>>(new Map());
+
+  useEffect(() => {
+    fetchAffiliateSettings().then((m) => { affiliateSettingsRef.current = m; }).catch(() => {});
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     const { data } = await supabase
@@ -192,9 +198,23 @@ export default function AdminProductsScreen() {
             <FInput value={form.name} onChangeText={(v) => setForm((f) => ({ ...f, name: v }))} placeholder="e.g. boAt Rockerz 450" colors={colors} />
 
             <FLabel text="Product URL *" />
-            <FInput value={form.original_url} onChangeText={(v) => setForm((f) => ({ ...f, original_url: v }))} placeholder="https://amazon.in/..." keyboardType="url" colors={colors} />
+            <FInput
+              value={form.original_url}
+              onChangeText={(v) => {
+                // Auto-fill affiliate link from URL when adding a new product
+                const { affiliateUrl } = autoAffiliate(v, affiliateSettingsRef.current);
+                setForm((f) => ({
+                  ...f,
+                  original_url: v,
+                  affiliate_link: affiliateUrl ?? f.affiliate_link,
+                }));
+              }}
+              placeholder="https://amazon.in/..."
+              keyboardType="url"
+              colors={colors}
+            />
 
-            <FLabel text="Affiliate Link" />
+            <FLabel text="Affiliate Link (auto-generated — edit if needed)" />
             <FInput value={form.affiliate_link} onChangeText={(v) => setForm((f) => ({ ...f, affiliate_link: v }))} placeholder="https://amzn.to/..." keyboardType="url" colors={colors} />
 
             <FLabel text="Image URL" />

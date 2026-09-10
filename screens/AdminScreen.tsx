@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark, Bell } from 'lucide-react-native';
+import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark, Bell, Link } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 
@@ -58,6 +58,14 @@ export default function AdminScreen({ navigation }: Props) {
           subtitle="Broadcast alerts and test the pipeline"
           colors={colors}
           onPress={() => navigation.navigate('AdminPush')}
+        />
+        <AdminRow
+          icon={<Link size={20} color="#059669" />}
+          iconBg="#DCFCE7"
+          label="Affiliate Settings"
+          subtitle="Configure affiliate tags per platform"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminAffiliate')}
         />
       </View>
     </SafeAreaView>

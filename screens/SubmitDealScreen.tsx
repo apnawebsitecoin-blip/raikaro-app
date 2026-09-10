@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TextInput, Pressable,
   Alert, ActivityIndicator, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link, Sparkles } from 'lucide-react-native';
+import { Link, Sparkles, ExternalLink } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import {
+  AffiliatePlatform, PLATFORM_META,
+  fetchAffiliateSettings, autoAffiliate,
+} from '../lib/affiliateUtils';
 const CATEGORIES = ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books', 'Food', 'Travel', 'Other'];
 
 async function scrapeMetaTags(url: string): Promise<{ title?: string; image?: string; price?: string }> {
@@ -51,13 +55,28 @@ export default function SubmitDealScreen() {
 
   const [productName, setProductName] = useState('');
   const [productUrl, setProductUrl] = useState('');
-  const [affiliateLink, setAffiliateLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Affiliate auto-generation
+  const [affiliateSettingsMap, setAffiliateSettingsMap] = useState<Map<AffiliatePlatform, string>>(new Map());
+  const [autoAffiliateLink, setAutoAffiliateLink] = useState<string | null>(null);
+  const [detectedPlatform, setDetectedPlatform] = useState<AffiliatePlatform | null>(null);
+
+  useEffect(() => {
+    fetchAffiliateSettings().then(setAffiliateSettingsMap).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!productUrl.trim()) { setAutoAffiliateLink(null); setDetectedPlatform(null); return; }
+    const { affiliateUrl, platform } = autoAffiliate(productUrl.trim(), affiliateSettingsMap);
+    setDetectedPlatform(platform);
+    setAutoAffiliateLink(affiliateUrl);
+  }, [productUrl, affiliateSettingsMap]);
 
   const handleScrape = async () => {
     const url = pasteUrl.trim();
@@ -89,7 +108,7 @@ export default function SubmitDealScreen() {
       user_id: userId,
       product_name: productName.trim(),
       product_url: productUrl.trim(),
-      affiliate_link: affiliateLink.trim() || null,
+      affiliate_link: autoAffiliateLink ?? null,
       image_url: imageUrl.trim() || null,
       price: price ? parseFloat(price) : null,
       category: category || null,
@@ -161,6 +180,28 @@ export default function SubmitDealScreen() {
         <Label text={t('submit_deal_product_url')} />
         <Input placeholder="https://amazon.in/..." value={productUrl} onChangeText={setProductUrl} autoCapitalize="none" keyboardType="url" />
 
+        {/* Affiliate link preview — shown automatically, no user input needed */}
+        {detectedPlatform && (
+          <View style={{
+            flexDirection: 'row', alignItems: 'flex-start', gap: 10,
+            backgroundColor: autoAffiliateLink ? '#ECFDF5' : '#F9FAFB',
+            borderRadius: 12, padding: 12, marginTop: -8, marginBottom: 18,
+            borderWidth: 1, borderColor: autoAffiliateLink ? '#A7F3D0' : '#E5E7EB',
+          }}>
+            <ExternalLink size={14} color={autoAffiliateLink ? '#059669' : '#9CA3AF'} style={{ marginTop: 2 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: autoAffiliateLink ? '#059669' : '#9CA3AF', marginBottom: 2 }}>
+                {autoAffiliateLink
+                  ? `Affiliate link auto-generated (${PLATFORM_META[detectedPlatform].label})`
+                  : `No affiliate tag configured for ${PLATFORM_META[detectedPlatform].label} yet`}
+              </Text>
+              {autoAffiliateLink && (
+                <Text style={{ fontSize: 11, color: '#6B7280' }} numberOfLines={2}>{autoAffiliateLink}</Text>
+              )}
+            </View>
+          </View>
+        )}
+
         <Label text={t('submit_deal_price')} />
         <Input placeholder="e.g. 999" value={price} onChangeText={setPrice} keyboardType="numeric" />
 
@@ -176,9 +217,6 @@ export default function SubmitDealScreen() {
             </Pressable>
           ))}
         </View>
-
-        <Label text={t('submit_deal_affiliate_link')} />
-        <Input placeholder="https://amzn.to/..." value={affiliateLink} onChangeText={setAffiliateLink} autoCapitalize="none" keyboardType="url" />
 
         <Label text={t('submit_deal_description')} />
         <TextInput
