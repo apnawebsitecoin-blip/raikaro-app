@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark, Bell, Link } from 'lucide-react-native';
+import { Package, ClipboardList, ChevronRight, ShieldCheck, Ticket, Landmark, Bell, Link, LayoutGrid, Store, Crown, Settings, FileText } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 
@@ -66,6 +66,46 @@ export default function AdminScreen({ navigation }: Props) {
           subtitle="Configure affiliate tags per platform"
           colors={colors}
           onPress={() => navigation.navigate('AdminAffiliate')}
+        />
+        <AdminRow
+          icon={<LayoutGrid size={20} color="#0284C7" />}
+          iconBg="#E0F2FE"
+          label="Categories"
+          subtitle="Add, edit, and reorder product categories"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminCategories')}
+        />
+        <AdminRow
+          icon={<Store size={20} color="#D97706" />}
+          iconBg="#FEF3C7"
+          label="Platforms"
+          subtitle="Manage cashback platforms and their labels"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminPlatforms')}
+        />
+        <AdminRow
+          icon={<Crown size={20} color="#F59E0B" />}
+          iconBg="#FEF3C7"
+          label="Premium Plan"
+          subtitle="Edit price, period, and benefits list"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminPremium')}
+        />
+        <AdminRow
+          icon={<Settings size={20} color="#6B7280" />}
+          iconBg="#F3F4F6"
+          label="App Settings"
+          subtitle="Maintenance mode and global toggles"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminSettings')}
+        />
+        <AdminRow
+          icon={<FileText size={20} color="#7C3AED" />}
+          iconBg="#EDE9FE"
+          label="Content Pages"
+          subtitle="Edit FAQ, Help, Terms & Privacy"
+          colors={colors}
+          onPress={() => navigation.navigate('AdminContent')}
         />
       </View>
     </SafeAreaView>

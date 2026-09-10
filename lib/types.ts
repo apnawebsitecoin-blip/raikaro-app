@@ -186,6 +186,49 @@ export interface HomeBanner {
   created_at: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  icon_name: string;
+  badge_color: string;
+  icon_color: string;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PlatformConfig {
+  id: string;
+  name: string;
+  brand_color: string;
+  cashback_text: string;
+  shoppers_text: string;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PremiumBenefit {
+  icon: string;
+  title: string;
+  desc: string;
+}
+
+export interface PremiumPlanConfig {
+  id: string;
+  price_display: string;
+  price_period: string;
+  benefits: PremiumBenefit[];
+  is_active: boolean;
+}
+
+export interface ContentPage {
+  slug: string;
+  title: string;
+  body: string;
+  updated_at: string;
+}
+
 export interface CommunityDeal {
   id: string;
   user_id: string;

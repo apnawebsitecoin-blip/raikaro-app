@@ -23,7 +23,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SkeletonProductCard } from '../components/SkeletonCard';
 import LanguagePicker from '../components/LanguagePicker';
-import { Product, Coupon, HomeBanner, VideoReview } from '../lib/types';
+import { Product, Coupon, HomeBanner, VideoReview, Category } from '../lib/types';
+import { resolveIcon } from '../lib/categoryIcons';
 
 function verifiedLabel(lastVerifiedAt: string | null): string | null {
   if (!lastVerifiedAt) return null;
@@ -38,23 +39,7 @@ import EarningStoryAnimation from '../components/EarningStoryAnimation';
 import AppDrawer from '../components/AppDrawer';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const PLATFORM_COLORS: Record<string, { bg: string; imgBg: string; text: string; cashback: string; shoppers: string }> = {
-  Amazon:   { bg: '#FEF9EC', imgBg: '#FEF3C7', text: '#92400E', cashback: 'Up to 8%',  shoppers: '3.2K+ shopped' },
-  Flipkart: { bg: '#EFF6FF', imgBg: '#DBEAFE', text: '#1E40AF', cashback: 'Up to 6%',  shoppers: '4.1K+ shopped' },
-  Meesho:   { bg: '#FAF5FF', imgBg: '#EDE9FE', text: '#7C3AED', cashback: 'Up to 10%', shoppers: '2.7K+ shopped' },
-  Myntra:   { bg: '#FFF1F2', imgBg: '#FFE4E6', text: '#BE123C', cashback: 'Up to 7%',  shoppers: '1.9K+ shopped' },
-};
-
-const CATEGORY_COLORS: Record<string, { bg: string; icon: string }> = {
-  Electronics: { bg: '#DBEAFE', icon: '#1D4ED8' },
-  Fashion:     { bg: '#FCE7F3', icon: '#DB2777' },
-  Home:        { bg: '#D1FAE5', icon: '#059669' },
-  Beauty:      { bg: '#EDE9FE', icon: '#7C3AED' },
-  Sports:      { bg: '#FED7AA', icon: '#EA580C' },
-  Books:       { bg: '#FEF3C7', icon: '#D97706' },
-  Food:        { bg: '#CCFBF1', icon: '#0D9488' },
-  Travel:      { bg: '#E0F2FE', icon: '#0284C7' },
-};
+// Static fallback palette for categories not in the DB
 const CAT_PALETTE = [
   { bg: '#DBEAFE', icon: '#1D4ED8' },
   { bg: '#FCE7F3', icon: '#DB2777' },
@@ -64,15 +49,12 @@ const CAT_PALETTE = [
   { bg: '#CCFBF1', icon: '#0D9488' },
 ];
 
-const CATEGORY_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
-  Electronics: Smartphone,
-  Fashion:     Shirt,
-  Home:        HomeIcon,
-  Beauty:      Sparkles,
-  Sports:      Dumbbell,
-  Books:       BookOpen,
-  Food:        UtensilsCrossed,
-  Travel:      Plane,
+// Static style fallbacks for platforms not in the DB
+const PLATFORM_STYLE_DEFAULTS: Record<string, { bg: string; imgBg: string; text: string }> = {
+  Amazon:   { bg: '#FEF9EC', imgBg: '#FEF3C7', text: '#92400E' },
+  Flipkart: { bg: '#EFF6FF', imgBg: '#DBEAFE', text: '#1E40AF' },
+  Meesho:   { bg: '#FAF5FF', imgBg: '#EDE9FE', text: '#7C3AED' },
+  Myntra:   { bg: '#FFF1F2', imgBg: '#FFE4E6', text: '#BE123C' },
 };
 
 type Props = { navigation: NativeStackNavigationProp<any> };
@@ -252,6 +234,8 @@ export default function HomeScreen({ navigation }: Props) {
   const [homeBanners, setHomeBanners] = useState<HomeBanner[]>([]);
   const [videoReviews, setVideoReviews] = useState<VideoReview[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [categoryConfigMap, setCategoryConfigMap] = useState<Map<string, Category>>(new Map());
+  const [platformConfigMap, setPlatformConfigMap] = useState<Map<string, { cashback_text: string; shoppers_text: string }>>(new Map());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [langPickerOpen, setLangPickerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -260,12 +244,14 @@ export default function HomeScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchData = useCallback(async () => {
-    const [featuredRes, allRes, couponsRes, bannersRes, videoRes] = await Promise.all([
+    const [featuredRes, allRes, couponsRes, bannersRes, videoRes, catsRes, platsRes] = await Promise.all([
       supabase.from('products').select('*').or('is_featured.eq.true,is_sponsored.eq.true').order('created_at', { ascending: false }).limit(10),
       supabase.from('products').select('*').order('created_at', { ascending: false }).limit(60),
       supabase.from('coupons').select('*').eq('is_active', true).eq('is_expired', false).order('discount_value', { ascending: false }).limit(10),
       supabase.from('home_banners').select('*').eq('is_active', true).order('display_order', { ascending: true }).limit(8),
       supabase.from('video_reviews').select('*').eq('status', 'live').order('created_at', { ascending: false }).limit(10),
+      supabase.from('categories').select('*').eq('is_active', true).order('display_order', { ascending: true }),
+      supabase.from('platforms').select('name,cashback_text,shoppers_text').eq('is_active', true),
     ]);
 
     if (featuredRes.data) setFeatured(featuredRes.data as Product[]);
@@ -278,6 +264,8 @@ export default function HomeScreen({ navigation }: Props) {
     if (couponsRes.data) setCoupons(couponsRes.data as Coupon[]);
     if (bannersRes.data) setHomeBanners(bannersRes.data as HomeBanner[]);
     if (videoRes.data) setVideoReviews(videoRes.data as VideoReview[]);
+    if (catsRes.data) setCategoryConfigMap(new Map((catsRes.data as Category[]).map((c) => [c.name, c])));
+    if (platsRes.data) setPlatformConfigMap(new Map((platsRes.data as any[]).map((p) => [p.name, { cashback_text: p.cashback_text, shoppers_text: p.shoppers_text }])));
 
     if (userId) {
       const notifRes = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('read', false);
@@ -442,7 +430,9 @@ export default function HomeScreen({ navigation }: Props) {
                 <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, paddingHorizontal: 16, marginBottom: 12 }}>{t('heading_shop_earn')}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
                   {platforms.map((platform) => {
-                    const pc = PLATFORM_COLORS[platform] ?? { bg: '#F8F9FB', imgBg: '#F3F4F6', text: '#374151', cashback: 'Cashback', shoppers: '1K+ shopped' };
+                    const style = PLATFORM_STYLE_DEFAULTS[platform] ?? { bg: '#F8F9FB', imgBg: '#F3F4F6', text: '#374151' };
+                    const conf = platformConfigMap.get(platform) ?? { cashback_text: 'Cashback', shoppers_text: '1K+ shopped' };
+                    const pc = { ...style, cashback: conf.cashback_text, shoppers: conf.shoppers_text };
                     return (
                       <Pressable
                         key={platform}
@@ -504,9 +494,10 @@ export default function HomeScreen({ navigation }: Props) {
                     <Text style={{ fontSize: 11, fontWeight: '600', color: selectedCategory === null ? colors.indigo : colors.textSub }}>All</Text>
                   </Pressable>
                   {categories.map((cat, idx) => {
-                    const Icon = CATEGORY_MAP[cat] ?? ShoppingBag;
+                    const catConf = categoryConfigMap.get(cat);
+                    const Icon = resolveIcon(catConf?.icon_name ?? 'ShoppingBag');
                     const active = selectedCategory === cat;
-                    const palette = CATEGORY_COLORS[cat] ?? CAT_PALETTE[idx % CAT_PALETTE.length];
+                    const palette = catConf ? { bg: catConf.badge_color, icon: catConf.icon_color } : CAT_PALETTE[idx % CAT_PALETTE.length];
                     return (
                       <Pressable key={cat} onPress={() => setSelectedCategory(active ? null : cat)} style={{ alignItems: 'center', marginRight: 20 }}>
                         <View style={{
@@ -558,7 +549,9 @@ export default function HomeScreen({ navigation }: Props) {
                   </Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
                     {plats.map((p) => {
-                      const s = PLATFORM_COLORS[p] ?? { bg: '#F3F4F6', imgBg: '#E5E7EB', text: '#374151', cashback: 'Cashback', shoppers: '1K+ shopped' };
+                      const pStyle = PLATFORM_STYLE_DEFAULTS[p] ?? { bg: '#F3F4F6', imgBg: '#E5E7EB', text: '#374151' };
+                      const pConf = platformConfigMap.get(p) ?? { cashback_text: 'Cashback', shoppers_text: '1K+ shopped' };
+                      const s = { ...pStyle, cashback: pConf.cashback_text, shoppers: pConf.shoppers_text };
                       return (
                         <Pressable
                           key={p}

@@ -71,12 +71,8 @@ function BankOffersBanner({ platform }: { platform: string | null }) {
 }
 
 // ─── Platform brand tokens ────────────────────────────────────────────────────
-const PLATFORM_COLORS: Record<string, {
-  dot: string;
-  activeBg: string;
-  activeBorder: string;
-  activeText: string;
-}> = {
+// Static chip style fallbacks — visual only, admin controls cashback/shoppers text via DB
+const PLATFORM_CHIP_STYLES: Record<string, { dot: string; activeBg: string; activeBorder: string; activeText: string }> = {
   Amazon:   { dot: '#F59E0B', activeBg: '#FEF3C7', activeBorder: '#D97706', activeText: '#92400E' },
   Flipkart: { dot: '#3B82F6', activeBg: '#DBEAFE', activeBorder: '#2563EB', activeText: '#1E40AF' },
   Meesho:   { dot: '#A78BFA', activeBg: '#EDE9FE', activeBorder: '#7C3AED', activeText: '#6D28D9' },
@@ -178,6 +174,7 @@ export default function DealsScreen({ navigation, route }: Props) {
   const [categories,       setCategories]       = useState<string[]>([]);
   const [platforms,        setPlatforms]        = useState<string[]>([]);
   const [ratingsMap,       setRatingsMap]       = useState<Record<string, { score: number; count: number }>>({});
+  const [dbPlatformNames,  setDbPlatformNames]  = useState<Set<string>>(new Set());
   const [loading,          setLoading]          = useState(true);
   const [refreshing,       setRefreshing]       = useState(false);
   const [search,           setSearch]           = useState('');
@@ -186,6 +183,11 @@ export default function DealsScreen({ navigation, route }: Props) {
   const [priceRange,       setPriceRange]       = useState<PriceRange | null>(null);
 
   const fetchProducts = useCallback(async () => {
+    // Fetch DB platform names for canonical name lookup
+    const { data: platData } = await supabase.from('platforms').select('name').eq('is_active', true);
+    const dbNames = new Set<string>((platData ?? []).map((p: any) => p.name));
+    setDbPlatformNames(dbNames);
+
     const { data } = await supabase
       .from('products')
       .select('*')
@@ -211,9 +213,9 @@ export default function DealsScreen({ navigation, route }: Props) {
         if (p.platform) {
           const key = p.platform.toLowerCase();
           if (!platMap.has(key)) {
-            const canonical = Object.keys(PLATFORM_COLORS).find(
-              (k) => k.toLowerCase() === key
-            ) ?? (p.platform.charAt(0).toUpperCase() + p.platform.slice(1).toLowerCase());
+            const canonical = Array.from(dbNames).find((k) => k.toLowerCase() === key)
+              ?? Object.keys(PLATFORM_CHIP_STYLES).find((k) => k.toLowerCase() === key)
+              ?? (p.platform.charAt(0).toUpperCase() + p.platform.slice(1).toLowerCase());
             platMap.set(key, canonical);
           }
         }
@@ -342,7 +344,7 @@ export default function DealsScreen({ navigation, route }: Props) {
             colors={colors}
           />
           {platforms.map((p) => {
-            const pc = PLATFORM_COLORS[p];
+            const pc = PLATFORM_CHIP_STYLES[p];
             return (
               <FilterChip
                 key={p}

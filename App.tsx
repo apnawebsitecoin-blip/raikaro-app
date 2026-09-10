@@ -37,6 +37,7 @@ import MyReviewsScreen from './screens/MyReviewsScreen';
 import ReelsScreen from './screens/ReelsScreen';
 import AdminPushScreen from './screens/AdminPushScreen';
 import AdminAffiliateScreen from './screens/AdminAffiliateScreen';
+import AdminCategoriesScreen from './screens/AdminCategoriesScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -100,6 +101,7 @@ function AccountStack() {
       <Stack.Screen name="AdminBankOffers" component={AdminBankOffersScreen} options={{ title: 'Bank Offers' }} />
       <Stack.Screen name="AdminPush" component={AdminPushScreen} options={{ title: 'Push Notifications' }} />
       <Stack.Screen name="AdminAffiliate" component={AdminAffiliateScreen} options={{ title: 'Affiliate Settings' }} />
+      <Stack.Screen name="AdminCategories" component={AdminCategoriesScreen} options={{ title: 'Categories' }} />
     </Stack.Navigator>
   );
 }
