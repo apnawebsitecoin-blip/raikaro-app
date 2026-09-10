@@ -41,6 +41,8 @@ import AdminCategoriesScreen from './screens/AdminCategoriesScreen';
 import AdminPlatformsScreen from './screens/AdminPlatformsScreen';
 import AdminPremiumScreen from './screens/AdminPremiumScreen';
 import AdminSettingsScreen from './screens/AdminSettingsScreen';
+import AdminContentScreen from './screens/AdminContentScreen';
+import ContentPageScreen from './screens/ContentPageScreen';
 import MaintenanceScreen from './screens/MaintenanceScreen';
 import { supabase } from './lib/supabase';
 
@@ -110,6 +112,8 @@ function AccountStack() {
       <Stack.Screen name="AdminPlatforms" component={AdminPlatformsScreen} options={{ title: 'Platforms' }} />
       <Stack.Screen name="AdminPremium" component={AdminPremiumScreen} options={{ title: 'Premium Plan' }} />
       <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} options={{ title: 'App Settings' }} />
+      <Stack.Screen name="AdminContent" component={AdminContentScreen} options={{ title: 'Content Pages' }} />
+      <Stack.Screen name="ContentPage" component={ContentPageScreen} options={({ route }: any) => ({ title: route.params?.title ?? 'Info' })} />
     </Stack.Navigator>
   );
 }

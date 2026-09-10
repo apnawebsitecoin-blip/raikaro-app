@@ -8,6 +8,7 @@ import {
   Mail, Edit2, Check, X, LogOut, Bell, Moon, Globe,
   ChevronRight, Shield, Heart, Wallet, Users, PenLine,
   Tag, AlertCircle, BookOpen, Crown, User, LogIn, ShieldCheck,
+  HelpCircle, FileText, Lock,
 } from 'lucide-react-native';
 
 import { supabase } from '../lib/supabase';
@@ -295,11 +296,36 @@ export default function AccountScreen({ navigation }: Props) {
           />
           <View style={[s.divider, { backgroundColor: colors.border }]} />
           <DashRow
+            icon={<HelpCircle size={18} color="#059669" />}
+            iconBg="#DCFCE7"
+            label="FAQ"
+            subtitle="Frequently asked questions"
+            colors={colors}
+            onPress={() => navigation.navigate('ContentPage', { slug: 'faq', title: 'FAQ' })}
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <DashRow
+            icon={<FileText size={18} color="#D97706" />}
+            iconBg="#FEF3C7"
+            label="Help & Support"
+            colors={colors}
+            onPress={() => navigation.navigate('ContentPage', { slug: 'help', title: 'Help & Support' })}
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <DashRow
             icon={<Shield size={18} color="#2563EB" />}
             iconBg="#EFF6FF"
             label={t('account_privacy')}
             colors={colors}
-            onPress={() => {}}
+            onPress={() => navigation.navigate('ContentPage', { slug: 'privacy', title: 'Privacy Policy' })}
+          />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
+          <DashRow
+            icon={<Lock size={18} color="#7C3AED" />}
+            iconBg="#EDE9FE"
+            label="Terms of Service"
+            colors={colors}
+            onPress={() => navigation.navigate('ContentPage', { slug: 'terms', title: 'Terms of Service' })}
           />
           {profile?.is_admin && (
             <>
