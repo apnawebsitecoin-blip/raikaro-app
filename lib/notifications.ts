@@ -1,14 +1,18 @@
-import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
-export function configureNotificationHandler() {
-  // setNotificationHandler internally calls addPushTokenListener, which is
-  // not supported in Expo Go since SDK 53 and will crash the app.
-  if (Constants.executionEnvironment === 'storeClient') return;
+// Evaluated once at module load — safe, no expo-notifications involved.
+const IS_EXPO_GO = Constants.executionEnvironment === 'storeClient';
 
+export async function configureNotificationHandler(): Promise<void> {
+  // Guard BEFORE any dynamic import — the import itself must never happen
+  // in Expo Go because expo-notifications registers addPushTokenListener
+  // as a module-level side effect the moment the module is evaluated.
+  if (IS_EXPO_GO) return;
+
+  const Notifications = await import('expo-notifications');
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -21,12 +25,12 @@ export function configureNotificationHandler() {
 }
 
 export async function registerForPushNotificationsAsync(userId: string): Promise<void> {
-  // Expo Go dropped remote push support in SDK 53 — skip silently.
-  // Use a dev build (npx expo run:ios / run:android) to test push end-to-end.
-  if (Constants.executionEnvironment === 'storeClient') return;
+  if (IS_EXPO_GO) return;
   if (!Device.isDevice) return;
 
   try {
+    const Notifications = await import('expo-notifications');
+
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
         name: 'Raikaro',
