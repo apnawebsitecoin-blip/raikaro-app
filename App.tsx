@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -40,6 +40,9 @@ import AdminAffiliateScreen from './screens/AdminAffiliateScreen';
 import AdminCategoriesScreen from './screens/AdminCategoriesScreen';
 import AdminPlatformsScreen from './screens/AdminPlatformsScreen';
 import AdminPremiumScreen from './screens/AdminPremiumScreen';
+import AdminSettingsScreen from './screens/AdminSettingsScreen';
+import MaintenanceScreen from './screens/MaintenanceScreen';
+import { supabase } from './lib/supabase';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -106,6 +109,7 @@ function AccountStack() {
       <Stack.Screen name="AdminCategories" component={AdminCategoriesScreen} options={{ title: 'Categories' }} />
       <Stack.Screen name="AdminPlatforms" component={AdminPlatformsScreen} options={{ title: 'Platforms' }} />
       <Stack.Screen name="AdminPremium" component={AdminPremiumScreen} options={{ title: 'Premium Plan' }} />
+      <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} options={{ title: 'App Settings' }} />
     </Stack.Navigator>
   );
 }
@@ -155,14 +159,37 @@ function MainTabs() {
 }
 
 function RootNavigator() {
-  const { loading } = useAuth();
+  const { loading, session } = useAuth();
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [settingsReady, setSettingsReady] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    if (loading) return;
+    const run = async () => {
+      const [settingsRes, profileRes] = await Promise.all([
+        supabase.from('app_settings').select('value').eq('key', 'maintenance_mode').maybeSingle(),
+        session?.user.id
+          ? supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()
+          : Promise.resolve({ data: null }),
+      ]);
+      setMaintenanceMode(settingsRes.data?.value === 'true');
+      setIsAdmin((profileRes as any).data?.is_admin ?? false);
+      setSettingsReady(true);
+    };
+    run();
+  }, [loading, session?.user.id]);
+
+  if (loading || !settingsReady) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={INDIGO} />
       </View>
     );
+  }
+
+  if (maintenanceMode && !isAdmin) {
+    return <MaintenanceScreen />;
   }
 
   return (
