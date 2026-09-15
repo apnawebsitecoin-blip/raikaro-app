@@ -17,6 +17,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { SkeletonBalanceCard } from '../components/SkeletonCard';
 import { Profile, WithdrawalRequest, DailyCheckin, MissingCashbackRequest } from '../lib/types';
 import GuestPrompt from '../components/GuestPrompt';
+import { useProfile } from '../context/ProfileContext';
 
 const PLATFORMS = ['Amazon', 'Flipkart', 'Meesho', 'Myntra'];
 
@@ -32,6 +33,7 @@ export default function WalletScreen() {
   const { session } = useAuth();
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const { refreshBalance } = useProfile();
   const userId = session?.user.id;
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -102,7 +104,7 @@ export default function WalletScreen() {
     else {
       const amount = (newCheckin as any)?.reward_amount ?? 5;
       Alert.alert('', `₹${amount} credited to your wallet!`);
-      await fetchData();
+      await Promise.all([fetchData(), refreshBalance()]);
     }
   };
 
