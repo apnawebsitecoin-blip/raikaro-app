@@ -92,10 +92,18 @@ export default function WalletScreen() {
       const refCode = userId.substring(0, 8).toUpperCase();
       await supabase.from('profiles').upsert({ id: userId, referral_code: refCode }, { onConflict: 'id', ignoreDuplicates: true });
     }
-    const { error } = await supabase.from('daily_checkins').insert({ user_id: userId });
+    const { data: newCheckin, error } = await supabase
+      .from('daily_checkins')
+      .insert({ user_id: userId })
+      .select('reward_amount')
+      .single();
     setCheckinLoading(false);
     if (error) Alert.alert('Error', error.message);
-    else { Alert.alert('', '₹5 credited to your wallet!'); await fetchData(); }
+    else {
+      const amount = (newCheckin as any)?.reward_amount ?? 5;
+      Alert.alert('', `₹${amount} credited to your wallet!`);
+      await fetchData();
+    }
   };
 
   const handleWithdraw = async () => {
