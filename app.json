@@ -8,7 +8,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/REPLACE_WITH_YOUR_PROJECT_ID",
+      "url": "https://u.expo.dev/3b921a0d-0934-4b36-a74c-a3ddbaea4060",
       "enabled": true,
       "fallbackToCacheTimeout": 0
     },
@@ -24,7 +24,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -46,6 +49,12 @@
           "cameraPermission": "Allow Raikaro to use your camera."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3b921a0d-0934-4b36-a74c-a3ddbaea4060"
+      }
+    },
+    "owner": "raikaro"
   }
 }
