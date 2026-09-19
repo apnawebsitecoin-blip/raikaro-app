@@ -87,11 +87,23 @@ export default function WriteReviewScreen({ navigation, route }: Props) {
   };
 
   const handleSubmit = async () => {
-    if (!userId) return;
+    if (!userId || submitting) return;
     if (!selected) { Alert.alert('Select a product', 'Please select the product you want to review.'); return; }
     if (!sentiment) { Alert.alert('Select sentiment', 'Please choose Positive, Neutral, or Negative.'); return; }
     if (reviewText.trim().length < 10) { Alert.alert('Review too short', 'Please write at least 10 characters.'); return; }
     if (existingReview) { Alert.alert('Already reviewed', 'You have already reviewed this product.'); return; }
+
+    // Rate limit: 3 reviews per 24 hours (mirrors reviewer-app)
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { count: recentCount } = await supabase
+      .from('reviews')
+      .select('*', { count: 'exact', head: true })
+      .eq('reviewer_id', userId)
+      .gte('created_at', since24h);
+    if ((recentCount ?? 0) >= 3) {
+      Alert.alert('Limit reached', 'You can submit at most 3 reviews per day. Please try again tomorrow.');
+      return;
+    }
 
     let mediaUrl: string | null = null;
 

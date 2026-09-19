@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Pressable, RefreshControl,
   Modal, TextInput, Alert, ActivityIndicator, StatusBar, TouchableOpacity,
@@ -43,6 +43,7 @@ export default function WalletScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [checkinLoading, setCheckinLoading] = useState(false);
+  const checkinLock = useRef(false);
 
   // Withdraw modal
   const [withdrawModal, setWithdrawModal] = useState(false);
@@ -86,7 +87,8 @@ export default function WalletScreen() {
   }, [fetchData]);
 
   const handleCheckin = async () => {
-    if (!userId) return;
+    if (!userId || checkinLock.current) return;
+    checkinLock.current = true;
     setCheckinLoading(true);
     // Ensure profile row exists before inserting (FK: daily_checkins.user_id → profiles.id)
     const { data: existingProfile } = await supabase.from('profiles').select('id').eq('id', userId).single();
@@ -99,6 +101,7 @@ export default function WalletScreen() {
       .insert({ user_id: userId })
       .select('reward_amount')
       .single();
+    checkinLock.current = false;
     setCheckinLoading(false);
     if (error) Alert.alert('Error', error.message);
     else {
